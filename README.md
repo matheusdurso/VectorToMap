@@ -1,21 +1,26 @@
 # VectorToMap (Atlas & Layout) 🗺️
 
-**VectorToMap (Atlas & Layout)** é uma ferramenta poderosa para QGIS que transforma camadas vetoriais em cadernos de mapas organizados e relatórios técnicos detalhados.
+**VectorToMap** é uma ferramenta de automação para QGIS desenvolvida para transformar camadas vetoriais em cadernos de mapas organizados e relatórios técnicos profissionais.
 
 ## 🌟 Diferenciais Técnicos
+* **Cálculo de Escala Inteligente**: Utiliza o lado dominante do retângulo envolvente para definir o zoom, garantindo que nenhuma parte da geometria seja cortada.
+* **Atlas Multi-Páginas Persistente**: Cria um único layout com múltiplas páginas, facilitando a exportação em lote para PDF.
+* **Transposição de Atributos**: Converte registros da tabela em formulários verticais legíveis usando renderização HTML.
+* **Independência de SRC**: Algoritmo testado para conversão dinâmica entre metros, graus e pés.
 
-- **Cálculo de Escala Inteligente**: Utiliza o lado dominante (maior eixo) do retângulo envolvente para definir o zoom, garantindo que nenhuma parte da geometria seja cortada.
-- **Atlas Multi-Páginas Persistente**: Cria um único layout com N páginas, facilitando a exportação em lote para PDF.
-- **Transposição de Atributos**: Converte registros horizontais da tabela em formulários verticais legíveis usando renderização HTML.
-- **Independência de SRC**: Algoritmo testado para conversão dinâmica entre metros, graus e pés.
+## 🚀 Instalação e Uso
+1. Baixe o arquivo `.zip` mais recente na aba [Releases](https://github.com/matheusdurso/VectorToMap/releases).
+2. No QGIS, vá em `Complementos` > `Gerenciar e Instalar Complementos` > `Instalar a partir do ZIP`.
+3. Selecione a camada, abra o plugin pelo menu **Vector to Map** e configure seu layout.
 
-## 🛠️ Como Usar
+## 🛠️ Reportando Problemas e Sugestões
+Para garantir a evolução constante desta ferramenta, utilizamos o **GitHub Issues**. Se você encontrou um erro ou tem uma ideia de nova funcionalidade:
 
-1. Selecione a camada e abra o plugin.
-2. Escolha o preset (ex: **Mapa Quadrado**) e a orientação.
-3. No **Atlas**, selecione a coluna para agrupamento ou use o modo individual.
-4. Marque as colunas de dados que deseja exibir no relatório.
-5. Clique em **OK** e visualize seu layout gerado instantaneamente.
+1. Acesse a aba [Issues](https://github.com/matheusdurso/VectorToMap/issues).
+2. Clique em **New Issue**.
+3. Descreva o problema detalhadamente (se possível, anexe um print do erro ou a camada utilizada).
+4. Aguarde o feedback; responderemos o mais breve possível!
 
 ---
-Desenvolvido por **Matheus Durso** | Especialista em GIS e Data Science.
+**Autor:** [Matheus Durso](https://github.com/matheusdurso) – Especialista com mestrado internacional focado em tecnologias digitais e ciência de dados.
+**Licença:** GNU GPL v2.
