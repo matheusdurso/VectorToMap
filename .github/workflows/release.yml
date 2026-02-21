@@ -1,0 +1,43 @@
+name: Gerar Release Automático
+
+on:
+  push:
+    tags:
+      - 'v*' # Dispara sempre que você criar uma tag começando com 'v' (ex: v0.1)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Preparar Pacote do Plugin
+        run: |
+          # Define o nome da pasta do plugin
+          PLUGIN_NAME="vector_to_map"
+          
+          # Cria uma pasta temporária para organizar o ZIP
+          mkdir "$PLUGIN_NAME"
+          
+          # Copia apenas os arquivos necessários (ignora lixo de cache)
+          cp -r __init__.py vector_to_map.py vector_to_map_dialog.py \
+                vector_to_map_dialog_base.ui metadata.txt icon.png \
+                resources.py LICENSE README.md "$PLUGIN_NAME/"
+          
+          # Gera o ZIP
+          zip -r "${PLUGIN_NAME}.zip" "$PLUGIN_NAME"
+
+      - name: Criar Release no GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          files: vector_to_map.zip
+          name: Release ${{ github.ref_name }}
+          body: "Nova versão do VectorToMap gerada automaticamente via GitHub Actions."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
