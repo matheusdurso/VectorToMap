@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/vector_to_map" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

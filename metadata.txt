@@ -1,0 +1,21 @@
+[general]
+name=VectorToMap (Atlas & Layout)
+qgisMinimumVersion=3.0
+description=Automação de atlas e layouts multi-páginas com zoom inteligente e exibição de atributos.
+version=0.1
+author=Matheus Durso
+email=matheusdursonc@gmail.com
+about=O VectorToMap (Atlas & Layout) automatiza a criação de relatórios geográficos complexos. Oferece zoom adaptativo baseado no lado dominante da feição, suporte a múltiplas unidades de medida e exibição flexível de dados da tabela de atributos em formato de formulário HTML ou etiquetas individuais.
+# Sugestão: Aponte para o link específico do projeto se já tiver criado o repositório
+tracker=https://github.com/matheusdurso/VectorToMap/issues
+repository=https://github.com/matheusdurso/VectorToMap
+hasProcessingProvider=no
+tags=atlas, layout, automation, printing, vector, report
+# Sugestão: Se não tiver site próprio, use o link do repositório aqui também
+homepage=https://github.com/matheusdurso/VectorToMap
+# Sugestão: Use 'Vector' para facilitar a busca por categoria no QGIS
+category=Vector
+icon=icon.png
+experimental=False
+deprecated=False
+server=False

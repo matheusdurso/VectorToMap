@@ -1,0 +1,11 @@
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Build outputs
+*.zip
+*.ui.autosave
+
+# IDEs
+.vscode/
+.idea/
