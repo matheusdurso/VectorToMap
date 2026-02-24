@@ -1,23 +1,19 @@
 [general]
 name=VectorToMap
 qgisMinimumVersion=3.0
-description=Automates the generation of multi-page QGIS print layouts from vector features with smart scaling.
-about=VectorToMap is a powerful automation tool designed to streamline the creation of high-quality print layouts directly from vector layers.
- Instead of manually configuring complex Atlas settings, this plugin allows users to generate consistent, professional map books in seconds.
- Key Features:
- - Dynamic Page Generation based on features or attributes.
- - "Iron-Lock" Geometry Presets (75%% Height or Square layouts).
- - Smart Scaling Engine: calculates optimal zoom based on the longest dimension to prevent clipping.
- - Advanced Attribute Display: Supports HTML Form and Individual bordered labels.
- - Performance Focused: Manual Render Preview button to handle heavy datasets.
-version=0.2.0
+description=Professional Atlas automation with geometrically-locked scaling and row-based data layout.
+about=VectorToMap (v0.2.6) is a high-performance tool for generating map books.
+ It features a Smart Scaling Engine for irregular geometries and a Row-Based Data Layout
+ that ensures every feature in a group is displayed in its own line, with automatic
+ map-overlap handling for large datasets.
+version=0.2.6
 author=Matheus Durso
 email=matheusdursonc@gmail.com
 repository=https://github.com/matheusdurso/VectorToMap
 tracker=https://github.com/matheusdurso/VectorToMap/issues
 homepage=https://github.com/matheusdurso/VectorToMap
 hasProcessingProvider=no
-tags=atlas, layout, automation, print, reporting, vector
+tags=atlas, layout, automation, scale, engineering, vector
 category=Vector
 icon=icon.png
 experimental=False

@@ -33,7 +33,7 @@ class VectorToMap:
         self.iface = iface
         self.plugin_dir = os.path.dirname(__file__)
         self.actions = []
-        self.menu = self.tr(u'&Vector to Map')
+        self.menu = self.tr(u'&VectorToMap')
         self.first_start = True
         self.is_rendering = False # Flag to prevent infinite rendering loops
 
@@ -55,24 +55,58 @@ class VectorToMap:
         return action
 
     def initGui(self):
-        """Set up icons and menus when the plugin starts."""
+        """Cria as entradas de menu e a barra de ferramentas personalizada."""
         icon_path = ':/plugins/vector_to_map/icon.png'
-        self.action = self.add_action(icon_path, text='VectorToMap (Atlas & Layout)', callback=self.run, parent=self.iface.mainWindow())
-        self.iface.addPluginToVectorMenu('Vector to Map', self.action)
+        
+        # 1. CRIAÇÃO DA BARRA DE FERRAMENTAS EXCLUSIVA
+        # Isso permite que o ícone fique em destaque na parte superior do QGIS
+        self.toolbar = self.iface.addToolBar(u'VectorToMap')
+        self.toolbar.setObjectName(u'VectorToMap')
+
+        # 2. CRIAÇÃO DA AÇÃO PRINCIPAL
+        # O parâmetro add_to_toolbar=True usa o helper para colocar o ícone na barra
+        self.action = self.add_action(
+            icon_path,
+            text=self.tr(u'VectorToMap'),
+            callback=self.run,
+            parent=self.iface.mainWindow(),
+            add_to_toolbar=True,
+            add_to_menu=True
+        )
 
     def unload(self):
-        """Remove plugin actions when it is disabled."""
+        """Remove o menu e a barra de ferramentas da interface do QGIS ao desativar o plugin."""
+        # Remove cada ação registrada nos menus e ícones padrão
         for action in self.actions:
-            self.iface.removePluginMenu(self.tr(u'&Vector to Map'), action)
+            self.iface.removePluginMenu(self.menu, action)
             self.iface.removeToolBarIcon(action)
+        
+        # 4. REMOÇÃO DA BARRA DE FERRAMENTAS FÍSICA
+        # Garante que a barra 'VectorToMap' desapareça completamente da interface
+        if hasattr(self, 'toolbar'):
+            # Deletar o objeto remove a barra visualmente do QGIS
+            del self.toolbar
 
     def run(self):
-        """Initialize the UI and set up the 'Render Preview' button logic (v0.2.0)"""
+        """Initialize the UI and set up window flags and button logic (v0.2.4)."""
         from qgis.PyQt.QtWidgets import QPushButton, QDialogButtonBox
+        from qgis.PyQt.QtCore import Qt # Import necessário para as Window Flags
 
         if self.first_start:
             self.first_start = False
             self.dlg = VectorToMapDialog()
+            
+            # --- CONFIGURAÇÃO DE BRANDING (CABEÇALHO) ---
+            # Define o ícone que aparece ao lado do nome na barra de título
+            self.dlg.setWindowIcon(QIcon(':/plugins/vector_to_map/icon.png'))
+            # Define o nome limpo conforme sua solicitação
+            self.dlg.setWindowTitle("VectorToMap")
+
+            # --- CONFIGURAÇÃO DE JANELA PROFISSIONAL ---
+            # Adiciona botões de minimizar e maximizar que não vêm por padrão em QDialog
+            self.dlg.setWindowFlags(self.dlg.windowFlags() | 
+                                   Qt.WindowMinimizeButtonHint | 
+                                   Qt.WindowMaximizeButtonHint)
             
             # Setup rendering engine timer
             self.is_rendering = False
@@ -81,25 +115,27 @@ class VectorToMap:
             self.timer_preview.timeout.connect(self.atualizar_preview)
 
             # --- SETUP 'Render Preview' BUTTON ---
-            # Use addButton with ActionRole to keep it close to the OK/Cancel group
             self.btn_render = QPushButton("Render Preview")
             self.dlg.button_box.addButton(self.btn_render, QDialogButtonBox.ActionRole)
             self.btn_render.clicked.connect(self.atualizar_preview)
 
-            # INITIAL STATE: Auto-preview disabled by default
+            # INITIAL STATE: Auto-preview setup
             if hasattr(self.dlg, 'chk_preview_auto'):
                 self.dlg.chk_preview_auto.setChecked(False)
-                # Render immediately if the user turns on auto-preview
                 self.dlg.chk_preview_auto.stateChanged.connect(
                     lambda state: self.timer_preview.start(100) if state == Qt.Checked else None
                 )
 
-            # Restore window geometry and Splitter positions (50/50 split)
+            # Restore window geometry and Splitter positions
             settings = QgsSettings()
             geometria = settings.value("/VectorToMap/geometry")
-            if geometria: self.dlg.restoreGeometry(geometria)
-            else: self.dlg.resize(1100, 750) 
-            if hasattr(self.dlg, 'splitter'): self.dlg.splitter.setSizes([550, 550]) 
+            if geometria: 
+                self.dlg.restoreGeometry(geometria)
+            else: 
+                self.dlg.resize(1100, 750) 
+            
+            if hasattr(self.dlg, 'splitter'): 
+                self.dlg.splitter.setSizes([550, 550]) 
             
             self.dlg.lbl_preview.setFrameShape(QFrame.StyledPanel)
             self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
@@ -109,15 +145,24 @@ class VectorToMap:
             self.dlg.mMapLayerComboBox.layerChanged.connect(self.disparar_preview_se_autorizado)
             self.dlg.chk_selecionar_todos.stateChanged.connect(self.marcar_desmarcar_todos)
 
-            # Triggers for fixed UI widgets
-            widgets = [self.dlg.combo_tamanho_pagina, self.dlg.combo_presets, 
-                       self.dlg.rb_retrato, self.dlg.rb_paisagem, 
-                       self.dlg.chk_modo_formulario, self.dlg.chk_modo_individual]
+            # --- MONITORING WIDGETS ---
+            widgets = [
+                self.dlg.combo_tamanho_pagina, 
+                self.dlg.combo_presets, 
+                self.dlg.rb_retrato, 
+                self.dlg.rb_paisagem, 
+                self.dlg.chk_modo_formulario, 
+                self.dlg.chk_modo_individual,
+                self.dlg.combo_atlas
+            ]
             
             for w in widgets:
-                if hasattr(w, 'currentIndexChanged'): w.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
-                elif hasattr(w, 'stateChanged'): w.stateChanged.connect(self.disparar_preview_se_autorizado)
-                elif hasattr(w, 'toggled'): w.toggled.connect(self.disparar_preview_se_autorizado)
+                if hasattr(w, 'currentIndexChanged'): 
+                    w.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
+                elif hasattr(w, 'stateChanged'): 
+                    w.stateChanged.connect(self.disparar_preview_se_autorizado)
+                elif hasattr(w, 'toggled'): 
+                    w.toggled.connect(self.disparar_preview_se_autorizado)
 
             self.dlg.resizeEvent = lambda event: self.disparar_preview_se_autorizado()
             self.dlg.button_box.accepted.connect(self.processar_clique_ok)
@@ -141,12 +186,14 @@ class VectorToMap:
         self.disparar_preview_se_autorizado()
 
     def montar_design_da_pagina(self, layout, camada, feicoes_da_pagina, preset, orientacao, tamanho_pg, pagina_index=0):
-        """Core Factory: Handles Iron-Lock geometry and custom scaling logic."""
+        """
+        Factory Core v0.2.6: Restauração do Formulário + Uma feição por linha (Individual).
+        """
         from qgis.core import (QgsLayoutItemMap, QgsLayoutItemLabel, QgsLayoutSize, 
                                QgsUnitTypes, QgsLayoutPoint, QgsCoordinateTransform, 
                                QgsRectangle, QgsProject, QgsLayoutItem)
         
-        # 1. PAGE SETUP
+        # --- 1. SETUP DA PÁGINA ---
         tamanhos = {'A4': (210, 297), 'A3': (297, 420), 'A2': (420, 594), 'A1': (594, 841), 'A0': (841, 1189)}
         dim = tamanhos.get(tamanho_pg, (210, 297))
         w_pg, h_pg = (dim[1], dim[0]) if orientacao == "Paisagem" else (dim[0], dim[1])
@@ -155,163 +202,151 @@ class VectorToMap:
         pagina.setPageSize(QgsLayoutSize(w_pg, h_pg, QgsUnitTypes.LayoutMillimeters))
         
         y_zero_folha = pagina_index * (h_pg + 10) 
-        margin_padrao = 10.0 # 1cm margins
+        margin_padrao = 10.0
 
-        # 2. IRON-LOCK GEOMETRY
+        # --- 2. GEOMETRIA MOLDURA (IRON-LOCK) ---
         if preset == "75% da Altura (Base fixada)":
             header_h = 35.0
             h_util = h_pg - (2 * margin_padrao) - header_h
             w_map_f, h_map_f = w_pg - (2 * margin_padrao), h_util * 0.75
             x_map_f, y_map_f = margin_padrao, y_zero_folha + margin_padrao + header_h
-        else: # SQUARE MODEL
+        else:
             if orientacao == "Retrato":
-                # Full width square with 1cm side margins
-                w_map_f = w_pg - (2 * margin_padrao)
-                h_map_f = w_map_f
+                w_map_f, h_map_f = w_pg - (2 * margin_padrao), w_pg - (2 * margin_padrao)
                 x_map_f, y_map_f = margin_padrao, y_zero_folha + 40.0
-            else: # Landscape Square (Positioned to the right)
+            else:
                 h_map_f = h_pg - (2 * margin_padrao)
                 w_map_f = h_map_f
-                x_map_f = w_pg - margin_padrao - w_map_f
-                y_map_f = y_zero_folha + margin_padrao
+                x_map_f, y_map_f = w_pg - margin_padrao - w_map_f, y_zero_folha + margin_padrao
 
         map_item = QgsLayoutItemMap(layout)
         map_item.setFrameEnabled(True)
+        layout.addLayoutItem(map_item)
         map_item.attemptResize(QgsLayoutSize(w_map_f, h_map_f, QgsUnitTypes.LayoutMillimeters))
         map_item.attemptMove(QgsLayoutPoint(x_map_f, y_map_f, QgsUnitTypes.LayoutMillimeters))
         
-        # 3. MANUAL SCALING LOGIC
+        # --- 3. ESCALA (v0.2.4) ---
         if feicoes_da_pagina:
             ext = QgsRectangle()
             ext.setMinimal()
             for f in feicoes_da_pagina: ext.combineExtentWith(f.geometry().boundingBox())
-            trans = QgsCoordinateTransform(camada.crs(), QgsProject.instance().crs(), QgsProject.instance())
+            project_crs = QgsProject.instance().crs()
+            trans = QgsCoordinateTransform(camada.crs(), project_crs, QgsProject.instance())
             ext_proj = trans.transformBoundingBox(ext)
             map_item.setExtent(ext_proj)
-            
-            # Scale calculation based on the longest feature side
-            # $$Scale = \max\left(\frac{W_{geo}}{W_{frame}}, \frac{H_{geo}}{H_{frame}}\right) \times 1.2$$
-            mult = 1000.0 if QgsProject.instance().crs().mapUnits() != QgsUnitTypes.DistanceDegrees else 1.0
-            escala_w, escala_h = (ext_proj.width() * mult) / w_map_f, (ext_proj.height() * mult) / h_map_f
-            map_item.setScale(max(escala_w, escala_h) * 1.2)
-
-            # RE-LOCK GEOMETRY: Ensure the frame doesn't move after scaling
+            unit_to_mm = QgsUnitTypes.fromUnitToUnitFactor(project_crs.mapUnits(), QgsUnitTypes.DistanceMillimeters)
+            scale_w = (ext_proj.width() * unit_to_mm) / w_map_f
+            scale_h = (ext_proj.height() * unit_to_mm) / h_map_f
+            map_item.setScale(max(scale_w, scale_h) * 1.25)
             map_item.attemptResize(QgsLayoutSize(w_map_f, h_map_f, QgsUnitTypes.LayoutMillimeters))
             map_item.attemptMove(QgsLayoutPoint(x_map_f, y_map_f, QgsUnitTypes.LayoutMillimeters))
-        
-        layout.addLayoutItem(map_item)
 
-        # 4. ATTRIBUTE DATA PLACEMENT
+        # --- 4. DISTRIBUIÇÃO DOS DADOS ---
         colunas = [cb.text() for cb in self.dlg.scrollAreaWidgetContents.findChildren(QCheckBox) if cb.isChecked()]
         limite_fundo = y_zero_folha + h_pg - margin_padrao
 
         if colunas and feicoes_da_pagina:
-            # Special Logic: 75% Landscape -> Left (Form) and Right (Labels) columns
+            # Áreas de Posicionamento
             if preset == "75% da Altura (Base fixada)" and orientacao == "Paisagem":
                 mid_x = w_pg / 2
                 x_form, y_form = margin_padrao, y_map_f + h_map_f + 3.0
-                w_form = mid_x - margin_padrao - 2.0
-                h_form = limite_fundo - y_form
-                
-                x_ind, y_ind = mid_x + 2.0, y_map_f + h_map_f + 3.0
-                w_ind = w_pg - margin_padrao - x_ind
-                h_ind = limite_fundo - y_ind
-
-                if self.dlg.chk_modo_formulario.isChecked():
-                    txt_html = ""
-                    for idx, f in enumerate(feicoes_da_pagina):
-                        if len(feicoes_da_pagina) > 1: txt_html += f"<b>ITEM {idx+1}</b><br>"
-                        for col in colunas:
-                            try: txt_html += f"<b>{col}:</b> {str(f.attribute(col)).strip()}<br>"
-                            except: continue
-                    lbl_f = QgsLayoutItemLabel(layout)
-                    lbl_f.setMode(QgsLayoutItemLabel.ModeHtml)
-                    lbl_f.setText(txt_html)
-                    lbl_f.attemptMove(QgsLayoutPoint(x_form, y_form, QgsUnitTypes.LayoutMillimeters))
-                    lbl_f.attemptResize(QgsLayoutSize(w_form, h_form, QgsUnitTypes.LayoutMillimeters))
-                    layout.addLayoutItem(lbl_f)
-
-                if self.dlg.chk_modo_individual.isChecked():
-                    xi, yi = x_ind, y_ind
-                    for f in feicoes_da_pagina:
-                        for col in colunas:
-                            try:
-                                lbl_i = QgsLayoutItemLabel(layout)
-                                lbl_i.setText(f"{col}: {str(f.attribute(col)).strip()}")
-                                lbl_i.setFrameEnabled(True); lbl_i.adjustSizeToText()
-                                # Row-break logic for the right column
-                                if xi + lbl_i.rect().width() > (x_ind + w_ind): xi, yi = x_ind, yi + 8
-                                if yi + 8 > limite_fundo: break
-                                lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
-                                layout.addLayoutItem(lbl_i)
-                                xi += lbl_i.rect().width() + 3.0
-                            except: continue
-            
+                w_form, h_form = mid_x - margin_padrao - 2.0, limite_fundo - (y_map_f + h_map_f + 3.0)
+                x_ind_start, y_ind_min = mid_x + 2.0, y_map_f + h_map_f + 2.0
+                w_ind_max = w_pg - margin_padrao - x_ind_start
             else:
-                # Standard Logic: Vertically stacked display
-                if orientacao == "Retrato":
-                    x_dados, y_dados = margin_padrao, y_map_f + h_map_f + 5.0
-                    w_dados = w_pg - (2 * margin_padrao)
-                else: # Landscape Square (Map on the right, data on the left)
-                    x_dados, y_dados = margin_padrao, y_map_f + (h_map_f / 2)
-                    w_dados = x_map_f - (2 * margin_padrao)
-                
-                h_dados_max = limite_fundo - y_dados
+                x_form = margin_padrao
+                y_form = y_map_f + h_map_f + 5.0 if orientacao == "Retrato" else y_map_f + (h_map_f / 2)
+                w_form = w_pg - (2 * margin_padrao) if orientacao == "Retrato" else x_map_f - (2 * margin_padrao)
+                h_form = (limite_fundo - y_form) * 0.5 if self.dlg.chk_modo_individual.isChecked() else (limite_fundo - y_form)
+                x_ind_start, y_ind_min = x_form, y_form + h_form + 2.0 if self.dlg.chk_modo_individual.isChecked() else y_form
+                w_ind_max = w_form
 
-                if self.dlg.chk_modo_formulario.isChecked():
-                    txt_html = ""
-                    for idx, f in enumerate(feicoes_da_pagina):
-                        if len(feicoes_da_pagina) > 1: txt_html += f"<b>ITEM {idx+1}</b><br>"
-                        for col in colunas:
-                            try: txt_html += f"<b>{col}:</b> {str(f.attribute(col)).strip()}<br>"
-                            except: continue
-                    lbl_f = QgsLayoutItemLabel(layout)
-                    lbl_f.setMode(QgsLayoutItemLabel.ModeHtml)
-                    lbl_f.setText(txt_html)
-                    h_f = h_dados_max * 0.6 if self.dlg.chk_modo_individual.isChecked() else h_dados_max
-                    lbl_f.attemptMove(QgsLayoutPoint(x_dados, y_dados, QgsUnitTypes.LayoutMillimeters))
-                    lbl_f.attemptResize(QgsLayoutSize(w_dados, h_f, QgsUnitTypes.LayoutMillimeters))
-                    layout.addLayoutItem(lbl_f)
-                    if self.dlg.chk_modo_individual.isChecked(): y_dados += h_f + 3.0
+            # RESTAURAÇÃO DO FORMULÁRIO
+            if self.dlg.chk_modo_formulario.isChecked():
+                txt_html = ""
+                for idx, f in enumerate(feicoes_da_pagina):
+                    if len(feicoes_da_pagina) > 1: txt_html += f"<b>ITEM {idx+1}</b><br>"
+                    for col in colunas:
+                        try: txt_html += f"<b>{col}:</b> {str(f.attribute(col)).strip()}<br>"
+                        except: continue
+                lbl_f = QgsLayoutItemLabel(layout)
+                lbl_f.setMode(QgsLayoutItemLabel.ModeHtml)
+                lbl_f.setText(txt_html)
+                lbl_f.attemptMove(QgsLayoutPoint(x_form, y_form, QgsUnitTypes.LayoutMillimeters))
+                lbl_f.attemptResize(QgsLayoutSize(w_form, h_form, QgsUnitTypes.LayoutMillimeters))
+                layout.addLayoutItem(lbl_f)
 
-                if self.dlg.chk_modo_individual.isChecked():
-                    xi, yi = x_dados, y_dados
-                    for f in feicoes_da_pagina:
-                        for col in colunas:
-                            try:
-                                lbl_i = QgsLayoutItemLabel(layout)
-                                lbl_i.setText(f"{col}: {str(f.attribute(col)).strip()}")
-                                lbl_i.setFrameEnabled(True); lbl_i.adjustSizeToText()
-                                if xi + lbl_i.rect().width() > (x_dados + w_dados): xi, yi = x_dados, yi + 8
-                                if yi + 8 > limite_fundo: break
-                                lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
-                                layout.addLayoutItem(lbl_i); xi += lbl_i.rect().width() + 3.0
-                            except: continue
+            # MODO INDIVIDUAL: UMA LINHA POR FEIÇÃO
+            if self.dlg.chk_modo_individual.isChecked():
+                altura_linha = 5.5
+                altura_total = len(feicoes_da_pagina) * altura_linha
+                yi = (limite_fundo - altura_total) if (y_ind_min + altura_total) > limite_fundo else y_ind_min
+
+                for f in feicoes_da_pagina:
+                    xi = x_ind_start
+                    for col in colunas:
+                        try:
+                            lbl_i = QgsLayoutItemLabel(layout)
+                            lbl_i.setText(f"{col}: {str(f.attribute(col)).strip()}")
+                            lbl_i.setFrameEnabled(True)
+                            lbl_i.adjustSizeToText()
+                            ancho_folga = lbl_i.rect().width() + 2.0 # Correção de 2mm mantida
+                            lbl_i.attemptResize(QgsLayoutSize(ancho_folga, lbl_i.rect().height(), QgsUnitTypes.LayoutMillimeters))
+                            lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
+                            layout.addLayoutItem(lbl_i)
+                            xi += ancho_folga + 2.0
+                        except: continue
+                    yi += altura_linha
 
     def atualizar_preview(self):
-        """Render the layout preview on the UI using a sample feature."""
-        if self.is_rendering or not self.dlg.isVisible(): return
+        """Renders a sample layout preview based on the current grouping selection."""
+        if self.is_rendering or not self.dlg.isVisible(): 
+            return
+            
         self.is_rendering = True
         QCoreApplication.processEvents()
 
         camada = self.dlg.mMapLayerComboBox.currentLayer()
         if not camada: 
-            self.is_rendering = False; return
+            self.is_rendering = False
+            return
 
+        # Prepare a temporary layout for the preview
         layout = QgsPrintLayout(QgsProject.instance())
         layout.initializeDefaults()
         
-        feicao = next(camada.getFeatures(QgsFeatureRequest().setLimit(1)), None)
-        feicoes = [feicao] if feicao else []
+        # --- PREVIEW GROUPING LOGIC ---
+        campo_atlas = self.dlg.combo_atlas.currentData()
+        feicoes = []
 
-        self.montar_design_da_pagina(layout, camada, feicoes, 
+        # Get a sample feature to start with
+        sample_f = next(camada.getFeatures(QgsFeatureRequest().setLimit(1)), None)
+        
+        if sample_f:
+            if campo_atlas is None:
+                # No grouping: preview only the first feature
+                feicoes = [sample_f]
+            else:
+                # Grouping active: find all features that share the same attribute value as the sample
+                val_amostra = sample_f.attribute(campo_atlas)
+                feicoes = [f for f in camada.getFeatures() if f.attribute(campo_atlas) == val_amostra]
+
+        # Call the design factory with the grouped features
+        self.montar_design_da_pagina(
+            layout, 
+            camada, 
+            feicoes, 
             self.dlg.combo_presets.currentText(),
             "Retrato" if self.dlg.rb_retrato.isChecked() else "Paisagem",
-            self.dlg.combo_tamanho_pagina.currentText())
+            self.dlg.combo_tamanho_pagina.currentText()
+        )
 
+        # Export the first page of the layout to an image for the UI
         exporter = QgsLayoutExporter(layout)
         image = exporter.renderPageToImage(0)
+        
         if not image.isNull():
+            # Apply smooth scaling to fit the preview label
             self.dlg.lbl_preview.setPixmap(QPixmap.fromImage(image).scaled(
                 self.dlg.lbl_preview.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
         
@@ -343,29 +378,50 @@ class VectorToMap:
         self.iface.openLayoutDesigner(layout) # Open the designer window for the user
 
     def processar_clique_ok(self):
-        """Process configurations and start the layout generation engine."""
+        """Processes configurations and generates the multi-page layout."""
         camada = self.dlg.mMapLayerComboBox.currentLayer()
-        if not camada: return
+        if not camada: 
+            return
         
+        # Get selected columns for the data display
         container = self.dlg.scrollAreaWidgetContents
         colunas_selecionadas = [cb.text() for cb in container.findChildren(QCheckBox) if cb.isChecked()]
 
         paginas_dados = []
         campo_atlas = self.dlg.combo_atlas.currentData()
         
+        # MODE 1: Individual (One page per feature)
         if campo_atlas is None:
-            for f in camada.getFeatures(): paginas_dados.append({'feicoes': [f]})
-        else:
-            idx = camada.fields().indexOf(campo_atlas)
-            for v in camada.uniqueValues(idx):
-                exp = f'"{campo_atlas}" = \'{v}\'' if isinstance(v, str) else f'"{campo_atlas}" = {v}'
-                feicoes = list(camada.getFeatures(QgsFeatureRequest().setFilterExpression(exp)))
-                if feicoes: paginas_dados.append({'feicoes': feicoes})
+            for f in camada.getFeatures(): 
+                paginas_dados.append({'feicoes': [f]})
         
+        # MODE 2: Grouped (Atlas mode by attribute)
+        else:
+            # Dictionary to store features grouped by attribute value
+            grupos = {}
+            for f in camada.getFeatures():
+                # Get the raw value of the attribute
+                val = f.attribute(campo_atlas)
+                # Ensure the key exists in the dictionary
+                if val not in grupos:
+                    grupos[val] = []
+                grupos[val].append(f)
+            
+            # Convert the dictionary groups into the layout data format
+            for val in grupos:
+                paginas_dados.append({'feicoes': grupos[val]})
+        
+        # Execute layout generation if data is present
         if paginas_dados: 
-            self.criar_layout_multi_paginas(self.dlg.combo_presets.currentText(), camada, 
+            self.criar_layout_multi_paginas(
+                self.dlg.combo_presets.currentText(), 
+                camada, 
                 "Retrato" if self.dlg.rb_retrato.isChecked() else "Paisagem", 
-                self.dlg.combo_tamanho_pagina.currentText(), paginas_dados, colunas_selecionadas, None)
+                self.dlg.combo_tamanho_pagina.currentText(), 
+                paginas_dados, 
+                colunas_selecionadas, 
+                None
+            )
 
     def atualizar_lista_atributos(self):
         """Clear the interface and rebuild the attribute list with preview triggers."""

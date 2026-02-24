@@ -1,46 +1,58 @@
-# VectorToMap: Automated Multi-Page Layout Generator for QGIS
+# 🗺️ VectorToMap (v0.2.6)
+**Automated High-Performance Atlas Generation for QGIS**
 
-**VectorToMap** is a QGIS plugin designed to automate the production of professional, high-consistency map books and reports from vector features. Unlike the native Atlas tool, it provides rigid geometry presets and a custom scaling engine to ensure that every map page looks identical and fits perfectly within the print frame.
+VectorToMap is a specialized QGIS plugin developed to solve common "clipping" and "data overflow" issues in automated cartography. Unlike standard "zoom-to-feature" methods, this plugin utilizes a custom-built **Geometric Scaling Engine** to ensure every vector feature is perfectly framed with consistent margins, regardless of its shape or grouping.
+
+---
 
 ## 🚀 Key Features
 
-* **Dynamic Page Generation**: Automatically creates a print layout with multiple pages based on feature selection or attribute grouping.
-* **"Iron-Lock" Geometry Presets**: Choose between **75% Height** or **Square Map** models. The plugin locks the map frame's dimensions and position, preventing QGIS from auto-resizing during zoom operations.
-* **Smart Scaling Engine**: Uses a manual calculation logic to find the optimal scale for each feature based on its longest dimension (Width vs. Height).
-* **Dual Attribute Modes**:
-    * **HTML Form**: Displays attributes in a clean, centralized list using HTML for easy reading.
-    * **Individual Labels**: Generates bordered, independent labels with automatic line-breaking and smart placement.
-* **Performance Optimization**: Includes a "Manual Render Preview" button and an optional automatic preview toggle to handle complex datasets without lag.
+* **Smart Scaling Engine**: Mathematically detects the limiting dimension (Width vs. Height) to frame irregular geometries with a constant 25% safety buffer.
+* **Row-Based Data Layout**: Each feature in a group (Grouped Atlas) is rendered in its own horizontal row, ensuring 100% attribute visibility without text wrapping.
+* **Geometric Presets**: "Iron-Lock" layout models (75% Height or Square maps) to maintain professional consistency across multi-page documents.
+* **Professional UI**: Integrated custom toolbar, window management (Minimize/Maximize support), and manual render preview for handling heavy datasets.
+* **Smart Overlap Handling**: Automatically shifts attribute labels over the map area if footer space is exhausted, ensuring no data is lost in high-density groups.
 
 ---
 
-## 🛠 Technical Scaling Logic
+## 🧠 Technical Deep Dive: The Scaling Logic
 
-The plugin solves the "clipping" problem by calculating the scale manually before locking the map item. It applies a **20% safety margin** to ensure features are perfectly centered and visible:
+The core of the plugin is a deterministic scaling engine. It calculates the optimal scale by comparing the feature's projected bounding box against the available layout frame dimensions in millimeters.
 
-$$Scale = \max\left(\frac{W_{geo}}{W_{frame}}, \frac{H_{geo}}{H_{frame}}\right) \times 1.2$$
+### The Scaling Formula
+To prevent clipping on irregular features, the plugin identifies the most restrictive axis using the following logic:
+
+$$Scale = \max\left(\frac{W_{geo} \cdot f_{unit}}{W_{frame}}, \frac{H_{geo} \cdot f_{unit}}{H_{frame}}\right) \cdot 1.25$$
+
+* $W_{geo}, H_{geo}$: Dimensions of the feature in map units.
+* $f_{unit}$: Unit-to-millimeter conversion factor.
+* $W_{frame}, H_{frame}$: Target layout item dimensions in millimeters.
+* **1.25**: Fixed 25% safety margin to ensure "breathing room" for labels.
+
+
 
 ---
 
-## 📖 How to Use
+## 🛠️ Installation
 
-1.  **Select Layer**: Choose the vector layer you want to map.
-2.  **Grouping**: Select an attribute to group features (Atlas mode) or leave empty to generate one page per feature.
-3.  **Choose Layout**: Pick your page size (A4 to A0), orientation, and geometry preset.
-4.  **Select Columns**: Check the attributes you want to display in the final layout.
-5.  **Preview**: Click **"Render Preview"** to see a live sample of the first feature.
-6.  **Generate**: Hit **OK** to create the final multi-page layout in the QGIS Layout Manager.
+1.  Download the latest release: `vector_to_map_v0.2.6.zip`.
+2.  Extract the content into your QGIS plugins directory:
+    * **Windows**: `%AppData%\QGIS\QGIS3\profiles\default\python\plugins\`
+    * **Linux/Mac**: `~/.local/share/QGIS/QGIS3/profiles/default/python/plugins/`
+3.  Restart QGIS and enable **VectorToMap** via the **Plugins > Manage and Install Plugins** menu.
 
 ---
 
-## ⚙ Installation
-
-1.  Download the repository as a `.zip` file.
-2.  In QGIS, go to **Plugins > Manage and Install Plugins > Install from ZIP**.
-3.  Select the downloaded file and click **Install**.
+## 📜 Changelog (v0.2.6)
+* **Feature**: Implemented "One Row Per Feature" logic for individual labels in grouped atlases.
+* **Added**: 2mm horizontal safety buffer to prevent internal text wrapping in attribute chips.
+* **UI**: Added Minimize/Maximize buttons and custom system toolbar.
+* **Fix**: Unified naming conventions and fixed Maranhão/Tocantins scaling issues.
 
 ---
 
 ## 👤 Author
-
-* **Matheus Durso** - [GitHub Profile](https://github.com/matheusdurso)
+**Matheus Durso**
+* **Master's in Data Science**
+* **Email**: matheusdursonc@gmail.com
+* **GitHub**: [matheusdurso](https://github.com/matheusdurso)
