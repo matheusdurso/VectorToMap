@@ -1,11 +1,38 @@
-# Python caches
+# Python: Proteção contra lixo de execução
 __pycache__/
 *.py[cod]
+*$py.class
+.pytest_cache/
 
-# Build outputs
-*.zip
+# QGIS: Proteção contra arquivos de projeto e cache local
+*.qgs~
+*.qgz
+*.qgs
+.qgis2/
+.qgis3/
+
+# Interface: Salvamento automático do Qt Designer
 *.ui.autosave
 
-# IDEs
+# Dados de Teste: (Essencial para não subir camadas pesadas e dados sensíveis)
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.qpj
+*.gpkg
+*.gpkg-journal
+
+# IDEs: Configurações locais do seu ambiente de trabalho
 .vscode/
 .idea/
+
+# Build e Releases: (Para não duplicar o que o robô de CI/CD faz)
+*.zip
+build/
+dist/
+
+# Sistema:
+.DS_Store
+Thumbs.db

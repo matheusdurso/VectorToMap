@@ -1,19 +1,23 @@
 [general]
-name=VectorToMap (Atlas & Layout)
+name=VectorToMap
 qgisMinimumVersion=3.0
-description=Automação de atlas e layouts multi-páginas com zoom inteligente e exibição de atributos.
-version=0.1
+description=Automates the generation of multi-page QGIS print layouts from vector features with smart scaling.
+about=VectorToMap is a powerful automation tool designed to streamline the creation of high-quality print layouts directly from vector layers.
+ Instead of manually configuring complex Atlas settings, this plugin allows users to generate consistent, professional map books in seconds.
+ Key Features:
+ - Dynamic Page Generation based on features or attributes.
+ - "Iron-Lock" Geometry Presets (75%% Height or Square layouts).
+ - Smart Scaling Engine: calculates optimal zoom based on the longest dimension to prevent clipping.
+ - Advanced Attribute Display: Supports HTML Form and Individual bordered labels.
+ - Performance Focused: Manual Render Preview button to handle heavy datasets.
+version=0.2.0
 author=Matheus Durso
 email=matheusdursonc@gmail.com
-about=O VectorToMap (Atlas & Layout) automatiza a criação de relatórios geográficos complexos. Oferece zoom adaptativo baseado no lado dominante da feição, suporte a múltiplas unidades de medida e exibição flexível de dados da tabela de atributos em formato de formulário HTML ou etiquetas individuais.
-# Sugestão: Aponte para o link específico do projeto se já tiver criado o repositório
-tracker=https://github.com/matheusdurso/VectorToMap/issues
 repository=https://github.com/matheusdurso/VectorToMap
-hasProcessingProvider=no
-tags=atlas, layout, automation, printing, vector, report
-# Sugestão: Se não tiver site próprio, use o link do repositório aqui também
+tracker=https://github.com/matheusdurso/VectorToMap/issues
 homepage=https://github.com/matheusdurso/VectorToMap
-# Sugestão: Use 'Vector' para facilitar a busca por categoria no QGIS
+hasProcessingProvider=no
+tags=atlas, layout, automation, print, reporting, vector
 category=Vector
 icon=icon.png
 experimental=False
