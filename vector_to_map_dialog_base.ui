@@ -40,7 +40,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>671</width>
+         <width>649</width>
          <height>776</height>
         </rect>
        </property>
@@ -282,7 +282,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>647</width>
+              <width>625</width>
               <height>85</height>
              </rect>
             </property>
@@ -372,6 +372,18 @@
            <number>15</number>
           </property>
           <item>
+           <widget class="QCheckBox" name="chk_numeracao">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Adicionar Número de Página</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QDialogButtonBox" name="button_box">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -403,7 +415,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>482</width>
+         <width>504</width>
          <height>776</height>
         </rect>
        </property>
@@ -416,7 +428,7 @@
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="text">
-             <string>Renderizar preview automaticamente</string>
+             <string>Preview automática</string>
             </property>
             <property name="tristate">
              <bool>false</bool>
