@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_US">
+<TS version="2.1" language="es_ES">
 <context>
     <name>Dialog</name>
     <message>
@@ -11,37 +11,37 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="66"/>
         <source>Camada Vetorial:</source>
-        <translation>Vector Layer:</translation>
+        <translation>Capa Vectorial:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="94"/>
         <source>Agrupar por Atributo:</source>
-        <translation>Group by Attribute:</translation>
+        <translation>Agrupar por Atributo:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="122"/>
         <source>Modelo de Layout:</source>
-        <translation>Layout Template:</translation>
+        <translation>Plantilla de Diseño:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="135"/>
         <source>Mapa Quadrado (Margem 1cm)</source>
-        <translation>Square Map (1cm Margin)</translation>
+        <translation>Mapa Cuadrado (Margen 1cm)</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="140"/>
         <source>75% da Altura (Base fixada)</source>
-        <translation>75% Height (Fixed Base)</translation>
+        <translation>75% de la Altura (Base fijada)</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="145"/>
         <source>Personalizado (Desenhar)</source>
-        <translation>Custom (Draw)</translation>
+        <translation>Personalizado (Dibujar)</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="165"/>
         <source>Tamanho da Página:</source>
-        <translation>Page Size:</translation>
+        <translation>Tamaño de Página:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="178"/>
@@ -54,7 +54,7 @@
         <translation>A3</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="183"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="188"/>
         <source>A2</source>
         <translation>A2</translation>
     </message>
@@ -71,77 +71,77 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="221"/>
         <source>Orientação:</source>
-        <translation>Orientation:</translation>
+        <translation>Orientación:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="233"/>
         <source>Retrato</source>
-        <translation>Portrait</translation>
+        <translation>Vertical</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="248"/>
         <source>Paisagem</source>
-        <translation>Landscape</translation>
+        <translation>Horizontal</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="269"/>
         <source>Escala:</source>
-        <translation>Scale:</translation>
+        <translation>Escala:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="276"/>
         <source>Automática</source>
-        <translation>Automatic</translation>
+        <translation>Automática</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="283"/>
         <source>Fixa:</source>
-        <translation>Fixed:</translation>
+        <translation>Fija:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="328"/>
         <source>Exibição de Dados Cadastrais:</source>
-        <translation>Attribute Data Display:</translation>
+        <translation>Visualización de Datos de Atributos:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="346"/>
         <source>Marcar todas</source>
-        <translation>Select All</translation>
+        <translation>Seleccionar todas</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="437"/>
         <source>Tabela de Atributos</source>
-        <translation>Attribute Table</translation>
+        <translation>Tabla de Atributos</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="482"/>
         <source>Modo de Exibição:</source>
-        <translation>Display Mode:</translation>
+        <translation>Modo de Visualización:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="494"/>
         <source>Formulário</source>
-        <translation>Form</translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="506"/>
         <source>Texto Individual</source>
-        <translation>Individual Text</translation>
+        <translation>Texto Individual</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="525"/>
         <source>Numeração de Página</source>
-        <translation>Page Numbering</translation>
+        <translation>Numeración de Página</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="574"/>
         <source>Preview automática</source>
-        <translation>Auto Preview</translation>
+        <translation>Vista previa automática</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="595"/>
         <source>Aguardando configuração de preview...</source>
-        <translation>Waiting for preview configuration...</translation>
+        <translation>Esperando configuración de vista previa...</translation>
     </message>
 </context>
 <context>
@@ -159,42 +159,42 @@
     <message>
         <location filename="../vector_to_map.py" line="124"/>
         <source>Exibe todos os atributos em um bloco único de texto (HTML).</source>
-        <translation>Displays all attributes in a single text block (HTML).</translation>
+        <translation>Muestra todos los atributos en un bloque de texto único (HTML).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="125"/>
         <source>Cria uma linha horizontal para cada feição (evita sobreposições).</source>
-        <translation>Creates a horizontal line for each feature (avoids overlapping).</translation>
+        <translation>Crea una línea horizontal para cada objeto (evita superposiciones).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="126"/>
         <source>Atualização automática da Preview. Pode ser lento. Alternativamente use o botão Render Preview.</source>
-        <translation>Automatic preview update. May be slow. Alternatively, use the Render Preview button.</translation>
+        <translation>Actualización automática de la vista previa. Puede ser lenta. Alternativamente, use el botón Render Preview.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="129"/>
         <source>Marca ou desmarca todos os campos da lista de uma vez.</source>
-        <translation>Selects or deselects all list fields at once.</translation>
+        <translation>Selecciona o deselecciona todos los campos a la vez.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="132"/>
         <source>Campo da tabela usado para agrupar as feições em cada página.</source>
-        <translation>Table field used to group features on each page.</translation>
+        <translation>Campo de la tabla usado para agrupar los objetos en cada página.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="133"/>
         <source>Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado).</source>
-        <translation>Sets the map size on the sheet (e.g., 75% of the page or Square).</translation>
+        <translation>Define el tamaño del mapa en la hoja (ej: 75% de la página o Cuadrado).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="134"/>
         <source>Gera uma prévia do layout com as configurações atuais.</source>
-        <translation>Generates a layout preview with current settings.</translation>
+        <translation>Genera una vista previa del diseño con la configuración actual.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="347"/>
         <source>⚠️ Atenção: Feições de ponto único podem quebrar a escala automática.</source>
-        <translation>⚠️ Warning: Single point features may break the automatic scale.</translation>
+        <translation>⚠️ Atención: Los objetos de punto único pueden romper la escala automática.</translation>
     </message>
 </context>
 </TS>

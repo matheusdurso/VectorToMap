@@ -1,19 +1,19 @@
 [general]
 name=VectorToMap
 qgisMinimumVersion=3.0
-description=Professional Atlas automation with geometrically-locked scaling and row-based data layout.
-about=VectorToMap is a high-performance tool for generating map books.
- It features a Smart Scaling Engine for irregular geometries and a Row-Based Data Layout
- that ensures every feature in a group is displayed in its own line, with automatic
- map-overlap handling for large datasets.
-version=0.2.8
+description=Multilingual Atlas automation with smart scaling engine and balanced attribute layouts.
+about=VectorToMap 0.3.0 is a professional tool for high-precision map book generation. 
+ It now features full English/Spanish support, an Adimensional Scaling Engine for 
+ engineering-grade accuracy, and a smart 3-column attribute layout that automatically 
+ organizes feature data for clean, row-based reporting.
+version=0.3.0
 author=Matheus Durso
 email=matheusdursonc@gmail.com
 repository=https://github.com/matheusdurso/VectorToMap
 tracker=https://github.com/matheusdurso/VectorToMap/issues
 homepage=https://github.com/matheusdurso/VectorToMap
 hasProcessingProvider=no
-tags=atlas, layout, automation, scale, engineering, vector
+tags=atlas, layout, automation, scale, engineering, vector, i18n, multilingual
 category=Vector
 icon=icon.png
 experimental=False

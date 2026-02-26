@@ -1,67 +1,63 @@
-# 🗺️ VectorToMap (v0.2.8)
+# 🗺️ VectorToMap (v0.3.0)
 **Automated High-Performance Atlas Generation for QGIS**
 
-VectorToMap é um plugin especializado para QGIS desenvolvido para resolver problemas comuns de "clivagem" (clipping) e transbordamento de dados em cartografia automatizada. Esta versão 0.2.8 foca na robustez da arquitetura, implementando desacoplamento de interface e suporte para internacionalização total.
+VectorToMap is a specialized QGIS plugin designed to solve common "clipping" and data overflow issues in automated cartography. Version 0.3.0 represents a major milestone, introducing a professional scaling engine, balanced attribute layouts, and full multilingual support.
 
 ---
 
 ## 🚀 Key Features
 
-* **Smart Scaling Engine**: Detecta matematicamente a dimensão limitante (Largura vs. Altura) para enquadrar geometrias irregulares com uma margem de segurança constante de 25%.
-* **Dynamic Page Numbering (v0.2.8)**: Inserção automatizada de numeração de páginas utilizando a variável `[% @layout_page %]` com posicionamento inteligente no canto inferior direito.
-* **Global i18n Engine (v0.2.8)**: Suporte completo para internacionalização (Português/Inglês) utilizando chaves técnicas invariantes para evitar quebras de lógica em diferentes idiomas.
-* **Row-Based Data Layout**: Renderiza cada feição em sua própria linha horizontal em atlas agrupados, garantindo 100% de visibilidade dos atributos sem sobreposição de texto.
-* **Optimized Preview (v0.2.8)**: Motor de pré-visualização com *debounce* de 400ms, equilibrando fluidez na interface e baixo consumo de CPU.
-* **Professional UI**: Barra de ferramentas personalizada integrada ao QGIS, gerenciamento avançado de janelas (Minimizar/Maximizar) e renderização manual de preview.
-
-
+* **Universal Scaling Engine (v0.3.0)**: Supports both **Fixed Scales** (e.g., 1:10,000) and **Automatic Scaling**. It mathematically detects the limiting dimension (Width vs. Height) to fit irregular geometries with a 25% safety margin.
+* **Balanced 3-Column Layout (v0.3.0)**: A smart attribute selection panel that automatically distributes fields into three balanced columns, ensuring a clean UI regardless of the dataset size.
+* **Trilingual i18n Support (v0.3.0)**: Full internationalization for **English**, **Spanish**, and **Portuguese**. The plugin automatically detects the QGIS locale for a native user experience.
+* **Professional Window Management (v0.3.0)**: Added system-level **Maximize/Minimize** buttons and automatic screen centering for improved workflow on high-resolution monitors.
+* **Dynamic Page Handling**: Support for A4 through A0 page sizes using dynamic data objects, ensuring high-precision layouts in both Portrait and Landscape orientations.
+* **Row-Based Data Reporting**: Renders grouped features in individual horizontal lines, preventing text overlapping and ensuring 100% visibility for complex attribute tables.
 
 ---
 
 ## 🧠 Technical Deep Dive: The Scaling Logic
 
-O motor de escala do plugin é determinístico. Ele calcula a escala ideal comparando a caixa delimitadora (*bounding box*) da geometria projetada contra as dimensões do quadro de layout disponíveis.
+The plugin's scaling engine is deterministic. When set to **Auto**, it identifies the most restrictive axis using the following formula:
 
 ### The Scaling Formula
-Para evitar o corte de feições irregulares, o plugin identifica o eixo mais restritivo usando a seguinte lógica:
-
 $$Scale = \max\left(\frac{W_{geo} \cdot f_{unit}}{W_{frame}}, \frac{H_{geo} \cdot f_{unit}}{H_{frame}}\right) \cdot 1.25$$
 
-* $W_{geo}, H_{geo}$: Dimensões da feição em unidades do mapa.
-* $f_{unit}$: Fator de conversão de unidades para milímetros.
-* $W_{frame}, H_{frame}$: Dimensões do item de layout em milímetros.
-* **1.25**: Margem de segurança fixa de 25% para "respiro" dos rótulos.
+* $W_{geo}, H_{geo}$: Feature dimensions in map units.
+* $f_{unit}$: Unit conversion factor to millimeters.
+* $W_{frame}, H_{frame}$: Layout item dimensions in millimeters.
+* **1.25**: Fixed 25% safety margin for label "breathing" room.
+
+
 
 ---
 
 ## 🛠️ Installation & Development
 
 ### For Users
-1.  Baixe a última release: `vector_to_map_v0.2.8.zip`.
-2.  Extraia o conteúdo no diretório de plugins do QGIS:
+1.  Download the latest release: `vector_to_map_v0.3.0.zip`.
+2.  Extract the content into your QGIS plugins directory:
     * **Windows**: `%AppData%\QGIS\QGIS3\profiles\default\python\plugins\vector_to_map\`
-3.  Reinicie o QGIS e ative o **VectorToMap** via menu **Complementos > Gerenciar e Instalar Complementos**.
+3.  Restart QGIS and activate **VectorToMap** via **Plugins > Manage and Install Plugins**.
 
 ### For Developers
-Este projeto utiliza ferramentas de build para compilação de recursos e interfaces:
-* **Recompilar Recursos**: Execute `pyrcc5 -o resources.py resources.qrc`.
-* **Build Automatizado**: Suporte para `pb_tool` (requer configuração local).
-
-
+* **Update Translations**: Use `pylupdate5` to scan for new strings and `lrelease` to compile `.qm` files.
+* **Recompile Resources**: Run `pyrcc5 -o resources.py resources.qrc`.
 
 ---
 
-## 📜 Changelog (v0.2.8)
-* **Feature**: Implementada numeração automática de páginas em layouts multi-folhas.
-* **i18n**: Adicionado suporte para tradução dinâmica via `QTranslator`.
-* **Refatoração**: Migração para `currentData()` em ComboBoxes para garantir invariância da lógica em ambientes multilinguagem.
-* **Correção de Bug**: Movida a criação de botões dinâmicos para o `initGui` para prevenir `AttributeError` no carregamento.
-* **Performance**: Ajuste do timer de preview automático para 400ms.
+## 📜 Changelog (v0.3.0)
+* **New**: Full **Spanish (es_ES)** translation added.
+* **New**: Professional window flags (Maximize/Minimize/Center).
+* **Improved**: Smart 3-column attribute distribution logic.
+* **Improved**: Refactored scale engine to support **Fixed Scaling** at 1:10,000.
+* **Safety**: Added conditional warning for Multi-point geometries to prevent auto-zoom errors.
+* **Refactor**: Full PEP 8 compliance and optimized signal-slot connections for faster layer switching.
 
 ---
 
 ## 👤 Author
 **Matheus**
-* **Mestre em Ciência de Dados** (Nuclio Digital School, Espanha)
+* **Master in Data Science** (Nuclio Digital School, Spain)
 * **GitHub**: [matheusdurso](https://github.com/matheusdurso)
-* **Localização**: Governador Valadares, MG, Brasil
+* **Location**: Governador Valadares, MG, Brazil
