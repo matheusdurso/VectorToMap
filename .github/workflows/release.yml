@@ -3,7 +3,7 @@ name: Gerar Release Automático
 on:
   push:
     tags:
-      - 'v*' # Dispara sempre que você criar uma tag começando com 'v' (ex: v0.1)
+      - 'v*' # Dispara ao criar tags como v0.3.1
 
 permissions:
   contents: write
@@ -22,18 +22,19 @@ jobs:
 
       - name: Preparar Pacote do Plugin
         run: |
-          # Define o nome da pasta do plugin
+          # 1. Define o nome técnico da pasta (exigido pelo QGIS)
           PLUGIN_NAME="vector_to_map"
-          
-          # Cria uma pasta temporária para organizar o ZIP
           mkdir "$PLUGIN_NAME"
           
-          # Copia apenas os arquivos necessários (ignora lixo de cache)
+          # 2. Copia arquivos e a pasta i18n (essencial para v0.3.1)
           cp -r __init__.py vector_to_map.py vector_to_map_dialog.py \
                 vector_to_map_dialog_base.ui metadata.txt icon.png \
-                resources.py LICENSE README.md "$PLUGIN_NAME/"
+                resources.py LICENSE README.md i18n/ "$PLUGIN_NAME/"
           
-          # Gera o ZIP
+          # 3. Limpeza: Remove arquivos de tradução fonte (.ts), mantém apenas os compilados (.qm)
+          find "$PLUGIN_NAME/i18n" -name "*.ts" -type f -delete
+          
+          # 4. Gera o ZIP final
           zip -r "${PLUGIN_NAME}.zip" "$PLUGIN_NAME"
 
       - name: Criar Release no GitHub
@@ -41,6 +42,16 @@ jobs:
         with:
           files: vector_to_map.zip
           name: Release ${{ github.ref_name }}
-          body: "Nova versão do VectorToMap gerada automaticamente via GitHub Actions."
+          body: |
+            ### 🗺️ VectorToMap ${{ github.ref_name }}
+            Nova versão gerada automaticamente via GitHub Actions.
+            
+            **Destaques desta versão:**
+            * Implementação de Barras de Progresso em tempo real.
+            * Novo sistema de interrupção (Abort) de processamento.
+            * Suporte multilíngue completo (PT, EN, ES).
+            * Escala fixa de 1:10.000 otimizada para engenharia.
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

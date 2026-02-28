@@ -45,7 +45,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>670</width>
+         <width>673</width>
          <height>776</height>
         </rect>
        </property>
@@ -381,7 +381,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>646</width>
+              <width>649</width>
               <height>83</height>
              </rect>
             </property>
@@ -510,6 +510,19 @@
          </layout>
         </item>
         <item>
+         <widget class="QProgressBar" name="progressBar">
+          <property name="value">
+           <number>24</number>
+          </property>
+          <property name="textVisible">
+           <bool>true</bool>
+          </property>
+          <property name="invertedAppearance">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_7">
           <property name="topMargin">
            <number>8</number>
@@ -558,13 +571,13 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>498</width>
+         <width>495</width>
          <height>776</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,1">
+         <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,1">
           <item>
            <widget class="QCheckBox" name="chk_preview_auto">
             <property name="layoutDirection">
@@ -575,6 +588,13 @@
             </property>
             <property name="tristate">
              <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QProgressBar" name="previewProgressBar">
+            <property name="value">
+             <number>24</number>
             </property>
            </widget>
           </item>

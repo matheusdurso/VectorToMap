@@ -1,19 +1,19 @@
 [general]
 name=VectorToMap
 qgisMinimumVersion=3.0
-description=Multilingual Atlas automation with smart scaling engine and balanced attribute layouts.
-about=VectorToMap 0.3.0 is a professional tool for high-precision map book generation. 
- It now features full English/Spanish support, an Adimensional Scaling Engine for 
- engineering-grade accuracy, and a smart 3-column attribute layout that automatically 
- organizes feature data for clean, row-based reporting.
-version=0.3.0
+description=Multilingual Atlas automation with real-time progress tracking and smart scaling engine.
+about=VectorToMap 0.3.1 is a professional tool for high-precision map book generation. 
+ It now features real-time Progress Bars for preview and export, an Abort/Cancel 
+ mechanism for safe processing, full English/Spanish support, and an Adimensional 
+ Scaling Engine for engineering-grade accuracy.
+version=0.3.1
 author=Matheus Durso
 email=matheusdursonc@gmail.com
 repository=https://github.com/matheusdurso/VectorToMap
 tracker=https://github.com/matheusdurso/VectorToMap/issues
 homepage=https://github.com/matheusdurso/VectorToMap
 hasProcessingProvider=no
-tags=atlas, layout, automation, scale, engineering, vector, i18n, multilingual
+tags=atlas, layout, automation, scale, engineering, vector, i18n, progressbar, uxtools
 category=Vector
 icon=icon.png
 experimental=False
