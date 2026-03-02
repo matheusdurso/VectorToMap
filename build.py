@@ -13,24 +13,30 @@ def criar_pacote():
 
     print(f"--- Iniciando Build do {nome_plugin} v{versao} ---")
 
-    # 2. Listas de Exclusão atualizadas para v0.3.1
+    # 2. Listas de Exclusão unificadas
     pastas_ignorar = ['__pycache__', '.git', '.vscode', 'build_output', '.github']
-    arquivos_ignorar = ['.gitignore', 'pb_tool.cfg', 'resources.qrc', 'build.py', '.ts']
+    
+    # Lista de arquivos exatos ou extensões para ignorar
+    itens_ignorar = [
+        '.gitignore', 'pb_tool.cfg', 'resources.qrc', 'build.py', 
+        '.ts', '.pyc', '.zip', '.vscode'
+    ]
 
     if os.path.exists(zip_name):
         os.remove(zip_name)
         print(f"Regerando arquivo: {zip_name}")
 
     # 3. Criar o ZIP com a estrutura correta para o QGIS
-    # O QGIS exige que dentro do ZIP os arquivos estejam em uma subpasta com o nome do plugin
     with zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk('.'):
             # Filtra pastas indesejadas
             dirs[:] = [d for d in dirs if d not in pastas_ignorar]
             
             for file in files:
-                # Filtra arquivos indesejados
-                if any(file.endswith(ext) for ext in extensoes_ignorar):
+                # Lógica de filtro corrigida: ignora se o nome está na lista ou se termina com a extensão
+                deve_ignorar = any(file == item or file.endswith(item) for item in itens_ignorar)
+                
+                if deve_ignorar:
                     continue
                 
                 caminho_completo = os.path.join(root, file)
