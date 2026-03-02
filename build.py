@@ -13,9 +13,9 @@ def criar_pacote():
 
     print(f"--- Iniciando Build do {nome_plugin} v{versao} ---")
 
-    # 2. Limpeza de arquivos temporários e caches
-    pastas_ignorar = ['__pycache__', '.git', '.vscode', 'build_output']
-    extensoes_ignorar = ['.pyc', '.zip', '.ui.autosave', 'build.py', '.ts']
+    # 2. Listas de Exclusão atualizadas para v0.3.1
+    pastas_ignorar = ['__pycache__', '.git', '.vscode', 'build_output', '.github']
+    arquivos_ignorar = ['.gitignore', 'pb_tool.cfg', 'resources.qrc', 'build.py', '.ts']
 
     if os.path.exists(zip_name):
         os.remove(zip_name)

@@ -30,15 +30,17 @@ from .vector_to_map_dialog import VectorToMapDialog
 
 class VectorToMap:
 
+    # --- 1. CICLO DE VIDA E CONFIGURAÇÕES INICIAIS ---
+
     def __init__(self, iface):
         """Initialize the plugin and define global state variables."""
-
         self.iface = iface
         self.plugin_dir = os.path.dirname(__file__)
         self.actions = []
         self.menu = self.tr(u'&VectorToMap')
         self.first_start = True
         self.is_rendering = False # Flag to prevent infinite rendering loops
+        self.colunas_atuais = []
         
         # No seu __init__
         locale = QgsSettings().value('locale/userLocale')[0:2] 
@@ -56,16 +58,12 @@ class VectorToMap:
                 self.translator.load(path)
                 QCoreApplication.installTranslator(self.translator)
 
-
     def tr(self, message):
         """Translate strings using the QGIS internationalization system."""
-
         return QCoreApplication.translate('VectorToMap', message)
-
 
     def add_action(self, icon_path, text, callback, enabled_flag=True, add_to_menu=True, add_to_toolbar=True, status_tip=None, whats_this=None, parent=None):
         """Helper function to add buttons and menus to the QGIS interface."""
-
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
@@ -77,14 +75,11 @@ class VectorToMap:
         self.actions.append(action)
         return action
 
-
     def initGui(self):
         """Cria as entradas de menu e a barra de ferramentas personalizada."""
-
         icon_path = ':/plugins/vector_to_map/icon.png'
         
         # 1. CRIAÇÃO DA BARRA DE FERRAMENTAS EXCLUSIVA
-        # Isso permite que o ícone fique em destaque na parte superior do QGIS
         self.toolbar = self.iface.addToolBar(u'VectorToMap')
         self.toolbar.setObjectName(u'VectorToMap')
 
@@ -92,7 +87,6 @@ class VectorToMap:
         self.btn_render = QPushButton("Render Preview")
 
         # 2. CRIAÇÃO DA AÇÃO PRINCIPAL
-        # O parâmetro add_to_toolbar=True usa o helper para colocar o ícone na barra
         self.action = self.add_action(
             icon_path,
             text=self.tr(u'VectorToMap'),
@@ -102,40 +96,20 @@ class VectorToMap:
             add_to_menu=True
         )
 
-
     def unload(self):
         """Remove o menu e a barra de ferramentas da interface do QGIS ao desativar o plugin."""
-        # Remove cada ação registrada nos menus e ícones padrão
         for action in self.actions:
             self.iface.removePluginMenu(self.menu, action)
             self.iface.removeToolBarIcon(action)
         
-        # 4. REMOÇÃO DA BARRA DE FERRAMENTAS FÍSICA
-        # Garante que a barra 'VectorToMap' desapareça completamente da interface
         if hasattr(self, 'toolbar'):
-            # Deletar o objeto remove a barra visualmente do QGIS
             del self.toolbar
 
 
-    def setup_ui_strings(self):
-        """Centraliza todos os Tooltips e textos da interface para tradução."""
-        # Tooltips dos Modos de Exibição
-        self.dlg.chk_modo_formulario.setToolTip(self.tr("Exibe todos os atributos em um bloco único de texto (HTML)."))
-        self.dlg.chk_modo_individual.setToolTip(self.tr("Cria uma linha horizontal para cada feição (evita sobreposições)."))
-        self.dlg.chk_preview_auto.setToolTip(self.tr("Atualização automática da Preview. Pode ser lento. Alternativamente use o botão Render Preview."))
-        
-        # Controle de Seleção (visto na image_98215f.png)
-        self.dlg.chk_selecionar_todos.setToolTip(self.tr("Marca ou desmarca todos os campos da lista de uma vez."))
-        
-        # Motor de Escala e Atlas
-        self.dlg.combo_atlas.setToolTip(self.tr("Campo da tabela usado para agrupar as feições em cada página."))
-        self.dlg.combo_presets.setToolTip(self.tr("Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado)."))
-        self.btn_render.setToolTip(self.tr("Gera uma prévia do layout com as configurações atuais."))
+    # --- 2. INTERFACE E DIÁLOGO ---
 
-    
     def run(self):
         """Initialize the UI and set up window flags and button logic."""
-        
         if self.first_start:
             self.first_start = False
             self.dlg = VectorToMapDialog()
@@ -146,11 +120,7 @@ class VectorToMap:
             except:
                 pass # Caso não haja conexão prévia
 
-            # 2. Conecta o sinal ao SEU método, e não ao accept() padrão
-            #self.dlg.button_box.accepted.connect(self.processar_clique_ok)
-
             # --- ESTILO CONSOLIDADO V0.3.0 (AZUL PROFISSIONAL & CLEAN) ---
-            # Unificamos as barras de progresso e as scrollbars em um único QSS
             estilo_consolidado = """
                 /* 1. ESTILO GERAL DAS BARRAS DE PROGRESSO */
                 QProgressBar {
@@ -168,7 +138,6 @@ class VectorToMap:
                 }
 
                 /* 2. BARRA DA PREVIEW (ULTRA-FINA ESTILO YOUTUBE) */
-                /* Usamos 'color: transparent' para eliminar os saltos de texto 50%/100% */
                 QProgressBar#previewProgressBar {
                     border: 1px solid #dcdcdc;
                     border-radius: 4px;
@@ -205,26 +174,21 @@ class VectorToMap:
                     width: 0px;
                 }
             """
-
             self.dlg.setStyleSheet(estilo_consolidado)
-                        
             self.dlg.previewProgressBar.hide()
             self.dlg.progressBar.hide()
 
             # --- ISOLAMENTO DOS RADIO BUTTONS (v0.2.8) ---
-            # 1. Grupo de Orientação (Retrato vs Paisagem)
             self.grupo_orientacao = QButtonGroup(self.dlg)
             self.grupo_orientacao.addButton(self.dlg.rb_retrato)
             self.grupo_orientacao.addButton(self.dlg.rb_paisagem)
 
-            # 2. Grupo de Escala (Automática vs Fixa)
             self.grupo_escala = QButtonGroup(self.dlg)
             self.grupo_escala.addButton(self.dlg.rb_escala_auto)
             self.grupo_escala.addButton(self.dlg.rb_escala_fixa)
 
             # --- SETUP TAMANHOS DE PÁGINA (v0.2.8) ---
             self.dlg.combo_tamanho_pagina.clear()
-            # Definimos uma lista de tuplas (Texto exibido, (Largura mm, Altura mm))
             tamanhos_disponiveis = [
                 ("A4 (210 x 297 mm)", (210.0, 297.0)),
                 ("A3 (297 x 420 mm)", (297.0, 420.0)),
@@ -237,31 +201,20 @@ class VectorToMap:
 
             # --- SETUP ESCALA (v0.2.8) ---
             self.dlg.combo_escala_fixa.clear()
-            # Valores técnicos são os denominadores das escalas solicitadas
             escalas = [
-                ("1:1.000", 1000),
-                ("1:5.000", 5000),
-                ("1:10.000", 10000),
-                ("1:50.000", 50000),
-                ("1:100.000", 100000), 
-                ("1:250.000", 250000),
-                ("1:500.000", 500000)
+                ("1:1.000", 1000), ("1:5.000", 5000), ("1:10.000", 10000),
+                ("1:50.000", 50000), ("1:100.000", 100000), 
+                ("1:250.000", 250000), ("1:500.000", 500000)
             ]
             for texto, valor in escalas:
                 self.dlg.combo_escala_fixa.addItem(texto, valor)
-            
-            # 1. DEFINE O VALOR VISUAL PADRÃO (1:10.000) PARA A JANELA
             self.dlg.combo_escala_fixa.setCurrentIndex(2)
 
-            # Conectar e Disparar Validação Inicial
             self.dlg.mMapLayerComboBox.layerChanged.connect(self.configurar_escala_ao_mudar_camada)
-            self.configurar_escala_ao_mudar_camada() # Executa agora para definir o estado inicial
+            self.configurar_escala_ao_mudar_camada() 
 
-            # Revalida a lógica sempre que o usuário alternar entre escala Auto e Fixa
             self.dlg.rb_escala_auto.toggled.connect(self.validar_geometria_escala)
             self.dlg.rb_escala_fixa.toggled.connect(self.validar_geometria_escala)
-
-            # Conectar os RadioButtons ao timer de preview
             self.dlg.rb_escala_auto.toggled.connect(self.disparar_preview_se_autorizado)
             self.dlg.rb_escala_fixa.toggled.connect(self.disparar_preview_se_autorizado)
             self.dlg.combo_escala_fixa.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
@@ -270,44 +223,31 @@ class VectorToMap:
             self.dlg.button_box.addButton(self.btn_render, QDialogButtonBox.ActionRole)
             self.btn_render.clicked.connect(self.atualizar_preview)
 
-            # Dentro do run(), após a inicialização da dlg:
-            # Mapeamos os índices para chaves internas fixas
             self.dlg.combo_presets.setItemData(0, "quadrado")
             self.dlg.combo_presets.setItemData(1, "75_altura")
-            self.dlg.combo_presets.setItemData(2, "custom")
 
-            # --- CONFIGURAÇÃO DE BRANDING (CABEÇALHO) ---
-            # Define o ícone que aparece ao lado do nome na barra de título
             self.dlg.setWindowIcon(QIcon(':/plugins/vector_to_map/icon.png'))
-            # Define o nome limpo conforme sua solicitação
             self.dlg.setWindowTitle("VectorToMap")
-
-            # Garante que o aviso comece oculto, independente do que está no arquivo .ui
             self.dlg.lbl_aviso_escala.hide()
 
             # --- CONFIGURAÇÃO DE JANELA PROFISSIONAL ---
-            # Adiciona botões de minimizar e maximizar que não vêm por padrão em QDialog
             self.dlg.setWindowFlags(
-                Qt.Window | 
-                Qt.WindowMinimizeButtonHint | 
-                Qt.WindowMaximizeButtonHint | 
-                Qt.WindowCloseButtonHint
+                Qt.Window | Qt.WindowMinimizeButtonHint | 
+                Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint
             )
             
-            # Setup rendering engine timer
             self.is_rendering = False
             self.timer_preview = QTimer()
             self.timer_preview.setSingleShot(True)
             self.timer_preview.timeout.connect(self.atualizar_preview)
             
-            # INITIAL STATE: Auto-preview setup
             if hasattr(self.dlg, 'chk_preview_auto'):
                 self.dlg.chk_preview_auto.setChecked(False)
                 self.dlg.chk_preview_auto.stateChanged.connect(
                     lambda state: self.timer_preview.start(100) if state == Qt.Checked else None
                 )
 
-            # Restore window geometry and Splitter positions
+            # Restore window geometry
             settings = QgsSettings()
             geometria = settings.value("/VectorToMap/geometry")
             if geometria: 
@@ -321,54 +261,46 @@ class VectorToMap:
             self.dlg.lbl_preview.setFrameShape(QFrame.StyledPanel)
             self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
 
-            # Layer and selection signals
             self.dlg.mMapLayerComboBox.layerChanged.connect(self.disparar_preview_se_autorizado)
             self.dlg.chk_selecionar_todos.stateChanged.connect(self.marcar_desmarcar_todos)
-            # Quando o estado da checkbox mudar, ela chama a função que inicia o timer da preview
             self.dlg.chk_numeracao.toggled.connect(self.disparar_preview_se_autorizado)
 
             # --- MONITORING WIDGETS ---
             widgets = [
-                self.dlg.combo_tamanho_pagina, 
-                self.dlg.combo_presets, 
-                self.dlg.rb_retrato, 
-                self.dlg.rb_paisagem, 
-                self.dlg.chk_modo_formulario, 
-                self.dlg.chk_modo_individual,
+                self.dlg.combo_tamanho_pagina, self.dlg.combo_presets, 
+                self.dlg.rb_retrato, self.dlg.rb_paisagem, 
+                self.dlg.chk_modo_formulario, self.dlg.chk_modo_individual,
                 self.dlg.combo_atlas
             ]
-            
             for w in widgets:
-                if hasattr(w, 'currentIndexChanged'): 
-                    w.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
-                elif hasattr(w, 'stateChanged'): 
-                    w.stateChanged.connect(self.disparar_preview_se_autorizado)
-                elif hasattr(w, 'toggled'): 
-                    w.toggled.connect(self.disparar_preview_se_autorizado)
+                if hasattr(w, 'currentIndexChanged'): w.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
+                elif hasattr(w, 'stateChanged'): w.stateChanged.connect(self.disparar_preview_se_autorizado)
+                elif hasattr(w, 'toggled'): w.toggled.connect(self.disparar_preview_se_autorizado)
 
             self.dlg.resizeEvent = lambda event: self.disparar_preview_se_autorizado()
-            # Em vez de self.dlg.button_box.accepted.connect(self.processar_clique_ok)
-            # Acesse o botão OK diretamente para evitar o accept() automático:
             self.dlg.button_box.button(QDialogButtonBox.Ok).clicked.connect(self.processar_clique_ok)
             self.abort_processing = False
             self.dlg.button_box.rejected.connect(self.cancelar_e_fechar)
-            # Chama a função que seleciona o botão, atualiza atributos e valida tudo de uma vez
             self.configurar_escala_ao_mudar_camada()
 
         # --- CENTRALIZAR NA TELA ---        
-        # Obtém a geometria da janela e o centro da tela disponível
         geometria_janela = self.dlg.frameGeometry()
         centro_tela = QDesktopWidget().availableGeometry().center()
-        
-        # Move o centro do retângulo da janela para o centro da tela
         geometria_janela.moveCenter(centro_tela)
-        
-        # Move o canto superior esquerdo da janela real para o ponto correspondente
         self.dlg.move(geometria_janela.topLeft())
 
         self.setup_ui_strings()  
         self.dlg.show()
-    
+
+    def setup_ui_strings(self):
+        """Centraliza todos os Tooltips e textos da interface para tradução."""
+        self.dlg.chk_modo_formulario.setToolTip(self.tr("Exibe todos os atributos em um bloco único de texto (HTML)."))
+        self.dlg.chk_modo_individual.setToolTip(self.tr("Cria uma linha horizontal para cada feição (evita sobreposições)."))
+        self.dlg.chk_preview_auto.setToolTip(self.tr("Atualização automática da Preview. Pode ser lento. Alternativamente use o botão Render Preview."))
+        self.dlg.chk_selecionar_todos.setToolTip(self.tr("Marca ou desmarca todos os campos da lista de uma vez."))
+        self.dlg.combo_atlas.setToolTip(self.tr("Campo da tabela usado para agrupar as feições em cada página."))
+        self.dlg.combo_presets.setToolTip(self.tr("Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado)."))
+        self.btn_render.setToolTip(self.tr("Gera uma prévia do layout com as configurações atuais."))
 
     def cancelar_e_fechar(self):
         """Interrompe o processamento e fecha o diálogo."""
@@ -376,438 +308,48 @@ class VectorToMap:
         self.dlg.reject()
 
 
-    def configurar_escala_ao_mudar_camada(self):
-        """Define o botão padrão inicial ao trocar de camada."""
-        camada = self.dlg.mMapLayerComboBox.currentLayer()
-        if not camada: return
-        
-        # 0: Ponto, 1: Linha, 2: Polígono
-        tipo_geom = camada.geometryType()
-        
-        # Se for qualquer tipo de Ponto (Simples ou Multi), começa na FIXA
-        if tipo_geom == 0:
-            self.dlg.rb_escala_fixa.setChecked(True)
-        else:
-            self.dlg.rb_escala_auto.setChecked(True)
-        
-        # Chama a validação para atualizar lista e estados
-        self.atualizar_lista_atributos()
-        self.validar_geometria_escala()
-    
-
-    def validar_geometria_escala(self):
-        """Gerencia habilitar/desabilitar, avisos e trava em 1:10.000."""
-        
-        camada = self.dlg.mMapLayerComboBox.currentLayer()
-        if not camada: return
-
-        tipo_geom = camada.geometryType() 
-        wkb_type = camada.wkbType()
-        is_multi = QgsWkbTypes.isMultiType(wkb_type)
-
-        self.dlg.combo_escala_fixa.blockSignals(True)
-
-        # 1. HABILITAÇÃO DOS BOTÕES: Ponto simples NUNCA usa automática
-        self.dlg.rb_escala_auto.setEnabled(not (tipo_geom == 0 and not is_multi))
-
-        # --- NOVA REGRA (v0.2.8): DESATIVA O COMBO SE AUTO ESTIVER ATIVO ---
-        # O combo só fica habilitado se o rádio botão de Escala Fixa estiver marcado
-        self.dlg.combo_escala_fixa.setEnabled(self.dlg.rb_escala_fixa.isChecked())
-
-        # 2. REGRA 1: SE FIXA SELECIONADA -> FORÇAR 1:10.000 (Sempre)
-        if self.dlg.rb_escala_fixa.isChecked():
-            self.dlg.combo_escala_fixa.setCurrentIndex(2)
-
-        # 3. REGRA 2: AVISO APENAS SE (MULTIPONTO E ESCALA AUTO)
-        perigo = (tipo_geom == 0 and is_multi and self.dlg.rb_escala_auto.isChecked())
-        
-        if perigo:
-            self.dlg.lbl_aviso_escala.show()
-            self.dlg.lbl_aviso_escala.setText(self.tr("⚠️ Atenção: Feições de ponto único podem quebrar a escala automática."))
-        else:
-            self.dlg.lbl_aviso_escala.hide()
-
-        self.dlg.combo_escala_fixa.blockSignals(False)
-        self.disparar_preview_se_autorizado()
-
-
-    def disparar_preview_se_autorizado(self):
-        """Start the preview timer only if auto-update is checked."""
-        if hasattr(self.dlg, 'chk_preview_auto') and self.dlg.chk_preview_auto.isChecked():
-            self.timer_preview.start(150)
-
-
-    def marcar_desmarcar_todos(self, state):
-        """Bulk check/uncheck attributes and consult auto-preview status."""
-        check = (state == Qt.Checked)
-        container = self.dlg.scrollAreaWidgetContents
-        for cb in container.findChildren(QCheckBox):
-            cb.setChecked(check)
-        
-        self.disparar_preview_se_autorizado()
-
-
-    def adicionar_numeracao_pagina(self, layout, w_pg, h_pg, y_zero_folha):
-        """Adiciona o número da página no canto inferior direito."""
-                
-        if not self.dlg.chk_numeracao.isChecked():
-            return
-
-        label_page = QgsLayoutItemLabel(layout)
-        label_page.setText("[% @layout_page %]") # O QGIS entende isso como o número da página atual
-        
-        # Ajuste de fonte (se você tiver um seletor de fonte, use-o aqui)
-        label_page.adjustSizeToText() 
-        
-        # Ponto de Referência: Inferior Direito
-        label_page.setReferencePoint(QgsLayoutItem.LowerRight)
-        
-        # Posicionamento Matemático:
-        # x = largura total - 5mm
-        # y = início da folha + altura da folha - 5mm
-        x = w_pg - 5
-        y = y_zero_folha + h_pg - 5
-        
-        label_page.attemptMove(
-            QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters)
-        )
-        
-        label_page.setZValue(100)
-        layout.addLayoutItem(label_page)
-
-
-    def montar_design_da_pagina(self, layout, camada, feicoes_da_pagina, preset, orientacao, pagina_index=0):
-        """Factory Core v0.2.8: Usa dimensões dinâmicas do ComboBox."""
-
-        # --- 1. SETUP DA PÁGINA (Recupera os dados do Combo) ---
-        # Recupera a tupla (largura, altura) armazenada no currentData
-        dim = self.dlg.combo_tamanho_pagina.currentData()
-        if not dim:
-            dim = (210.0, 297.0) # Fallback para A4
-
-        # Define W e H baseado na orientação selecionada
-        w_pg, h_pg = (dim[1], dim[0]) if orientacao == "Paisagem" else (dim[0], dim[1])
-        
-        pagina = layout.pageCollection().pages()[pagina_index]
-        pagina.setPageSize(QgsLayoutSize(w_pg, h_pg, QgsUnitTypes.LayoutMillimeters))
-        
-        # ESSENCIAL: Mantém o cálculo do deslocamento vertical para múltiplas páginas
-        y_zero_folha = pagina_index * (h_pg + 10) 
-        margin_padrao = 10.0
-        
-        # --- 2. GEOMETRIA MOLDURA (IRON-LOCK) ---
-        if preset == "75_altura":
-            header_h = 35.0
-            h_util = h_pg - (2 * margin_padrao) - header_h
-            w_map_f, h_map_f = w_pg - (2 * margin_padrao), h_util * 0.75
-            x_map_f, y_map_f = margin_padrao, y_zero_folha + margin_padrao + header_h
-        else:
-            if orientacao == "Retrato":
-                w_map_f, h_map_f = w_pg - (2 * margin_padrao), w_pg - (2 * margin_padrao)
-                x_map_f, y_map_f = margin_padrao, y_zero_folha + 40.0
-            else:
-                h_map_f = h_pg - (2 * margin_padrao)
-                w_map_f = h_map_f
-                x_map_f, y_map_f = w_pg - margin_padrao - w_map_f, y_zero_folha + margin_padrao
-
-        map_item = QgsLayoutItemMap(layout)
-        map_item.setFrameEnabled(True)
-        layout.addLayoutItem(map_item)
-        map_item.attemptResize(QgsLayoutSize(w_map_f, h_map_f, QgsUnitTypes.LayoutMillimeters))
-        map_item.attemptMove(QgsLayoutPoint(x_map_f, y_map_f, QgsUnitTypes.LayoutMillimeters))
-        
-
-        # --- 3. MOTOR DE ESCALA (v0.2.8 - CORRIGIDO) ---
-        if feicoes_da_pagina:
-            # 1. Calcula a Extensão e Projeta (Unificado)
-            ext = QgsRectangle()
-            ext.setMinimal()
-            for f in feicoes_da_pagina: 
-                ext.combineExtentWith(f.geometry().boundingBox())
-            
-            # CRITICAL FIX: Projeta a extensão para o SRC do Projeto (essencial para escalas métricas)
-            project_crs = QgsProject.instance().crs()
-            trans = QgsCoordinateTransform(camada.crs(), project_crs, QgsProject.instance())
-            ext_proj = trans.transformBoundingBox(ext)
-            
-            # Prevenção para Pontos Únicos: se a largura/altura for 0, o QGIS não consegue "olhar" para o lugar
-            if ext_proj.width() == 0 or ext_proj.height() == 0:
-                ext_proj.grow(1.0) # Expande 1 metro/unidade para centralizar
-
-            # Define o CENTRO do mapa com a extensão projetada
-            map_item.setExtent(ext_proj)
-
-            # 2. Aplica o Zoom (Escala) conforme escolha do usuário
-            if self.dlg.rb_escala_fixa.isChecked():
-                # Opção A: ESCALA FIXA
-                escala_val = self.dlg.combo_escala_fixa.currentData()
-                escala_alvo = float(escala_val) if escala_val else 10000.0
-                map_item.setScale(escala_alvo)
-            else:
-                # Opção B: ESCALA AUTOMÁTICA
-                unit_to_mm = QgsUnitTypes.fromUnitToUnitFactor(project_crs.mapUnits(), QgsUnitTypes.DistanceMillimeters)
-                scale_w = (ext_proj.width() * unit_to_mm) / w_map_f
-                scale_h = (ext_proj.height() * unit_to_mm) / h_map_f
-                map_item.setScale(max(scale_w, scale_h) * 1.25)
-
-            # Força o refresh para o preview atualizar a escala visualmente
-            map_item.refresh()
-            map_item.attemptResize(QgsLayoutSize(w_map_f, h_map_f, QgsUnitTypes.LayoutMillimeters))
-            map_item.attemptMove(QgsLayoutPoint(x_map_f, y_map_f, QgsUnitTypes.LayoutMillimeters))
-
-
-        # --- 4. DISTRIBUIÇÃO DOS DADOS ---
-        colunas = [cb.text() for cb in self.dlg.scrollAreaWidgetContents.findChildren(QCheckBox) if cb.isChecked()]
-        limite_fundo = y_zero_folha + h_pg - margin_padrao
-
-        if colunas and feicoes_da_pagina:
-            # Áreas de Posicionamento
-            if preset == "75_altura" and orientacao == "Paisagem":
-                mid_x = w_pg / 2
-                x_form, y_form = margin_padrao, y_map_f + h_map_f + 3.0
-                w_form, h_form = mid_x - margin_padrao - 2.0, limite_fundo - (y_map_f + h_map_f + 3.0)
-                x_ind_start, y_ind_min = mid_x + 2.0, y_map_f + h_map_f + 2.0
-                w_ind_max = w_pg - margin_padrao - x_ind_start
-            else:
-                x_form = margin_padrao
-                y_form = y_map_f + h_map_f + 5.0 if orientacao == "Retrato" else y_map_f + (h_map_f / 2)
-                w_form = w_pg - (2 * margin_padrao) if orientacao == "Retrato" else x_map_f - (2 * margin_padrao)
-                h_form = (limite_fundo - y_form) * 0.5 if self.dlg.chk_modo_individual.isChecked() else (limite_fundo - y_form)
-                x_ind_start, y_ind_min = x_form, y_form + h_form + 2.0 if self.dlg.chk_modo_individual.isChecked() else y_form
-                w_ind_max = w_form
-
-            # RESTAURAÇÃO DO FORMULÁRIO
-            if self.dlg.chk_modo_formulario.isChecked():
-                txt_html = ""
-                for idx, f in enumerate(feicoes_da_pagina):
-                    if len(feicoes_da_pagina) > 1: txt_html += f"<b>ITEM {idx+1}</b><br>"
-                    for col in colunas:
-                        try: txt_html += f"<b>{col}:</b> {str(f.attribute(col)).strip()}<br>"
-                        except: continue
-                lbl_f = QgsLayoutItemLabel(layout)
-                lbl_f.setMode(QgsLayoutItemLabel.ModeHtml)
-                lbl_f.setText(txt_html)
-                lbl_f.attemptMove(QgsLayoutPoint(x_form, y_form, QgsUnitTypes.LayoutMillimeters))
-                lbl_f.attemptResize(QgsLayoutSize(w_form, h_form, QgsUnitTypes.LayoutMillimeters))
-                layout.addLayoutItem(lbl_f)
-
-            # MODO INDIVIDUAL: UMA LINHA POR FEIÇÃO
-            if self.dlg.chk_modo_individual.isChecked():
-                altura_linha = 5.5
-                altura_total = len(feicoes_da_pagina) * altura_linha
-                yi = (limite_fundo - altura_total) if (y_ind_min + altura_total) > limite_fundo else y_ind_min
-
-                for f in feicoes_da_pagina:
-                    xi = x_ind_start
-                    for col in colunas:
-                        try:
-                            lbl_i = QgsLayoutItemLabel(layout)
-                            lbl_i.setText(f"{col}: {str(f.attribute(col)).strip()}")
-                            lbl_i.setFrameEnabled(True)
-                            lbl_i.adjustSizeToText()
-                            ancho_folga = lbl_i.rect().width() + 2.0 # Correção de 2mm mantida
-                            lbl_i.attemptResize(QgsLayoutSize(ancho_folga, lbl_i.rect().height(), QgsUnitTypes.LayoutMillimeters))
-                            lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
-                            layout.addLayoutItem(lbl_i)
-                            xi += ancho_folga + 2.0
-                        except: continue
-                    yi += altura_linha
-        
-        #Adiciona numeração de página se checkbox estiver selecionada
-        self.adicionar_numeracao_pagina(layout, w_pg, h_pg, y_zero_folha)
-
-
-    def atualizar_preview(self):
-        """Renders a sample layout preview with an indeterminate progress bar."""
-
-        if self.is_rendering or not self.dlg.isVisible(): 
-            return
-            
-        self.is_rendering = True
-        self.dlg.previewProgressBar.show() # Mostra a barra específica da preview
-        self.dlg.previewProgressBar.setRange(0, 0) # Modo indeterminado 
-        
-        QCoreApplication.processEvents()
-        QCoreApplication.processEvents() # Chamamos duas vezes para garantir a fila do Windows
-
-        try:
-            camada = self.dlg.mMapLayerComboBox.currentLayer()
-            if not camada: 
-                return
-
-            layout = QgsPrintLayout(QgsProject.instance())
-            layout.initializeDefaults()
-            
-            campo_atlas = self.dlg.combo_atlas.currentData()
-            feicoes = []
-            sample_f = next(camada.getFeatures(QgsFeatureRequest().setLimit(1)), None)
-            
-            if sample_f:
-                if campo_atlas is None:
-                    feicoes = [sample_f]
-                else:
-                    val_amostra = sample_f.attribute(campo_atlas)
-                    feicoes = [f for f in camada.getFeatures() if f.attribute(campo_atlas) == val_amostra]
-
-            self.montar_design_da_pagina(
-                layout, 
-                camada, 
-                feicoes, 
-                self.dlg.combo_presets.currentData(),
-                "Retrato" if self.dlg.rb_retrato.isChecked() else "Paisagem",
-            )
-
-            exporter = QgsLayoutExporter(layout)
-            image = exporter.renderPageToImage(0)
-            
-            if not image.isNull():
-                self.dlg.lbl_preview.setPixmap(QPixmap.fromImage(image).scaled(
-                    self.dlg.lbl_preview.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        
-        finally:
-            self.is_rendering = False
-            self.dlg.previewProgressBar.hide() # Esconde apenas a da preview
-            self.dlg.previewProgressBar.setRange(0, 100) # Reseta para o modo padrão
-            QCoreApplication.processEvents()
-
-
-    def criar_layout_multi_paginas(self, preset, camada, orientacao, tamanho_pg, paginas_dados, colunas, modos):
-        """Generate the definitive layout with a real-time progress bar."""
-
-        project = QgsProject.instance()
-        manager = project.layoutManager()
-        
-        nome_camada = re.sub(r'[^a-zA-Z0-9_]', '_', unicodedata.normalize('NFD', camada.name()).encode('ascii', 'ignore').decode('utf-8'))
-        layout_name = f"VectorToMap_{nome_camada}"
-        
-        contador = 1
-        while manager.layoutByName(layout_name):
-            layout_name = f"VectorToMap_{nome_camada}_{contador}"; contador += 1
-
-        layout = QgsPrintLayout(project)
-        layout.initializeDefaults()
-        layout.setName(layout_name)
-
-        # --- CONFIGURAÇÃO DA BARRA DE PROGRESSO ---
-        total_paginas = len(paginas_dados)
-        self.dlg.progressBar.show()
-        self.dlg.progressBar.setRange(0, total_paginas)
-        self.dlg.progressBar.setValue(0)
-
-        for i, dados in enumerate(paginas_dados):
-            if self.abort_processing:
-                break
-
-            if i > 0: 
-                layout.pageCollection().addPage(QgsLayoutItemPage(layout))
-            
-            self.montar_design_da_pagina(layout, camada, dados['feicoes'], preset, orientacao, pagina_index=i)
-            
-            # Atualiza o progresso e força a interface a redesenhar
-            self.dlg.progressBar.setValue(i + 1)
-            QCoreApplication.processEvents() 
-
-        self.dlg.progressBar.hide()
-
-        # Só adiciona ao QGIS e abre o designer se o processo foi concluído
-        if not self.abort_processing:
-            layout.refresh()
-            manager.addLayout(layout)
-            # Esconde a barra e abre o designer            
-            self.iface.openLayoutDesigner(layout)
-
-
-    def processar_clique_ok(self):
-        """Processes configurations and generates the multi-page layout."""
-
-        camada = self.dlg.mMapLayerComboBox.currentLayer()
-        if not camada: 
-            return
-        
-        self.abort_processing = False  # Limpa o estado de cancelamento anterior
-        
-        # Get selected columns for the data display
-        container = self.dlg.scrollAreaWidgetContents
-        colunas_selecionadas = [cb.text() for cb in container.findChildren(QCheckBox) if cb.isChecked()]
-
-        paginas_dados = []
-        campo_atlas = self.dlg.combo_atlas.currentData()
-        
-        # MODE 1: Individual (One page per feature)
-        if campo_atlas is None:
-            for f in camada.getFeatures(): 
-                paginas_dados.append({'feicoes': [f]})
-        
-        # MODE 2: Grouped (Atlas mode by attribute)
-        else:
-            # Dictionary to store features grouped by attribute value
-            grupos = {}
-            for f in camada.getFeatures():
-                # Get the raw value of the attribute
-                val = f.attribute(campo_atlas)
-                # Ensure the key exists in the dictionary
-                if val not in grupos:
-                    grupos[val] = []
-                grupos[val].append(f)
-            
-            # Convert the dictionary groups into the layout data format
-            for val in grupos:
-                paginas_dados.append({'feicoes': grupos[val]})
-        
-        if paginas_dados: 
-            # 1. Executa a criação (a barra de progresso rodará aqui dentro)
-            self.criar_layout_multi_paginas(
-                self.dlg.combo_presets.currentData(), 
-                camada, 
-                "Retrato" if self.dlg.rb_retrato.isChecked() else "Paisagem", 
-                self.dlg.combo_tamanho_pagina.currentData(), 
-                paginas_dados, 
-                colunas_selecionadas, 
-                None
-            )
-            
-            # 2. SÓ AGORA fechamos a janela, após o loop terminar
-            if not self.abort_processing:
-                self.dlg.accept()
-
+    # --- 3. GESTÃO DE ATRIBUTOS E WIDGETS ---
 
     def atualizar_lista_atributos(self):
-        """Limpa a interface e reconstrói a lista usando a nova grade de 3 colunas."""
+        """Limpa a interface e reconstrói a lista com isolamento total."""
+        self.dlg.chk_modo_formulario.blockSignals(True)
+        self.dlg.chk_modo_individual.blockSignals(True)
+        self.dlg.chk_modo_formulario.setChecked(False)
+        self.dlg.chk_modo_individual.setChecked(False)
+        self.dlg.chk_modo_formulario.setEnabled(False) 
+        self.dlg.chk_modo_individual.setEnabled(False) 
+
         camada = self.dlg.mMapLayerComboBox.currentLayer()
         self.dlg.tableWidget.setRowCount(0)
         self.dlg.tableWidget.setColumnCount(0)
+        self.colunas_atuais = []
 
-        # Reset do checkbox 'Selecionar Todos'
         self.dlg.chk_selecionar_todos.blockSignals(True)
         self.dlg.chk_selecionar_todos.setChecked(False)
         self.dlg.chk_selecionar_todos.blockSignals(False)
 
-        # Reset do Combo de Agrupamento
         self.dlg.combo_atlas.clear()
         self.dlg.combo_atlas.addItem("--- No Grouping (Each Feature) ---", None)
 
         if not camada: 
-            self.atualizar_estado_modos_exibicao()
+            self.dlg.chk_modo_formulario.blockSignals(False)
+            self.dlg.chk_modo_individual.blockSignals(False)
             return
 
-        # CHAMADA DA NOVA FUNÇÃO
         self.atualizar_lista_colunas(camada)
+        self.dlg.chk_modo_formulario.blockSignals(False)
+        self.dlg.chk_modo_individual.blockSignals(False)
         self.atualizar_estado_modos_exibicao()
-    
-    
+
     def atualizar_lista_colunas(self, camada):
         """Reconstrói a grade de 3 colunas com distribuição balanceada descendente."""
-        
-        # 1. Setup do Container e Layout
         container = self.dlg.scrollAreaWidgetContents
         layout_atual = container.layout()
 
         if layout_atual:
             while layout_atual.count():
                 item = layout_atual.takeAt(0)
-                if item.widget():
-                    item.widget().deleteLater()
-            
+                if item.widget(): item.widget().deleteLater()
             if not isinstance(layout_atual, QGridLayout):
                 sip.delete(layout_atual)
                 layout_atual = QGridLayout(container)
@@ -817,13 +359,12 @@ class VectorToMap:
             container.setLayout(layout_atual)
 
         layout_atual.setAlignment(Qt.AlignTop)
+        self.colunas_atuais = [] 
         
-        # 2. Preparação dos Dados
         campos = list(camada.fields())
         N = len(campos)
         if N == 0: return
 
-        # 3. Lógica de Distribuição Proposta (Matheus v0.2.8)
         if N <= 2:
             distribuicao = [N, 0, 0]
         elif N <= 4:
@@ -832,14 +373,8 @@ class VectorToMap:
         else:
             base = N // 3
             resto = N % 3
-            # Distribui o resto (+1) prioritariamente para as primeiras colunas
-            distribuicao = [
-                base + (1 if resto > 0 else 0),
-                base + (1 if resto > 1 else 0),
-                base
-            ]
+            distribuicao = [base + (1 if resto > 0 else 0), base + (1 if resto > 1 else 0), base]
 
-        # 4. População da Grade seguindo a Distribuição
         idx_campo = 0
         for col_index, limite_linhas in enumerate(distribuicao):
             for row_index in range(limite_linhas):
@@ -847,16 +382,42 @@ class VectorToMap:
                     campo = campos[idx_campo]
                     nome = campo.name()
                     cb = QCheckBox(nome)
-                    
-                    # Conexões de sinais mantidas
-                    cb.stateChanged.connect(self.atualizar_tabela_por_selecao)
-                    cb.stateChanged.connect(self.atualizar_estado_modos_exibicao)
+                    self.colunas_atuais.append(cb)
+                    cb.stateChanged.connect(self.atualizar_tabela_por_selecao)                    
                     cb.stateChanged.connect(self.verificar_estado_selecionar_todos)
+                    cb.stateChanged.connect(self.atualizar_estado_modos_exibicao)
                     cb.stateChanged.connect(self.disparar_preview_se_autorizado)
-                    
                     layout_atual.addWidget(cb, row_index, col_index)
                     self.dlg.combo_atlas.addItem(nome, nome)
                     idx_campo += 1
+
+    def marcar_desmarcar_todos(self, state):
+        """Bulk check/uncheck attributes using the control list."""
+        check = (state == Qt.Checked)
+        for cb in self.colunas_atuais:
+            cb.setChecked(check)
+
+    def verificar_estado_selecionar_todos(self):
+        """Synchronize the master 'Select All' checkbox state."""
+        container = self.dlg.scrollAreaWidgetContents
+        cbs = container.findChildren(QCheckBox)
+        total = len(cbs)
+        marcados = sum(1 for cb in cbs if cb.isChecked())
+        self.dlg.chk_selecionar_todos.blockSignals(True)
+        self.dlg.chk_selecionar_todos.setChecked(total > 0 and total == marcados)
+        self.dlg.chk_selecionar_todos.blockSignals(False)
+
+    def atualizar_estado_modos_exibicao(self):
+        """Manage accessibility for display modes using the control list."""
+        tem_selecao = any(cb.isChecked() for cb in self.colunas_atuais)
+        self.dlg.chk_modo_formulario.setEnabled(tem_selecao)
+        self.dlg.chk_modo_individual.setEnabled(tem_selecao)
+        if tem_selecao:
+            if not self.dlg.chk_modo_formulario.isChecked() and not self.dlg.chk_modo_individual.isChecked():
+                self.dlg.chk_modo_formulario.setChecked(True)
+        else:
+            self.dlg.chk_modo_formulario.setChecked(False)
+            self.dlg.chk_modo_individual.setChecked(False)
 
     def atualizar_tabela_por_selecao(self):
         """Synchronize the sample data table with the user's attribute selection."""
@@ -878,30 +439,327 @@ class VectorToMap:
                 tabela.setItem(i, j, QTableWidgetItem(str(feicao[col])))
         tabela.resizeColumnsToContents()
 
-    def atualizar_estado_modos_exibicao(self):
-        """Manage accessibility for display modes and set 'Form' as default."""
-        container = self.dlg.scrollAreaWidgetContents
-        tem_selecao = any(cb.isChecked() for cb in container.findChildren(QCheckBox))
-        
-        # Enable modes only when at least one column is selected
-        self.dlg.chk_modo_formulario.setEnabled(tem_selecao)
-        self.dlg.chk_modo_individual.setEnabled(tem_selecao)
-        
-        if tem_selecao:
-            # Activate 'Form' mode by default if no mode is currently active
-            if not self.dlg.chk_modo_formulario.isChecked() and not self.dlg.chk_modo_individual.isChecked():
-                self.dlg.chk_modo_formulario.setChecked(True)
-        else:
-            # Clear modes if no attributes are selected
-            self.dlg.chk_modo_formulario.setChecked(False)
-            self.dlg.chk_modo_individual.setChecked(False)
 
-    def verificar_estado_selecionar_todos(self):
-        """Synchronize the master 'Select All' checkbox state."""
+    # --- 4. LÓGICA GEOGRÁFICA E ESCALA ---
+
+    def configurar_escala_ao_mudar_camada(self):
+        """Define o botão padrão inicial ao trocar de camada."""
+        camada = self.dlg.mMapLayerComboBox.currentLayer()
+        if not camada: return
+        tipo_geom = camada.geometryType()
+        if tipo_geom == 0:
+            self.dlg.rb_escala_fixa.setChecked(True)
+        else:
+            self.dlg.rb_escala_auto.setChecked(True)
+        self.atualizar_lista_atributos()
+        self.validar_geometria_escala()
+
+    def validar_geometria_escala(self):
+        """Gerencia habilitar/desabilitar, avisos e trava em 1:10.000."""
+        camada = self.dlg.mMapLayerComboBox.currentLayer()
+        if not camada: return
+        tipo_geom = camada.geometryType() 
+        wkb_type = camada.wkbType()
+        is_multi = QgsWkbTypes.isMultiType(wkb_type)
+
+        self.dlg.combo_escala_fixa.blockSignals(True)
+        self.dlg.rb_escala_auto.setEnabled(not (tipo_geom == 0 and not is_multi))
+        self.dlg.combo_escala_fixa.setEnabled(self.dlg.rb_escala_fixa.isChecked())
+
+        if self.dlg.rb_escala_fixa.isChecked():
+            self.dlg.combo_escala_fixa.setCurrentIndex(2)
+
+        perigo = (tipo_geom == 0 and is_multi and self.dlg.rb_escala_auto.isChecked())
+        if perigo:
+            self.dlg.lbl_aviso_escala.show()
+            self.dlg.lbl_aviso_escala.setText(self.tr("⚠️ Atenção: Feições de ponto único podem quebrar a escala automática."))
+        else:
+            self.dlg.lbl_aviso_escala.hide()
+
+        self.dlg.combo_escala_fixa.blockSignals(False)
+        self.disparar_preview_se_autorizado()
+
+
+    # --- 5. RENDERIZAÇÃO E LAYOUT ---
+
+    def atualizar_preview(self):
+        """Renders a sample layout preview with an indeterminate progress bar."""
+        if self.is_rendering or not self.dlg.isVisible(): 
+            return
+            
+        self.is_rendering = True
+        self.dlg.previewProgressBar.show() 
+        self.dlg.previewProgressBar.setRange(0, 0) 
+        QCoreApplication.processEvents()
+        QCoreApplication.processEvents() 
+
+        try:
+            camada = self.dlg.mMapLayerComboBox.currentLayer()
+            if not camada: return
+
+            layout = QgsPrintLayout(QgsProject.instance())
+            layout.initializeDefaults()
+            
+            campo_atlas = self.dlg.combo_atlas.currentData()
+            feicoes = []
+            sample_f = next(camada.getFeatures(QgsFeatureRequest().setLimit(1)), None)
+            
+            if sample_f:
+                if campo_atlas is None:
+                    feicoes = [sample_f]
+                else:
+                    val_amostra = sample_f.attribute(campo_atlas)
+                    feicoes = [f for f in camada.getFeatures() if f.attribute(campo_atlas) == val_amostra]
+
+            self.montar_design_da_pagina(
+                layout, camada, feicoes, self.dlg.combo_presets.currentData(),
+                "Retrato" if self.dlg.rb_retrato.isChecked() else "Paisagem",
+            )
+
+            exporter = QgsLayoutExporter(layout)
+            image = exporter.renderPageToImage(0)
+            if not image.isNull():
+                self.dlg.lbl_preview.setPixmap(QPixmap.fromImage(image).scaled(
+                    self.dlg.lbl_preview.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        finally:
+            self.is_rendering = False
+            self.dlg.previewProgressBar.hide()
+            self.dlg.previewProgressBar.setRange(0, 100)
+            QCoreApplication.processEvents()
+
+    def disparar_preview_se_autorizado(self):
+        """Start the preview timer only if auto-update is checked."""
+        if hasattr(self.dlg, 'chk_preview_auto') and self.dlg.chk_preview_auto.isChecked():
+            self.timer_preview.start(150)
+
+    def processar_clique_ok(self):
+        """Processes configurations and generates the multi-page layout."""
+        camada = self.dlg.mMapLayerComboBox.currentLayer()
+        if not camada: return
+        
+        self.abort_processing = False
         container = self.dlg.scrollAreaWidgetContents
-        cbs = container.findChildren(QCheckBox)
-        total = len(cbs)
-        marcados = sum(1 for cb in cbs if cb.isChecked())
-        self.dlg.chk_selecionar_todos.blockSignals(True)
-        self.dlg.chk_selecionar_todos.setChecked(total > 0 and total == marcados)
-        self.dlg.chk_selecionar_todos.blockSignals(False)
+        colunas_selecionadas = [cb.text() for cb in container.findChildren(QCheckBox) if cb.isChecked()]
+
+        paginas_dados = []
+        campo_atlas = self.dlg.combo_atlas.currentData()
+        
+        if campo_atlas is None:
+            for f in camada.getFeatures(): 
+                paginas_dados.append({'feicoes': [f]})
+        else:
+            grupos = {}
+            for f in camada.getFeatures():
+                val = f.attribute(campo_atlas)
+                if val not in grupos: grupos[val] = []
+                grupos[val].append(f)
+            for val in grupos:
+                paginas_dados.append({'feicoes': grupos[val]})
+        
+        if paginas_dados: 
+            self.criar_layout_multi_paginas(
+                self.dlg.combo_presets.currentData(), camada, 
+                "Retrato" if self.dlg.rb_retrato.isChecked() else "Paisagem", 
+                self.dlg.combo_tamanho_pagina.currentData(), 
+                paginas_dados, colunas_selecionadas, None
+            )
+            if not self.abort_processing:
+                self.dlg.accept()
+
+    def criar_layout_multi_paginas(self, preset, camada, orientacao, tamanho_pg, paginas_dados, colunas, modos):
+        """Generate the definitive layout with a real-time progress bar."""
+        project = QgsProject.instance()
+        manager = project.layoutManager()
+        nome_camada = re.sub(r'[^a-zA-Z0-9_]', '_', unicodedata.normalize('NFD', camada.name()).encode('ascii', 'ignore').decode('utf-8'))
+        layout_name = f"VectorToMap_{nome_camada}"
+        
+        contador = 1
+        while manager.layoutByName(layout_name):
+            layout_name = f"VectorToMap_{nome_camada}_{contador}"; contador += 1
+
+        layout = QgsPrintLayout(project)
+        layout.initializeDefaults()
+        layout.setName(layout_name)
+
+        total_paginas = len(paginas_dados)
+        self.dlg.progressBar.show()
+        self.dlg.progressBar.setRange(0, total_paginas)
+        self.dlg.progressBar.setValue(0)
+
+        for i, dados in enumerate(paginas_dados):
+            if self.abort_processing: break
+            if i > 0: layout.pageCollection().addPage(QgsLayoutItemPage(layout))
+            self.montar_design_da_pagina(layout, camada, dados['feicoes'], preset, orientacao, pagina_index=i)
+            self.dlg.progressBar.setValue(i + 1)
+            QCoreApplication.processEvents() 
+
+        self.dlg.progressBar.hide()
+        if not self.abort_processing:
+            layout.refresh()
+            manager.addLayout(layout)
+            self.iface.openLayoutDesigner(layout)
+
+    def montar_design_da_pagina(self, layout, camada, feicoes_da_pagina, preset, orientacao, pagina_index=0):
+        """Factory Core v0.2.8: Usa dimensões dinâmicas do ComboBox."""
+        dim = self.dlg.combo_tamanho_pagina.currentData()
+        if not dim: dim = (210.0, 297.0)
+
+        w_pg, h_pg = (dim[1], dim[0]) if orientacao == "Paisagem" else (dim[0], dim[1])
+        pagina = layout.pageCollection().pages()[pagina_index]
+        pagina.setPageSize(QgsLayoutSize(w_pg, h_pg, QgsUnitTypes.LayoutMillimeters))
+        
+        y_zero_folha = pagina_index * (h_pg + 10) 
+        margin_padrao = 10.0
+        
+        if preset == "75_altura":
+            header_h = 35.0
+            h_util = h_pg - (2 * margin_padrao) - header_h
+            w_map_f, h_map_f = w_pg - (2 * margin_padrao), h_util * 0.75
+            x_map_f, y_map_f = margin_padrao, y_zero_folha + margin_padrao + header_h
+        else:
+            if orientacao == "Retrato":
+                w_map_f, h_map_f = w_pg - (2 * margin_padrao), w_pg - (2 * margin_padrao)
+                x_map_f, y_map_f = margin_padrao, y_zero_folha + 40.0
+            else:
+                h_map_f = h_pg - (2 * margin_padrao)
+                w_map_f = h_map_f
+                x_map_f, y_map_f = w_pg - margin_padrao - w_map_f, y_zero_folha + margin_padrao
+
+        map_item = QgsLayoutItemMap(layout)
+        map_item.setFrameEnabled(True)
+        layout.addLayoutItem(map_item)
+        map_item.attemptResize(QgsLayoutSize(w_map_f, h_map_f, QgsUnitTypes.LayoutMillimeters))
+        map_item.attemptMove(QgsLayoutPoint(x_map_f, y_map_f, QgsUnitTypes.LayoutMillimeters))
+        
+        if feicoes_da_pagina:
+            ext = QgsRectangle()
+            ext.setMinimal()
+            for f in feicoes_da_pagina: ext.combineExtentWith(f.geometry().boundingBox())
+            
+            project_crs = QgsProject.instance().crs()
+            trans = QgsCoordinateTransform(camada.crs(), project_crs, QgsProject.instance())
+            ext_proj = trans.transformBoundingBox(ext)
+            
+            if ext_proj.width() == 0 or ext_proj.height() == 0: ext_proj.grow(1.0)
+            map_item.setExtent(ext_proj)
+
+            if self.dlg.rb_escala_fixa.isChecked():
+                escala_val = self.dlg.combo_escala_fixa.currentData()
+                map_item.setScale(float(escala_val) if escala_val else 10000.0)
+            else:
+                unit_to_mm = QgsUnitTypes.fromUnitToUnitFactor(project_crs.mapUnits(), QgsUnitTypes.DistanceMillimeters)
+                scale_w = (ext_proj.width() * unit_to_mm) / w_map_f
+                scale_h = (ext_proj.height() * unit_to_mm) / h_map_f
+                map_item.setScale(max(scale_w, scale_h) * 1.25)
+
+            map_item.refresh()
+            map_item.attemptResize(QgsLayoutSize(w_map_f, h_map_f, QgsUnitTypes.LayoutMillimeters))
+            map_item.attemptMove(QgsLayoutPoint(x_map_f, y_map_f, QgsUnitTypes.LayoutMillimeters))
+
+        colunas = [cb.text() for cb in self.dlg.scrollAreaWidgetContents.findChildren(QCheckBox) if cb.isChecked()]
+        limite_fundo = y_zero_folha + h_pg - margin_padrao
+
+        if colunas and feicoes_da_pagina:
+            # --- ÁREAS DE POSICIONAMENTO ---
+            if preset == "75_altura":
+                # Layout de 1/3 lateral para o Preset 75 (Independente da orientação)
+                largura_util = w_pg - (2 * margin_padrao)
+                terco_x = margin_padrao + (largura_util * 0.33) 
+                
+                x_form, y_form = margin_padrao, y_map_f + h_map_f + 3.0
+                w_form = (largura_util * 0.33) - 2.0
+                h_form = limite_fundo - (y_map_f + h_map_f + 3.0)
+                
+                x_ind_start = terco_x + 2.0
+                y_ind_min = y_map_f + h_map_f + 2.0
+            else:
+                # Layout original para Mapas Quadrados
+                x_form = margin_padrao
+                y_form = y_map_f + h_map_f + 5.0 if orientacao == "Retrato" else y_map_f + (h_map_f / 2)
+                w_form = w_pg - (2 * margin_padrao) if orientacao == "Retrato" else x_map_f - (2 * margin_padrao)
+                h_form = (limite_fundo - y_form) * 0.5 if self.dlg.chk_modo_individual.isChecked() else (limite_fundo - y_form)
+                x_ind_start, y_ind_min = x_form, y_form + h_form + 2.0 if self.dlg.chk_modo_individual.isChecked() else y_form
+
+            # --- RENDERIZAÇÃO DO FORMULÁRIO ---
+            if self.dlg.chk_modo_formulario.isChecked():
+                txt_html = ""
+                for idx, f in enumerate(feicoes_da_pagina):
+                    if len(feicoes_da_pagina) > 1: txt_html += f"<b>ITEM {idx+1}</b><br>"
+                    for col in colunas:
+                        try: txt_html += f"<b>{col}:</b> {str(f.attribute(col)).strip()}<br>"
+                        except: continue
+                lbl_f = QgsLayoutItemLabel(layout)
+                lbl_f.setMode(QgsLayoutItemLabel.ModeHtml)
+                lbl_f.setText(txt_html)
+                lbl_f.attemptMove(QgsLayoutPoint(x_form, y_form, QgsUnitTypes.LayoutMillimeters))
+                lbl_f.attemptResize(QgsLayoutSize(w_form, h_form, QgsUnitTypes.LayoutMillimeters))
+                layout.addLayoutItem(lbl_f)
+
+            # --- RENDERIZAÇÃO DOS RÓTULOS INDIVIDUAIS ---
+            if self.dlg.chk_modo_individual.isChecked():
+                campo_atlas = self.dlg.combo_atlas.currentData() 
+
+                if campo_atlas is None:
+                    altura_linha = 5.5
+                    f = feicoes_da_pagina[0] 
+                    xi = x_ind_start
+                    yi = y_ind_min
+                    
+                    # --- DEFINIÇÃO RIGOROSA DOS LIMITES ---
+                    if preset == "75_altura":
+                        limite_colunas = 3 if orientacao == "Retrato" else 5
+                    else:
+                        # Casos de Mapa Quadrado
+                        limite_colunas = 5 if orientacao == "Retrato" else 3
+                    
+                    for idx, col in enumerate(colunas):
+                        if idx > 0 and idx % limite_colunas == 0:
+                            yi += altura_linha
+                            xi = x_ind_start
+                            
+                        try:
+                            lbl_i = QgsLayoutItemLabel(layout)
+                            lbl_i.setText(f"{col}: {str(f.attribute(col)).strip()}")
+                            lbl_i.setFrameEnabled(True)
+                            lbl_i.adjustSizeToText()
+                            ancho_folga = lbl_i.rect().width() + 2.0
+                            lbl_i.attemptResize(QgsLayoutSize(ancho_folga, lbl_i.rect().height(), QgsUnitTypes.LayoutMillimeters))
+                            lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
+                            layout.addLayoutItem(lbl_i)
+                            xi += ancho_folga + 2.0
+                        except: continue
+                else:
+                    # Comportamento Agrupado (Uma linha por feição)
+                    altura_linha = 5.5
+                    altura_total = len(feicoes_da_pagina) * altura_linha
+                    yi = (limite_fundo - altura_total) if (y_ind_min + altura_total) > limite_fundo else y_ind_min
+
+                    for f in feicoes_da_pagina:
+                        xi = x_ind_start
+                        for col in colunas:
+                            try:
+                                lbl_i = QgsLayoutItemLabel(layout)
+                                lbl_i.setText(f"{col}: {str(f.attribute(col)).strip()}")
+                                lbl_i.setFrameEnabled(True)
+                                lbl_i.adjustSizeToText()
+                                ancho_folga = lbl_i.rect().width() + 2.0
+                                lbl_i.attemptResize(QgsLayoutSize(ancho_folga, lbl_i.rect().height(), QgsUnitTypes.LayoutMillimeters))
+                                lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
+                                layout.addLayoutItem(lbl_i)
+                                xi += ancho_folga + 2.0
+                            except: continue
+                        yi += altura_linha
+        
+        self.adicionar_numeracao_pagina(layout, w_pg, h_pg, y_zero_folha)
+
+    def adicionar_numeracao_pagina(self, layout, w_pg, h_pg, y_zero_folha):
+        """Adiciona o número da página no canto inferior direito."""
+        if not self.dlg.chk_numeracao.isChecked(): return
+        label_page = QgsLayoutItemLabel(layout)
+        label_page.setText("[% @layout_page %]") 
+        label_page.adjustSizeToText() 
+        label_page.setReferencePoint(QgsLayoutItem.LowerRight)
+        x, y = w_pg - 5, y_zero_folha + h_pg - 5
+        label_page.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
+        label_page.setZValue(100)
+        layout.addLayoutItem(label_page)

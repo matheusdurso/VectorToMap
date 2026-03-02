@@ -45,7 +45,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>673</width>
+         <width>771</width>
          <height>776</height>
         </rect>
        </property>
@@ -138,11 +138,6 @@
             <item>
              <property name="text">
               <string>75% da Altura (Base fixada)</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Personalizado (Desenhar)</string>
              </property>
             </item>
            </widget>
@@ -325,7 +320,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Exibição de Dados Cadastrais:</string>
+           <string>Exibição de Atributos:</string>
           </property>
          </widget>
         </item>
@@ -381,7 +376,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>649</width>
+              <width>747</width>
               <height>83</height>
              </rect>
             </property>
@@ -571,7 +566,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>495</width>
+         <width>397</width>
          <height>776</height>
         </rect>
        </property>

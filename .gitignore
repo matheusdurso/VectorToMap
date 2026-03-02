@@ -36,3 +36,10 @@ dist/
 # Sistema:
 .DS_Store
 Thumbs.db
+
+# Garante que versões nomeadas (ex: vector_to_map_v0.3.1.zip) também fiquem fora
+vector_to_map_v*.zip
+build/
+dist/
+# Opcional: Se você não quer que as pessoas vejam sua pasta de saída de build local
+build_output/
