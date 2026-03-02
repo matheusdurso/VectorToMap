@@ -2,8 +2,8 @@
 name=VectorToMap
 qgisMinimumVersion=3.0
 description=Adaptive Atlas automation with 1/3-width form layouts and smart column balancing.
-about=VectorToMap 0.3.2 features an advanced layout engine with 1/3-width form positioning, side-by-side attribute visualization, and dynamic column grouping (3-5 columns) based on orientation.
-version=0.3.2
+about=VectorToMap 0.3.2.1 features an advanced layout engine with 1/3-width form positioning, side-by-side attribute visualization, and dynamic column grouping (3-5 columns) based on orientation.
+version=0.3.2.1
 author=Matheus Durso
 email=matheusdursonc@gmail.com
 repository=https://github.com/matheusdurso/VectorToMap

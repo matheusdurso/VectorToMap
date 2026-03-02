@@ -76,12 +76,12 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="233"/>
         <source>Retrato</source>
-        <translation>Vertical</translation>
+        <translation>Retrato</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="248"/>
         <source>Paisagem</source>
-        <translation>Horizontal</translation>
+        <translation>Paisaje</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="269"/>
@@ -101,12 +101,12 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="328"/>
         <source>Exibição de Dados Cadastrais:</source>
-        <translation>Visualización de Datos de Atributos:</translation>
+        <translation>Visualización de Atributos:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="346"/>
         <source>Marcar todas</source>
-        <translation>Seleccionar todas</translation>
+        <translation>Seleccionar todos</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="437"/>
@@ -159,7 +159,7 @@
     <message>
         <location filename="../vector_to_map.py" line="124"/>
         <source>Exibe todos os atributos em um bloco único de texto (HTML).</source>
-        <translation>Muestra todos los atributos en un bloque de texto único (HTML).</translation>
+        <translation>Muestra todos los atributos en un único bloque de texto (HTML).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="125"/>
@@ -184,12 +184,17 @@
     <message>
         <location filename="../vector_to_map.py" line="133"/>
         <source>Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado).</source>
-        <translation>Define el tamaño del mapa en la hoja (ej: 75% de la página o Cuadrado).</translation>
+        <translation>Define el tamaño del mapa en la hoja (p. ej., 75% de la página o Cuadrado).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="134"/>
         <source>Gera uma prévia do layout com as configurações atuais.</source>
-        <translation>Genera una vista previa del diseño con la configuración actual.</translation>
+        <translation>Generates a layout preview with current settings.</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map.py" line="135"/>
+        <source>Render Preview</source>
+        <translation>Render Preview</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="347"/>

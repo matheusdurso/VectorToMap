@@ -54,8 +54,7 @@
         <translation>A3</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="183"/>
-        <source>A2</source>
+        <location filename="../vector_to_map_dialog_base.ui" line="188"/> <source>A2</source>
         <translation>A2</translation>
     </message>
     <message>
@@ -194,7 +193,7 @@
     <message>
         <location filename="../vector_to_map.py" line="347"/>
         <source>⚠️ Atenção: Feições de ponto único podem quebrar a escala automática.</source>
-        <translation>⚠️ Warning: Single point features may break the automatic scale.</translation>
+        <translation>⚠️ Warning: Single point features may break automatic scaling.</translation>
     </message>
 </context>
 </TS>
