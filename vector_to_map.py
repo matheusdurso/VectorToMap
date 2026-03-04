@@ -30,10 +30,13 @@ from .vector_to_map_dialog import VectorToMapDialog
 
 class VectorToMap:
 
+    ####################################################################################
     # --- 1. CICLO DE VIDA E CONFIGURAÇÕES INICIAIS ---
+    ####################################################################################
 
     def __init__(self, iface):
         """Initialize the plugin and define global state variables."""
+
         self.iface = iface
         self.plugin_dir = os.path.dirname(__file__)
         self.actions = []
@@ -42,7 +45,7 @@ class VectorToMap:
         self.is_rendering = False # Flag to prevent infinite rendering loops
         self.colunas_atuais = []
         
-        # No seu __init__
+        # Determina a língua de exibição
         locale = QgsSettings().value('locale/userLocale')[0:2] 
 
         if locale != 'pt':
@@ -57,13 +60,19 @@ class VectorToMap:
                 self.translator = QTranslator()
                 self.translator.load(path)
                 QCoreApplication.installTranslator(self.translator)
+    
 
+    #Indica um trecho que deve ser traduzido
     def tr(self, message):
         """Translate strings using the QGIS internationalization system."""
-        return QCoreApplication.translate('VectorToMap', message)
 
+        return QCoreApplication.translate('VectorToMap', message)
+    
+
+    #Determina variáveis de sistema e configuração de aparência
     def add_action(self, icon_path, text, callback, enabled_flag=True, add_to_menu=True, add_to_toolbar=True, status_tip=None, whats_this=None, parent=None):
         """Helper function to add buttons and menus to the QGIS interface."""
+
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
@@ -74,9 +83,11 @@ class VectorToMap:
         if add_to_menu: self.iface.addPluginToMenu(self.menu, action)
         self.actions.append(action)
         return action
+    
 
     def initGui(self):
         """Cria as entradas de menu e a barra de ferramentas personalizada."""
+
         icon_path = ':/plugins/vector_to_map/icon.png'
         
         # 1. CRIAÇÃO DA BARRA DE FERRAMENTAS EXCLUSIVA
@@ -96,8 +107,10 @@ class VectorToMap:
             add_to_menu=True
         )
 
+
     def unload(self):
         """Remove o menu e a barra de ferramentas da interface do QGIS ao desativar o plugin."""
+        
         for action in self.actions:
             self.iface.removePluginMenu(self.menu, action)
             self.iface.removeToolBarIcon(action)
@@ -105,8 +118,9 @@ class VectorToMap:
         if hasattr(self, 'toolbar'):
             del self.toolbar
 
-
+    ##################################################################################
     # --- 2. INTERFACE E DIÁLOGO ---
+    ##################################################################################
 
     def run(self):
         """Initialize the UI and set up window flags and button logic."""
@@ -117,6 +131,7 @@ class VectorToMap:
             # 1. Tenta desconectar qualquer link automático que o Qt Designer criou
             try:
                 self.dlg.button_box.accepted.disconnect()
+                self.dlg.button_box.rejected.disconnect()
             except:
                 pass # Caso não haja conexão prévia
 
@@ -291,9 +306,11 @@ class VectorToMap:
 
         self.setup_ui_strings()  
         self.dlg.show()
+    
 
     def setup_ui_strings(self):
         """Centraliza todos os Tooltips e textos da interface para tradução."""
+
         self.dlg.chk_modo_formulario.setToolTip(self.tr("Exibe todos os atributos em um bloco único de texto (HTML)."))
         self.dlg.chk_modo_individual.setToolTip(self.tr("Cria uma linha horizontal para cada feição (evita sobreposições)."))
         self.dlg.chk_preview_auto.setToolTip(self.tr("Atualização automática da Preview. Pode ser lento. Alternativamente use o botão Render Preview."))
@@ -302,16 +319,30 @@ class VectorToMap:
         self.dlg.combo_presets.setToolTip(self.tr("Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado)."))
         self.btn_render.setToolTip(self.tr("Gera uma prévia do layout com as configurações atuais."))
 
+
     def cancelar_e_fechar(self):
-        """Interrompe o processamento e fecha o diálogo."""
-        self.abort_processing = True
-        self.dlg.reject()
+        """Gerencia se o clique no Cancelar deve parar o motor ou fechar a janela."""
 
+        if self.is_rendering:
+            # Se estiver processando, apenas levantamos a bandeira de parada
+            self.abort_processing = True
+            self.iface.messageBar().pushMessage(
+                self.tr("Aviso"), 
+                self.tr("Cancelando processamento... A janela permanecerá aberta."), 
+                level=3, 
+                duration=3
+            )
+        else:
+            # Se não houver nada rodando, o comportamento de fechar é seguro
+            self.dlg.reject()
 
+    #################################################################################
     # --- 3. GESTÃO DE ATRIBUTOS E WIDGETS ---
+    #################################################################################
 
     def atualizar_lista_atributos(self):
         """Limpa a interface e reconstrói a lista com isolamento total."""
+
         self.dlg.chk_modo_formulario.blockSignals(True)
         self.dlg.chk_modo_individual.blockSignals(True)
         self.dlg.chk_modo_formulario.setChecked(False)
@@ -340,6 +371,7 @@ class VectorToMap:
         self.dlg.chk_modo_formulario.blockSignals(False)
         self.dlg.chk_modo_individual.blockSignals(False)
         self.atualizar_estado_modos_exibicao()
+
 
     def atualizar_lista_colunas(self, camada):
         """Reconstrói a grade de 3 colunas com distribuição balanceada descendente."""
@@ -391,11 +423,13 @@ class VectorToMap:
                     self.dlg.combo_atlas.addItem(nome, nome)
                     idx_campo += 1
 
+
     def marcar_desmarcar_todos(self, state):
         """Bulk check/uncheck attributes using the control list."""
         check = (state == Qt.Checked)
         for cb in self.colunas_atuais:
             cb.setChecked(check)
+
 
     def verificar_estado_selecionar_todos(self):
         """Synchronize the master 'Select All' checkbox state."""
@@ -406,6 +440,7 @@ class VectorToMap:
         self.dlg.chk_selecionar_todos.blockSignals(True)
         self.dlg.chk_selecionar_todos.setChecked(total > 0 and total == marcados)
         self.dlg.chk_selecionar_todos.blockSignals(False)
+
 
     def atualizar_estado_modos_exibicao(self):
         """Manage accessibility for display modes using the control list."""
@@ -418,6 +453,7 @@ class VectorToMap:
         else:
             self.dlg.chk_modo_formulario.setChecked(False)
             self.dlg.chk_modo_individual.setChecked(False)
+
 
     def atualizar_tabela_por_selecao(self):
         """Synchronize the sample data table with the user's attribute selection."""
@@ -439,8 +475,9 @@ class VectorToMap:
                 tabela.setItem(i, j, QTableWidgetItem(str(feicao[col])))
         tabela.resizeColumnsToContents()
 
-
+    #####################################################################################
     # --- 4. LÓGICA GEOGRÁFICA E ESCALA ---
+    #####################################################################################
 
     def configurar_escala_ao_mudar_camada(self):
         """Define o botão padrão inicial ao trocar de camada."""
@@ -453,6 +490,7 @@ class VectorToMap:
             self.dlg.rb_escala_auto.setChecked(True)
         self.atualizar_lista_atributos()
         self.validar_geometria_escala()
+
 
     def validar_geometria_escala(self):
         """Gerencia habilitar/desabilitar, avisos e trava em 1:10.000."""
@@ -479,14 +517,18 @@ class VectorToMap:
         self.dlg.combo_escala_fixa.blockSignals(False)
         self.disparar_preview_se_autorizado()
 
-
+    ####################################################################################
     # --- 5. RENDERIZAÇÃO E LAYOUT ---
+    ####################################################################################
 
     def atualizar_preview(self):
         """Renders a sample layout preview with an indeterminate progress bar."""
+        
         if self.is_rendering or not self.dlg.isVisible(): 
             return
-            
+        
+        self.dlg.lbl_preview.clear()
+
         self.is_rendering = True
         self.dlg.previewProgressBar.show() 
         self.dlg.previewProgressBar.setRange(0, 0) 
@@ -527,10 +569,12 @@ class VectorToMap:
             self.dlg.previewProgressBar.setRange(0, 100)
             QCoreApplication.processEvents()
 
+
     def disparar_preview_se_autorizado(self):
         """Start the preview timer only if auto-update is checked."""
         if hasattr(self.dlg, 'chk_preview_auto') and self.dlg.chk_preview_auto.isChecked():
-            self.timer_preview.start(150)
+            self.timer_preview.start(350)
+
 
     def processar_clique_ok(self):
         """Processes configurations and generates the multi-page layout."""
@@ -566,38 +610,66 @@ class VectorToMap:
             if not self.abort_processing:
                 self.dlg.accept()
 
+
     def criar_layout_multi_paginas(self, preset, camada, orientacao, tamanho_pg, paginas_dados, colunas, modos):
         """Generate the definitive layout with a real-time progress bar."""
-        project = QgsProject.instance()
-        manager = project.layoutManager()
-        nome_camada = re.sub(r'[^a-zA-Z0-9_]', '_', unicodedata.normalize('NFD', camada.name()).encode('ascii', 'ignore').decode('utf-8'))
-        layout_name = f"VectorToMap_{nome_camada}"
         
-        contador = 1
-        while manager.layoutByName(layout_name):
-            layout_name = f"VectorToMap_{nome_camada}_{contador}"; contador += 1
+        # --- INÍCIO: Liga o motor e reseta o aborto ---
+        self.is_rendering = True
+        self.abort_processing = False
+        
+        try:
+            project = QgsProject.instance()
+            manager = project.layoutManager()
+            nome_camada = re.sub(r'[^a-zA-Z0-9_]', '_', unicodedata.normalize('NFD', camada.name()).encode('ascii', 'ignore').decode('utf-8'))
+            layout_name = f"VectorToMap_{nome_camada}"
+            
+            contador = 1
+            while manager.layoutByName(layout_name):
+                layout_name = f"VectorToMap_{nome_camada}_{contador}"; contador += 1
 
-        layout = QgsPrintLayout(project)
-        layout.initializeDefaults()
-        layout.setName(layout_name)
+            layout = QgsPrintLayout(project)
+            layout.initializeDefaults()
+            layout.setName(layout_name)
 
-        total_paginas = len(paginas_dados)
-        self.dlg.progressBar.show()
-        self.dlg.progressBar.setRange(0, total_paginas)
-        self.dlg.progressBar.setValue(0)
+            total_paginas = len(paginas_dados)
+            self.dlg.progressBar.show()
+            self.dlg.progressBar.setRange(0, total_paginas)
+            self.dlg.progressBar.setValue(0)
 
-        for i, dados in enumerate(paginas_dados):
-            if self.abort_processing: break
-            if i > 0: layout.pageCollection().addPage(QgsLayoutItemPage(layout))
-            self.montar_design_da_pagina(layout, camada, dados['feicoes'], preset, orientacao, pagina_index=i)
-            self.dlg.progressBar.setValue(i + 1)
-            QCoreApplication.processEvents() 
+            for i, dados in enumerate(paginas_dados):
+                # Verifica se o usuário clicou no novo botão cancelar
+                if self.abort_processing: 
+                    break
+                    
+                if i > 0: layout.pageCollection().addPage(QgsLayoutItemPage(layout))
+                
+                self.montar_design_da_pagina(layout, camada, dados['feicoes'], preset, orientacao, pagina_index=i)
+                
+                layout.refresh()
 
-        self.dlg.progressBar.hide()
-        if not self.abort_processing:
-            layout.refresh()
-            manager.addLayout(layout)
-            self.iface.openLayoutDesigner(layout)
+                self.dlg.progressBar.setValue(i + 1)
+                # Essencial para que o QGIS "ouça" o clique no botão cancelar durante o loop
+                QCoreApplication.processEvents() 
+
+            # --- FINALIZAÇÃO DO LAYOUT ---
+            if not self.abort_processing:
+                layout.refresh()
+                manager.addLayout(layout)
+                self.iface.openLayoutDesigner(layout)
+            else:
+                # Opcional: remover o layout inacabado se foi abortado
+                self.iface.messageBar().pushMessage("Cancelado", "O processamento foi interrompido pelo usuário.", level=2)
+
+        except Exception as e:
+            # Se der qualquer erro no código, avisa o usuário
+            self.iface.messageBar().pushMessage("Erro", f"Falha ao gerar layout: {str(e)}", level=3)
+
+        finally:
+            # --- FIM: Desliga o motor SEMPRE, mesmo se houver erro ou break ---
+            self.is_rendering = False
+            self.dlg.progressBar.hide()
+
 
     def montar_design_da_pagina(self, layout, camada, feicoes_da_pagina, preset, orientacao, pagina_index=0):
         """Factory Core v0.2.8: Usa dimensões dinâmicas do ComboBox."""
@@ -637,7 +709,7 @@ class VectorToMap:
             for f in feicoes_da_pagina: ext.combineExtentWith(f.geometry().boundingBox())
             
             project_crs = QgsProject.instance().crs()
-            trans = QgsCoordinateTransform(camada.crs(), project_crs, QgsProject.instance())
+            trans = QgsCoordinateTransform(camada.crs(), project_crs, QgsProject.instance().transformContext())
             ext_proj = trans.transformBoundingBox(ext)
             
             if ext_proj.width() == 0 or ext_proj.height() == 0: ext_proj.grow(1.0)
@@ -686,7 +758,7 @@ class VectorToMap:
                 for idx, f in enumerate(feicoes_da_pagina):
                     if len(feicoes_da_pagina) > 1: txt_html += f"<b>ITEM {idx+1}</b><br>"
                     for col in colunas:
-                        try: txt_html += f"<b>{col}:</b> {str(f.attribute(col)).strip()}<br>"
+                        try: txt_html += f"<b>{col}:</b> {str(f.attribute(col) or '').strip()}<br>"
                         except: continue
                 lbl_f = QgsLayoutItemLabel(layout)
                 lbl_f.setMode(QgsLayoutItemLabel.ModeHtml)
@@ -719,7 +791,11 @@ class VectorToMap:
                             
                         try:
                             lbl_i = QgsLayoutItemLabel(layout)
-                            lbl_i.setText(f"{col}: {str(f.attribute(col)).strip()}")
+
+                            val = f.attribute(col)
+                            display_val = str(val).strip() if val is not None else ""
+                            lbl_i.setText(f"{col}: {display_val}")
+
                             lbl_i.setFrameEnabled(True)
                             lbl_i.adjustSizeToText()
                             ancho_folga = lbl_i.rect().width() + 2.0
@@ -727,7 +803,9 @@ class VectorToMap:
                             lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
                             layout.addLayoutItem(lbl_i)
                             xi += ancho_folga + 2.0
-                        except: continue
+                        except Exception as e:
+                            print(f"Erro ao processar campo {col}: {e}")
+                            continue
                 else:
                     # Comportamento Agrupado (Uma linha por feição)
                     altura_linha = 5.5
@@ -739,7 +817,11 @@ class VectorToMap:
                         for col in colunas:
                             try:
                                 lbl_i = QgsLayoutItemLabel(layout)
-                                lbl_i.setText(f"{col}: {str(f.attribute(col)).strip()}")
+
+                                val = f.attribute(col)
+                                display_val = str(val).strip() if val is not None else ""
+                                lbl_i.setText(f"{col}: {display_val}")
+
                                 lbl_i.setFrameEnabled(True)
                                 lbl_i.adjustSizeToText()
                                 ancho_folga = lbl_i.rect().width() + 2.0
@@ -747,10 +829,13 @@ class VectorToMap:
                                 lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
                                 layout.addLayoutItem(lbl_i)
                                 xi += ancho_folga + 2.0
-                            except: continue
+                            except Exception as e:
+                                print(f"Erro ao processar campo {col}: {e}")
+                                continue
                         yi += altura_linha
         
         self.adicionar_numeracao_pagina(layout, w_pg, h_pg, y_zero_folha)
+
 
     def adicionar_numeracao_pagina(self, layout, w_pg, h_pg, y_zero_folha):
         """Adiciona o número da página no canto inferior direito."""

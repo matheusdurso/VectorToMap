@@ -76,12 +76,12 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="233"/>
         <source>Retrato</source>
-        <translation>Retrato</translation>
+        <translation>Vertical</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="248"/>
         <source>Paisagem</source>
-        <translation>Paisaje</translation>
+        <translation>Horizontal</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="269"/>
@@ -126,7 +126,7 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="506"/>
         <source>Texto Individual</source>
-        <translation>Texto Individual</translation>
+        <translation>Etiquetas Individuales</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="525"/>
@@ -184,12 +184,12 @@
     <message>
         <location filename="../vector_to_map.py" line="133"/>
         <source>Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado).</source>
-        <translation>Define el tamaño del mapa en la hoja (p. ej., 75% de la página o Cuadrado).</translation>
+        <translation>Define el tamaño del mapa en la hoja (p. ej., 75% de la página ou Cuadrado).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="134"/>
         <source>Gera uma prévia do layout com as configurações atuais.</source>
-        <translation>Generates a layout preview with current settings.</translation>
+        <translation>Genera una vista previa del diseño con la configuración actual.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="135"/>

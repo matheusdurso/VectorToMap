@@ -54,7 +54,8 @@
         <translation>A3</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="188"/> <source>A2</source>
+        <location filename="../vector_to_map_dialog_base.ui" line="188"/> 
+        <source>A2</source>
         <translation>A2</translation>
     </message>
     <message>
@@ -100,7 +101,7 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="328"/>
         <source>Exibição de Dados Cadastrais:</source>
-        <translation>Attribute Data Display:</translation>
+        <translation>Attribute Data:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="346"/>
@@ -125,7 +126,7 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="506"/>
         <source>Texto Individual</source>
-        <translation>Individual Text</translation>
+        <translation>Individual Labels</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="525"/>
@@ -140,7 +141,7 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="595"/>
         <source>Aguardando configuração de preview...</source>
-        <translation>Waiting for preview configuration...</translation>
+        <translation>Waiting for preview...</translation>
     </message>
 </context>
 <context>
@@ -163,7 +164,7 @@
     <message>
         <location filename="../vector_to_map.py" line="125"/>
         <source>Cria uma linha horizontal para cada feição (evita sobreposições).</source>
-        <translation>Creates a horizontal line for each feature (avoids overlapping).</translation>
+        <translation>Creates a horizontal label for each feature (prevents overlapping).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="126"/>
@@ -183,7 +184,7 @@
     <message>
         <location filename="../vector_to_map.py" line="133"/>
         <source>Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado).</source>
-        <translation>Sets the map size on the sheet (e.g., 75% of the page or Square).</translation>
+        <translation>Sets the map size on the page (e.g., 75% height or Square).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="134"/>
