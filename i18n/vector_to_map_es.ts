@@ -34,112 +34,107 @@
         <translation>75% de la Altura (Base fijada)</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="145"/>
-        <source>Personalizado (Desenhar)</source>
-        <translation>Personalizado (Dibujar)</translation>
-    </message>
-    <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="165"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="160"/>
         <source>Tamanho da Página:</source>
         <translation>Tamaño de Página:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="178"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="173"/>
         <source>A4</source>
         <translation>A4</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="183"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="178"/>
         <source>A3</source>
         <translation>A3</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="188"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="183"/>
         <source>A2</source>
         <translation>A2</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="193"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="188"/>
         <source>A1</source>
         <translation>A1</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="198"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="193"/>
         <source>A0</source>
         <translation>A0</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="221"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="216"/>
         <source>Orientação:</source>
         <translation>Orientación:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="233"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="228"/>
         <source>Retrato</source>
         <translation>Vertical</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="248"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="243"/>
         <source>Paisagem</source>
         <translation>Horizontal</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="269"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="264"/>
         <source>Escala:</source>
         <translation>Escala:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="276"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="271"/>
         <source>Automática</source>
         <translation>Automática</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="283"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="278"/>
         <source>Fixa:</source>
         <translation>Fija:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="328"/>
-        <source>Exibição de Dados Cadastrais:</source>
+        <location filename="../vector_to_map_dialog_base.ui" line="323"/>
+        <source>Exibição de Atributos:</source>
         <translation>Visualización de Atributos:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="346"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="341"/>
         <source>Marcar todas</source>
         <translation>Seleccionar todos</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="437"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="432"/>
         <source>Tabela de Atributos</source>
         <translation>Tabla de Atributos</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="482"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="477"/>
         <source>Modo de Exibição:</source>
         <translation>Modo de Visualización:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="494"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="489"/>
         <source>Formulário</source>
         <translation>Formulario</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="506"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="501"/>
         <source>Texto Individual</source>
         <translation>Etiquetas Individuales</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="525"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="533"/>
         <source>Numeração de Página</source>
         <translation>Numeración de Página</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="574"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="582"/>
         <source>Preview automática</source>
         <translation>Vista previa automática</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="595"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="610"/>
         <source>Aguardando configuração de preview...</source>
         <translation>Esperando configuración de vista previa...</translation>
     </message>
@@ -147,57 +142,62 @@
 <context>
     <name>VectorToMap</name>
     <message>
-        <location filename="../vector_to_map.py" line="37"/>
+        <location filename="../vector_to_map.py" line="44"/>
         <source>&amp;VectorToMap</source>
         <translation>&amp;VectorToMap</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="97"/>
+        <location filename="../vector_to_map.py" line="102"/>
         <source>VectorToMap</source>
         <translation>VectorToMap</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="124"/>
+        <location filename="../vector_to_map.py" line="323"/>
         <source>Exibe todos os atributos em um bloco único de texto (HTML).</source>
         <translation>Muestra todos los atributos en un único bloque de texto (HTML).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="125"/>
+        <location filename="../vector_to_map.py" line="324"/>
         <source>Cria uma linha horizontal para cada feição (evita sobreposições).</source>
         <translation>Crea una línea horizontal para cada objeto (evita superposiciones).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="126"/>
+        <location filename="../vector_to_map.py" line="325"/>
         <source>Atualização automática da Preview. Pode ser lento. Alternativamente use o botão Render Preview.</source>
         <translation>Actualización automática de la vista previa. Puede ser lenta. Alternativamente, use el botón Render Preview.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="129"/>
+        <location filename="../vector_to_map.py" line="326"/>
         <source>Marca ou desmarca todos os campos da lista de uma vez.</source>
         <translation>Selecciona o deselecciona todos los campos a la vez.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="132"/>
+        <location filename="../vector_to_map.py" line="327"/>
         <source>Campo da tabela usado para agrupar as feições em cada página.</source>
         <translation>Campo de la tabla usado para agrupar los objetos en cada página.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="133"/>
+        <location filename="../vector_to_map.py" line="328"/>
         <source>Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado).</source>
-        <translation>Define el tamaño del mapa en la hoja (p. ej., 75% de la página ou Cuadrado).</translation>
+        <translation>Define el tamaño del mapa en la hoja (p. ej., 75% de la página o Cuadrado).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="134"/>
+        <location filename="../vector_to_map.py" line="329"/>
         <source>Gera uma prévia do layout com as configurações atuais.</source>
         <translation>Genera una vista previa del diseño con la configuración actual.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="135"/>
-        <source>Render Preview</source>
-        <translation>Render Preview</translation>
+        <location filename="../vector_to_map.py" line="338"/>
+        <source>Aviso</source>
+        <translation>Aviso</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="347"/>
+        <location filename="../vector_to_map.py" line="338"/>
+        <source>Cancelando processamento... A janela permanecerá aberta.</source>
+        <translation>Cancelando el procesamiento... La ventana permanecerá abierta.</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map.py" line="522"/>
         <source>⚠️ Atenção: Feições de ponto único podem quebrar a escala automática.</source>
         <translation>⚠️ Atención: Los objetos de punto único pueden romper la escala automática.</translation>
     </message>
