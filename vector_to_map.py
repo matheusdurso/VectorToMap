@@ -10,14 +10,13 @@ import math
 import re
 import unicodedata
 import os
-import sip
 import gc
-from PyQt5.QtWidgets import QGridLayout
-from PyQt5.QtWidgets import QDesktopWidget
+from qgis.PyQt import sip
+from qgis.PyQt.QtWidgets import QGridLayout
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QTimer
 from qgis.PyQt.QtGui import QIcon, QPixmap, QImage, QFont
 from qgis.utils import iface
-from qgis.PyQt.QtWidgets import QAction, QCheckBox, QTableWidgetItem, QFrame, QPushButton, QDialogButtonBox, QButtonGroup
+from qgis.PyQt.QtWidgets import QAction, QCheckBox, QTableWidgetItem, QFrame, QPushButton, QDialogButtonBox, QButtonGroup, QApplication
 from qgis.core import (
     QgsProject, QgsPrintLayout, QgsLayoutSize, QgsUnitTypes, QgsLayoutItemMap, 
     QgsLayoutPoint, QgsMapLayerProxyModel, QgsFeatureRequest, QgsSettings, 
@@ -110,21 +109,22 @@ class VectorToMap:
 
 
     def unload(self):
-        """Remove o menu e a barra de ferramentas da interface do QGIS ao desativar o plugin."""
-        
         for action in self.actions:
             self.iface.removePluginMenu(self.menu, action)
             self.iface.removeToolBarIcon(action)
         
         if hasattr(self, 'toolbar'):
+            self.iface.mainWindow().removeToolBar(self.toolbar)
+            # Verificação segura antes de deletar
+            if not sip.isdeleted(self.toolbar):
+                sip.delete(self.toolbar)
             del self.toolbar
 
         if hasattr(self, 'dlg'):
-            # Deleta o objeto C++ do diálogo explicitamente
-            if self.dlg:
+            if self.dlg and not sip.isdeleted(self.dlg):
+                self.dlg.close() # Melhor fechar antes de deletar
                 sip.delete(self.dlg)
             del self.dlg
-
         gc.collect()
 
     ##################################################################################
@@ -244,7 +244,7 @@ class VectorToMap:
             self.dlg.combo_escala_fixa.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
             
             # --- SETUP 'Render Preview' BUTTON ---
-            self.dlg.button_box.addButton(self.btn_render, QDialogButtonBox.ActionRole)
+            self.dlg.button_box.addButton(self.btn_render, QDialogButtonBox.ButtonRole.ActionRole)
             self.btn_render.clicked.connect(self.atualizar_preview)
 
             self.dlg.combo_presets.setItemData(0, "quadrado")
@@ -256,8 +256,10 @@ class VectorToMap:
 
             # --- CONFIGURAÇÃO DE JANELA PROFISSIONAL ---
             self.dlg.setWindowFlags(
-                Qt.Window | Qt.WindowMinimizeButtonHint | 
-                Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint
+                Qt.WindowType.Window | 
+                Qt.WindowType.WindowMinimizeButtonHint | 
+                Qt.WindowType.WindowMaximizeButtonHint | 
+                Qt.WindowType.WindowCloseButtonHint
             )
             
             self.is_rendering = False
@@ -268,7 +270,7 @@ class VectorToMap:
             if hasattr(self.dlg, 'chk_preview_auto'):
                 self.dlg.chk_preview_auto.setChecked(False)
                 self.dlg.chk_preview_auto.stateChanged.connect(
-                    lambda state: self.timer_preview.start(250) if state == Qt.Checked else None
+                    lambda state: self.timer_preview.start(250) if state == Qt.CheckState.Checked else None
                 )
 
             # Restore window geometry
@@ -282,7 +284,7 @@ class VectorToMap:
             if hasattr(self.dlg, 'splitter'): 
                 self.dlg.splitter.setSizes([550, 550]) 
             
-            self.dlg.lbl_preview.setFrameShape(QFrame.StyledPanel)
+            self.dlg.lbl_preview.setFrameShape(QFrame.Shape.StyledPanel)
             self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
 
             self.dlg.mMapLayerComboBox.layerChanged.connect(self.disparar_preview_se_autorizado)
@@ -302,17 +304,19 @@ class VectorToMap:
                 elif hasattr(w, 'toggled'): w.toggled.connect(self.disparar_preview_se_autorizado)
 
             self.dlg.resizeEvent = lambda event: self.disparar_preview_se_autorizado()
-            self.dlg.button_box.button(QDialogButtonBox.Ok).clicked.connect(self.processar_clique_ok)
+            self.dlg.button_box.button(QDialogButtonBox.StandardButton.Ok).clicked.connect(self.processar_clique_ok)
             self.abort_processing = False
             self.dlg.button_box.rejected.connect(self.cancelar_e_fechar)
             self.configurar_escala_ao_mudar_camada()
 
         # --- CENTRALIZAR NA TELA ---        
+        screen_geometry = QApplication.primaryScreen().availableGeometry()
+        centro_tela = screen_geometry.center()
+        
         geometria_janela = self.dlg.frameGeometry()
-        centro_tela = QDesktopWidget().availableGeometry().center()
         geometria_janela.moveCenter(centro_tela)
         self.dlg.move(geometria_janela.topLeft())
-
+        
         self.setup_ui_strings()  
         self.dlg.show()
     
@@ -399,7 +403,7 @@ class VectorToMap:
             layout_atual = QGridLayout(container)
             container.setLayout(layout_atual)
 
-        layout_atual.setAlignment(Qt.AlignTop)
+        layout_atual.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.colunas_atuais = [] 
         
         campos = list(camada.fields())
@@ -435,7 +439,7 @@ class VectorToMap:
 
     def marcar_desmarcar_todos(self, state):
         """Bulk check/uncheck attributes using the control list."""
-        check = (state == Qt.Checked)
+        check = (state == Qt.CheckState.Checked)
         for cb in self.colunas_atuais:
             cb.setChecked(check)
 
@@ -533,11 +537,14 @@ class VectorToMap:
     def atualizar_preview(self):
         """Renders a sample layout preview with an indeterminate progress bar."""
         
-        layout = None
+        if not self.dlg or sip.isdeleted(self.dlg):
+            return        
 
         if self.is_rendering or not self.dlg.isVisible(): 
             return
         
+        layout = None
+
         self.dlg.lbl_preview.clear()
 
         self.is_rendering = True
@@ -549,12 +556,24 @@ class VectorToMap:
             camada = self.dlg.mMapLayerComboBox.currentLayer()
             if not camada: return
 
+            # --- NOVA LÓGICA DE OTIMIZAÇÃO (IGUAL AO OK) ---
+            container = self.dlg.scrollAreaWidgetContents
+            colunas_selecionadas = [cb.text() for cb in container.findChildren(QCheckBox) if cb.isChecked()]
+            campo_atlas = self.dlg.combo_atlas.currentData()
+
+            colunas_para_carregar = list(colunas_selecionadas)
+            if campo_atlas and campo_atlas not in colunas_para_carregar:
+                colunas_para_carregar.append(campo_atlas)
+
+            # Preparamos o request básico com subset (Geometria inclusa por padrão)
+            request_base = QgsFeatureRequest().setSubsetOfAttributes(colunas_para_carregar, camada.fields())
+            # -----------------------------------------------
+
             layout = QgsPrintLayout(QgsProject.instance())
             layout.initializeDefaults()
-            
-            campo_atlas = self.dlg.combo_atlas.currentData()
+                        
             feicoes = []
-            sample_f = next(camada.getFeatures(QgsFeatureRequest().setLimit(1)), None)
+            sample_f = next(camada.getFeatures(request_base.setLimit(1)), None)
             
             if sample_f:
                 if campo_atlas is None:
@@ -568,8 +587,9 @@ class VectorToMap:
                     filtro = f'"{campo_atlas}" = {QgsExpression.quotedValue(val_amostra)}'
                     
                     # 3. Faz a busca filtrada diretamente na camada
-                    request = QgsFeatureRequest().setFilterExpression(filtro)
-                    feicoes = list(camada.getFeatures(request))
+                    request_filtrado = QgsFeatureRequest().setFilterExpression(filtro)
+                    request_filtrado.setSubsetOfAttributes(colunas_para_carregar, camada.fields())
+                    feicoes = list(camada.getFeatures(request_filtrado))
 
             self.montar_design_da_pagina(
                 layout, camada, feicoes, self.dlg.combo_presets.currentData(),
@@ -580,7 +600,7 @@ class VectorToMap:
             image = exporter.renderPageToImage(0)
             if not image.isNull():
                 self.dlg.lbl_preview.setPixmap(QPixmap.fromImage(image).scaled(
-                    self.dlg.lbl_preview.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                    self.dlg.lbl_preview.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
         
         finally:
             if layout:
@@ -613,8 +633,17 @@ class VectorToMap:
         paginas_dados = []
         campo_atlas = self.dlg.combo_atlas.currentData()
         
+        # 1. Pegamos os nomes das colunas que o usuário quer VER no mapa
+        colunas_para_carregar = list(colunas_selecionadas)
+        # 2. SE o usuário escolheu um campo de agrupamento (Atlas), 
+        # precisamos garantir que ele seja carregado também, senão o filtro não funciona!
+        if campo_atlas and campo_atlas not in colunas_para_carregar:
+            colunas_para_carregar.append(campo_atlas)
+
         if campo_atlas is None:
-            for f in camada.getFeatures(): 
+            # Melhorei aqui: Aplicando subset também no modo sem atlas
+            request = QgsFeatureRequest().setSubsetOfAttributes(colunas_para_carregar, camada.fields())
+            for f in camada.getFeatures(request): 
                 paginas_dados.append({'feicoes': [f]})
         else:
             # 1. Obtém todos os valores únicos do campo de agrupamento (MUITO mais rápido)
@@ -625,7 +654,10 @@ class VectorToMap:
                 # 2. Para cada valor único, fazemos uma requisição filtrada
                 filtro = f'"{campo_atlas}" = {QgsExpression.quotedValue(val)}'
                 request = QgsFeatureRequest().setFilterExpression(filtro)
-                
+                                               
+                # Carrega apenas as colunas selecionadas + geometria
+                request.setSubsetOfAttributes(colunas_para_carregar, camada.fields())
+
                 # 3. Pegamos apenas as feições daquele grupo
                 feicoes_do_grupo = list(camada.getFeatures(request))
                 if feicoes_do_grupo:
@@ -677,7 +709,7 @@ class VectorToMap:
                 
                 self.montar_design_da_pagina(layout, camada, dados['feicoes'], preset, orientacao, pagina_index=i)
                 
-                if i % 10 == 0:
+                if i % 20 == 0:
                     layout.refresh()
                     gc.collect()                    
 
@@ -749,7 +781,7 @@ class VectorToMap:
             
             if ext_proj.width() == 0 or ext_proj.height() == 0: ext_proj.grow(1.0)
             map_item.setExtent(ext_proj)
-
+                        
             if self.dlg.rb_escala_fixa.isChecked():
                 escala_val = self.dlg.combo_escala_fixa.currentData()
                 map_item.setScale(float(escala_val) if escala_val else 10000.0)
@@ -796,7 +828,9 @@ class VectorToMap:
                         try: txt_html += f"<b>{col}:</b> {str(f.attribute(col) or '').strip()}<br>"
                         except: continue
                 lbl_f = QgsLayoutItemLabel(layout)
-                lbl_f.setMode(QgsLayoutItemLabel.ModeHtml)
+                # Tenta o modo novo (QGIS 4), se falhar usa o modo antigo (QGIS 3)
+                mode = getattr(QgsLayoutItemLabel, 'ContentMode', QgsLayoutItemLabel).ModeHtml
+                lbl_f.setMode(mode)
                 lbl_f.setText(txt_html)
                 lbl_f.attemptMove(QgsLayoutPoint(x_form, y_form, QgsUnitTypes.LayoutMillimeters))
                 lbl_f.attemptResize(QgsLayoutSize(w_form, h_form, QgsUnitTypes.LayoutMillimeters))

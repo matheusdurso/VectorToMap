@@ -1,14 +1,16 @@
 [general]
 name=VectorToMap
-qgisMinimumVersion=3.40
+qgisMinimumVersion=3.0
+qgisMaximumVersion=4.99
 description=Automates the creation of multi-page print layouts from vector layers with smart attribute placement and scale control.
 about=Automate your cartographic workflow. VectorToMap creates multi-page layouts with smart grouping, dynamic scaling, and professional attribute forms. Includes real-time preview and built-in design presets for A4/A3 layouts.
-version=0.3.4
+version=0.4.0
 author=Matheus Durso
 email=matheusdursonc@gmail.com
 repository=https://github.com/matheusdurso/VectorToMap
 tracker=https://github.com/matheusdurso/VectorToMap/issues
 homepage=https://github.com/matheusdurso/VectorToMap
+has_gui=True
 hasProcessingProvider=no
 tags=atlas, layout, automation, scale, engineering, vector, i18n, progressbar, uxtools, adaptive
 category=Vector
