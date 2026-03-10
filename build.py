@@ -1,6 +1,5 @@
 import os
 import zipfile
-import shutil
 import configparser
 
 def criar_pacote():
