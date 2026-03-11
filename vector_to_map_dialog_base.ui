@@ -12,8 +12,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1000</width>
-    <height>600</height>
+    <width>1100</width>
+    <height>700</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -50,7 +50,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>673</width>
+         <width>704</width>
          <height>776</height>
         </rect>
        </property>
@@ -78,6 +78,9 @@
              <font>
               <pointsize>10</pointsize>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>Selecione a camada vetorial de interesse</string>
             </property>
            </widget>
           </item>
@@ -107,6 +110,9 @@
               <pointsize>10</pointsize>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Escolha um campo para agrupar as feições</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -132,6 +138,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="rb_escala_auto">
+            <property name="toolTip">
+             <string>Centralização e zoom automáticos. Para pontos individuais a escala automática e fixada em 1:10.000</string>
+            </property>
             <property name="text">
              <string>Automática</string>
             </property>
@@ -139,37 +148,22 @@
           </item>
           <item>
            <widget class="QRadioButton" name="rb_escala_fixa">
+            <property name="toolTip">
+             <string>Escolha dentre as opções de escala fixa</string>
+            </property>
             <property name="text">
              <string>Fixa:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="combo_escala_fixa"/>
+           <widget class="QComboBox" name="combo_escala_fixa">
+            <property name="toolTip">
+             <string>Selecione a escala desejada</string>
+            </property>
+           </widget>
           </item>
          </layout>
-        </item>
-        <item>
-         <widget class="QLabel" name="lbl_aviso_escala">
-          <property name="font">
-           <font>
-            <pointsize>8</pointsize>
-            <italic>false</italic>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color: #e67e22; font-size: 8pt;</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,0,0">
@@ -188,6 +182,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="chk_exibir_so_camada_atual">
+            <property name="toolTip">
+             <string>Exibe apenas a camada atual</string>
+            </property>
             <property name="text">
              <string>Camada Atual</string>
             </property>
@@ -195,6 +192,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="chk_filtrar_feicoes">
+            <property name="toolTip">
+             <string>Exibe apenas as feições vinculadas à página</string>
+            </property>
             <property name="text">
              <string>Feições da Página</string>
             </property>
@@ -229,6 +229,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="chk_travar_camadas">
+            <property name="toolTip">
+             <string>Cria mapas com a opção &quot;Travar Camadas&quot; ativada</string>
+            </property>
             <property name="text">
              <string>Travar Camadas</string>
             </property>
@@ -236,6 +239,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="chk_travar_estilos">
+            <property name="toolTip">
+             <string>Trava os estilos do mapa</string>
+            </property>
             <property name="text">
              <string>Travar Estilos</string>
             </property>
@@ -266,6 +272,9 @@
              <font>
               <pointsize>10</pointsize>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>Escolha uma pré-definição de layout</string>
             </property>
             <item>
              <property name="text">
@@ -304,6 +313,9 @@
              <font>
               <pointsize>10</pointsize>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>Escolha o tamanho da folha</string>
             </property>
             <item>
              <property name="text">
@@ -361,6 +373,9 @@
               <pointsize>10</pointsize>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Página Vertical</string>
+            </property>
             <property name="text">
              <string>Retrato</string>
             </property>
@@ -376,6 +391,9 @@
               <pointsize>10</pointsize>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Página na horizontal</string>
+            </property>
             <property name="text">
              <string>Paisagem</string>
             </property>
@@ -384,40 +402,79 @@
          </layout>
         </item>
         <item>
-         <widget class="QLabel" name="label_4">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>30</height>
-           </size>
+         <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,2">
+          <property name="topMargin">
+           <number>0</number>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Exibição de Atributos:</string>
-          </property>
-         </widget>
+          <item>
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>Número de Página:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chk_numeracao">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="text">
+             <string>Adicionar Numeração de Página</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
-         <widget class="QCheckBox" name="chk_selecionar_todos">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
+         <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="1,2">
+          <property name="topMargin">
+           <number>0</number>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Marcar todas</string>
-          </property>
-         </widget>
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Exibição de Atributos:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chk_selecionar_todos">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>Seleciona todas as colunas da tabela de atributos para serem exibidas no mapa.</string>
+            </property>
+            <property name="text">
+             <string>Marcar Todas as Colunas</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QSplitter" name="splitter_2">
@@ -436,6 +493,9 @@
              <pointsize>10</pointsize>
             </font>
            </property>
+           <property name="toolTip">
+            <string>Selecione os campos que deseja exibir no mapa.</string>
+           </property>
            <property name="autoFillBackground">
             <bool>false</bool>
            </property>
@@ -453,7 +513,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>649</width>
+              <width>680</width>
               <height>83</height>
              </rect>
             </property>
@@ -526,6 +586,9 @@
                 <height>0</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>Pré-visualização dos campos da tabela de atributos</string>
+              </property>
               <property name="autoFillBackground">
                <bool>false</bool>
               </property>
@@ -562,6 +625,9 @@
               <pointsize>10</pointsize>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Exibe os atributos no modo formulário.</string>
+            </property>
             <property name="text">
              <string>Formulário</string>
             </property>
@@ -573,6 +639,9 @@
              <font>
               <pointsize>10</pointsize>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>Exibe os textos individuais dos atributos.</string>
             </property>
             <property name="text">
              <string>Texto Individual</string>
@@ -600,14 +669,15 @@
            <number>8</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="chk_numeracao">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
+           <widget class="QCheckBox" name="chk_export_individual">
+            <property name="toolTip">
+             <string>Exporta um arquivo para cada página. Obrigatório para imagens.</string>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
             </property>
             <property name="text">
-             <string>Numeração de Página</string>
+             <string>Exp. Arquivos Individuais</string>
             </property>
            </widget>
           </item>
@@ -643,7 +713,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>495</width>
+         <width>464</width>
          <height>776</height>
         </rect>
        </property>
@@ -652,11 +722,14 @@
          <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,1">
           <item>
            <widget class="QCheckBox" name="chk_preview_auto">
+            <property name="toolTip">
+             <string>Atualiza a pré-visualização automaticamente sempre que um campo é alterado.</string>
+            </property>
             <property name="layoutDirection">
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="text">
-             <string>Preview automática</string>
+             <string>Pré-visualização automática</string>
             </property>
             <property name="tristate">
              <bool>false</bool>
@@ -677,6 +750,9 @@
               <pointsize>10</pointsize>
              </font>
             </property>
+            <property name="toolTip">
+             <string>Visualização da primeira página do layout.</string>
+            </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
@@ -684,7 +760,7 @@
              <enum>QFrame::Sunken</enum>
             </property>
             <property name="text">
-             <string>Aguardando configuração de preview...</string>
+             <string>Aguardando configuração de pré-visualização...</string>
             </property>
             <property name="scaledContents">
              <bool>false</bool>

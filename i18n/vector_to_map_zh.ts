@@ -1,142 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_US">
+<TS version="2.1" language="zh_CN">
 <context>
     <name>Dialog</name>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="31"/>
         <source>Dialog</source>
-        <translation>Dialog</translation>
+        <translation>对话框</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="71"/>
         <source>Camada Vetorial:</source>
-        <translation>Vector Layer:</translation>
+        <translation>矢量图层：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="83"/>
         <source>Selecione a camada vetorial de interesse</source>
-        <translation>Select the vector layer of interest</translation>
+        <translation>选择感兴趣的矢量图层</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="102"/>
         <source>Agrupar por Atributo:</source>
-        <translation>Group by Attribute:</translation>
+        <translation>按属性分组：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="114"/>
         <source>Escolha um campo para agrupar as feições</source>
-        <translation>Choose a field to group the features</translation>
+        <translation>选择一个字段对要素进行分组</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="135"/>
         <source>Escala:</source>
-        <translation>Scale:</translation>
+        <translation>比例尺：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="142"/>
         <source>Centralização e zoom automáticos. Para pontos individuais a escala automática e fixada em 1:10.000</source>
-        <translation>Automatic centering and zoom. For individual points, the automatic scale is fixed at 1:10,000</translation>
+        <translation>自动居中和缩放。对于单个点，自动比例尺固定为 1:10,000</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="145"/>
         <source>Automática</source>
-        <translation>Automatic</translation>
+        <translation>自动</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="152"/>
         <source>Escolha dentre as opções de escala fixa</source>
-        <translation>Choose from the fixed scale options</translation>
+        <translation>从固定比例尺选项中选择</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="155"/>
         <source>Fixa:</source>
-        <translation>Fixed:</translation>
+        <translation>固定：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="162"/>
         <source>Selecione a escala desejada</source>
-        <translation>Select the desired scale</translation>
+        <translation>选择所需的比例尺</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="179"/>
         <source>Filtrar Geometrias:</source>
-        <translation>Filter Geometries:</translation>
+        <translation>过滤几何图形：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="186"/>
         <source>Exibe apenas a camada atual</source>
-        <translation>Displays only the current layer</translation>
+        <translation>仅显示当前图层</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="189"/>
         <source>Camada Atual</source>
-        <translation>Current Layer</translation>
+        <translation>当前图层</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="196"/>
         <source>Exibe apenas as feições vinculadas à página</source>
-        <translation>Displays only the features linked to the page</translation>
+        <translation>仅显示与页面关联的要素</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="199"/>
         <source>Feições da Página</source>
-        <translation>Page Features</translation>
+        <translation>页面要素</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="226"/>
         <source>Exibição de Camadas:</source>
-        <translation>Layer Display:</translation>
+        <translation>图层显示：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="233"/>
-        <source>Cria mapas com a opção &quot;Travar Camadas&quot; ativada</source>
-        <translation>Creates maps with the &quot;Lock Layers&quot; option enabled</translation>
+        <source>Cria mapas com a opção "Travar Camadas" ativada</source>
+        <translation>在启用“锁定图层”选项的情况下创建地图</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="236"/>
         <source>Travar Camadas</source>
-        <translation>Lock Layers</translation>
+        <translation>锁定图层</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="243"/>
         <source>Trava os estilos do mapa</source>
-        <translation>Locks map styles</translation>
+        <translation>锁定地图样式</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="246"/>
         <source>Travar Estilos</source>
-        <translation>Lock Styles</translation>
+        <translation>锁定样式</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="265"/>
         <source>Modelo de Layout:</source>
-        <translation>Layout Preset:</translation>
+        <translation>布局模板：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="277"/>
         <source>Escolha uma pré-definição de layout</source>
-        <translation>Choose a layout preset</translation>
+        <translation>选择一个布局预设</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="281"/>
         <source>Mapa Quadrado (Margem 1cm)</source>
-        <translation>Square Map (1cm Margin)</translation>
+        <translation>正方形地图（1cm 边距）</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="286"/>
         <source>75% da Altura (Base fixada)</source>
-        <translation>75% Height (Fixed Base)</translation>
+        <translation>75% 高度（底部固定）</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="306"/>
         <source>Tamanho da Página:</source>
-        <translation>Page Size:</translation>
+        <translation>页面大小：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="318"/>
         <source>Escolha o tamanho da folha</source>
-        <translation>Choose the sheet size</translation>
+        <translation>选择图纸大小</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="322"/>
@@ -166,122 +166,122 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="365"/>
         <source>Orientação:</source>
-        <translation>Orientation:</translation>
+        <translation>方向：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="377"/>
         <source>Página Vertical</source>
-        <translation>Vertical Page</translation>
+        <translation>垂直页面</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="380"/>
         <source>Retrato</source>
-        <translation>Portrait</translation>
+        <translation>纵向</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="395"/>
         <source>Página na horizontal</source>
-        <translation>Horizontal Page</translation>
+        <translation>水平页面</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="398"/>
         <source>Paisagem</source>
-        <translation>Landscape</translation>
+        <translation>横向</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="412"/>
         <source>Número de Página:</source>
-        <translation>Page Number:</translation>
+        <translation>页码：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="427"/>
         <source>Adicionar Numeração de Página</source>
-        <translation>Add Page Numbering</translation>
+        <translation>添加页码</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="452"/>
         <source>Exibição de Atributos:</source>
-        <translation>Attribute Display:</translation>
+        <translation>属性显示：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="470"/>
         <source>Seleciona todas as colunas da tabela de atributos para serem exibidas no mapa.</source>
-        <translation>Selects all columns from the attribute table to be displayed on the map.</translation>
+        <translation>选择属性表中要在地图上显示的所有列。</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="473"/>
         <source>Marcar Todas as Colunas</source>
-        <translation>Select All Columns</translation>
+        <translation>选择所有列</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="497"/>
         <source>Selecione os campos que deseja exibir no mapa.</source>
-        <translation>Select the fields you want to display on the map.</translation>
+        <translation>选择要在地图上显示的字段。</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="569"/>
         <source>Tabela de Atributos</source>
-        <translation>Attribute Table</translation>
+        <translation>属性表</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="590"/>
         <source>Pré-visualização dos campos da tabela de atributos</source>
-        <translation>Preview of attribute table fields</translation>
+        <translation>属性表字段预览</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="617"/>
         <source>Modo de Exibição:</source>
-        <translation>Display Mode:</translation>
+        <translation>显示模式：</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="629"/>
         <source>Exibe os atributos no modo formulário.</source>
-        <translation>Displays attributes in form mode.</translation>
+        <translation>在表单模式下显示属性。</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="632"/>
         <source>Formulário</source>
-        <translation>Form</translation>
+        <translation>表单</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="644"/>
         <source>Exibe os textos individuais dos atributos.</source>
-        <translation>Displays the individual text of attributes.</translation>
+        <translation>显示属性的单独文本。</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="647"/>
         <source>Texto Individual</source>
-        <translation>Individual Text</translation>
+        <translation>单独文本</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="674"/>
         <source>Exporta um arquivo para cada página. Obrigatório para imagens.</source>
-        <translation>Exports one file per page. Mandatory for images.</translation>
+        <translation>为每页导出一个文件。导出图像时为必选项。</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="680"/>
         <source>Exp. Arquivos Individuais</source>
-        <translation>Export Individual Files</translation>
+        <translation>导出单个文件</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="726"/>
         <source>Atualiza a pré-visualização automaticamente sempre que um campo é alterado.</source>
-        <translation>Automatically updates the preview whenever a field is changed.</translation>
+        <translation>每次更改字段时自动更新预览。</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="732"/>
         <source>Pré-visualização automática</source>
-        <translation>Automatic Preview</translation>
+        <translation>自动预览</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="754"/>
         <source>Visualização da primeira página do layout.</source>
-        <translation>Preview of the first layout page.</translation>
+        <translation>第一页布局预览。</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="763"/>
         <source>Aguardando configuração de pré-visualização...</source>
-        <translation>Waiting for preview configuration...</translation>
+        <translation>正在等待预览配置...</translation>
     </message>
 </context>
 <context>
@@ -294,7 +294,7 @@
     <message>
         <location filename="../vector_to_map.py" line="275"/>
         <source>Preview</source>
-        <translation>Preview</translation>
+        <translation>预览</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="105"/>
@@ -304,116 +304,116 @@
     <message>
         <location filename="../vector_to_map.py" line="274"/>
         <source>Exportar</source>
-        <translation>Export</translation>
+        <translation>导出</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="276"/>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation>确定</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="277"/>
         <source>Cancelar</source>
-        <translation>Cancel</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="393"/>
         <source>Exportar Mapas</source>
-        <translation>Export Maps</translation>
+        <translation>导出地图</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="525"/>
         <source>⚠️ Aviso: O filtro de feições cria camadas temporárias para cada feição ou grupo de feições.</source>
-        <translation>⚠️ Warning: Feature filtering creates temporary layers for each feature or feature group.</translation>
+        <translation>⚠️ 警告：要素过滤会为每个要素或要素组创建临时图层。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="546"/>
         <source>Exibe todos os atributos em um bloco único de texto (HTML).</source>
-        <translation>Displays all attributes in a single text block (HTML).</translation>
+        <translation>在单个文本块（HTML）中显示所有属性。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="547"/>
         <source>Cria uma linha horizontal para cada feição (evita sobreposições).</source>
-        <translation>Creates a horizontal line for each feature (prevents overlaps).</translation>
+        <translation>为每个要素创建一条水平线（防止重叠）。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="548"/>
         <source>Marca ou desmarca todos os campos da lista de uma vez.</source>
-        <translation>Checks or unchecks all fields in the list at once.</translation>
+        <translation>一次勾选或取消勾选列表中的所有字段。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="549"/>
         <source>Campo da tabela usado para agrupar as feições em cada página.</source>
-        <translation>Table field used to group features on each page.</translation>
+        <translation>用于对每页上的要素进行分组的表字段。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="550"/>
         <source>Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado).</source>
-        <translation>Defines the map size on the sheet (e.g., 75% of the page or Square).</translation>
+        <translation>定义图纸上的地图大小（例如：页面的75%或正方形）。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="551"/>
         <source>Gera uma prévia do layout com as configurações atuais.</source>
-        <translation>Generates a layout preview with the current settings.</translation>
+        <translation>使用当前设置生成布局预览。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="552"/>
         <source>Exporta os mapas diretamente como PDF, PNG ou JPG.</source>
-        <translation>Exports maps directly as PDF, PNG, or JPG.</translation>
+        <translation>将地图直接导出为PDF、PNG或JPG格式。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="563"/>
         <source>Aviso</source>
-        <translation>Warning</translation>
+        <translation>警告</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="563"/>
         <source>Cancelando processamento... A janela permanecerá aberta.</source>
-        <translation>Canceling processing... The window will remain open.</translation>
+        <translation>正在取消处理... 窗口将保持打开状态。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="597"/>
         <source>--- No Grouping (Each Feature) ---</source>
-        <translation>--- No Grouping (Each Feature) ---</translation>
+        <translation>--- 无分组（每个要素） ---</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1003"/>
         <source>Confirmar Sobrescrita</source>
-        <translation>Confirm Overwrite</translation>
+        <translation>确认覆盖</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1003"/>
         <source>Arquivos com os mesmos nomes já existem no diretório de destino.
 
 Deseja sobrescrevê-los?</source>
-        <translation>Files with the same names already exist in the destination directory.
+        <translation>目标目录中已存在同名文件。
 
-Do you want to overwrite them?</translation>
+您要覆盖它们吗？</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1102"/>
         <source>Sucesso</source>
-        <translation>Success</translation>
+        <translation>成功</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1102"/>
         <source>Exportação concluída com sucesso!</source>
-        <translation>Export completed successfully!</translation>
+        <translation>导出成功！</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1110"/>
         <source>Cancelado</source>
-        <translation>Canceled</translation>
+        <translation>已取消</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1110"/>
         <source>O processamento foi interrompido.</source>
-        <translation>Processing was interrupted.</translation>
+        <translation>处理已中断。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1114"/>
         <source>Erro</source>
-        <translation>Error</translation>
+        <translation>错误</translation>
     </message>
 </context>
 </TS>
