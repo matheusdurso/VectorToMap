@@ -50,8 +50,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>633</width>
-         <height>876</height>
+         <width>683</width>
+         <height>856</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -71,10 +71,10 @@
              <string notr="true">font-size: 9pt;</string>
             </property>
             <property name="text">
-             <string>CAMADAS &amp; GEOMETRIA</string>
+             <string>CAMADAS &amp; GEOMETRIA:</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -259,10 +259,10 @@
              <string notr="true">font-size: 9pt;</string>
             </property>
             <property name="text">
-             <string>LAYOUT &amp; DESIGN</string>
+             <string>LAYOUT &amp; DESIGN:</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -354,7 +354,7 @@
              <string>Cria layouts apenas com a área do item de mapa.</string>
             </property>
             <property name="text">
-             <string>Gerar Itens de Mapa Avulsos</string>
+             <string>Gerar Mapa Avulsos</string>
             </property>
            </widget>
           </item>
@@ -514,7 +514,7 @@
              <enum>Qt::LeftToRight</enum>
             </property>
             <property name="text">
-             <string>Adicionar Numero de Página</string>
+             <string>Adicionar Número de Página</string>
             </property>
            </widget>
           </item>
@@ -539,10 +539,10 @@
              <string notr="true">font-size: 9pt;</string>
             </property>
             <property name="text">
-             <string>TABELA DE ATRIBUTOS</string>
+             <string>TABELA DE ATRIBUTOS:</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -626,7 +626,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>609</width>
+              <width>659</width>
               <height>63</height>
              </rect>
             </property>
@@ -826,7 +826,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>514</width>
+         <width>464</width>
          <height>822</height>
         </rect>
        </property>

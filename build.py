@@ -18,7 +18,7 @@ def criar_pacote():
     # Lista de arquivos exatos ou extensões para ignorar
     itens_ignorar = [
         '.gitignore', 'pb_tool.cfg', 'resources.qrc', 'build.py', 
-        '.ts', '.pyc', '.zip', '.vscode'
+        '.ts', '.pyc', '.zip', '.vscode', '.html'
     ]
 
     if os.path.exists(zip_name):

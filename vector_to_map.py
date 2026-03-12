@@ -111,6 +111,9 @@ class VectorToMap:
             add_to_menu=True
         )
 
+        # Adiciona atalho para o plugin
+        self.action.setShortcut("Ctrl+Alt+V")
+
 
     def unload(self):
         """Limpa os recursos do plugin ao ser desativado."""
@@ -233,15 +236,18 @@ class VectorToMap:
             # --- SETUP TAMANHOS DE PÁGINA (v0.2.8) ---
             self.dlg.combo_tamanho_pagina.clear()
             tamanhos_disponiveis = [
+                ("A5 (148 x 210 mm)", (148.0, 210.0)),
                 ("A4 (210 x 297 mm)", (210.0, 297.0)),
                 ("A3 (297 x 420 mm)", (297.0, 420.0)),
                 ("A2 (420 x 594 mm)", (420.0, 594.0)),
                 ("A1 (594 x 841 mm)", (594.0, 841.0)),
-                ("A0 (841 x 1189 mm)", (841.0, 1189.0)),
-                ("A5 (148 x 210 mm)", (148.0, 210.0))
+                ("A0 (841 x 1189 mm)", (841.0, 1189.0))
             ]
             for texto, dimensoes in tamanhos_disponiveis:
                 self.dlg.combo_tamanho_pagina.addItem(texto, dimensoes)
+            
+            # Força o A4 (índice 1) a ser o padrão selecionado ao abrir a janela
+            self.dlg.combo_tamanho_pagina.setCurrentIndex(1)
 
             # --- SETUP ESCALA (v0.2.8) ---
             self.dlg.combo_escala_fixa.clear()
@@ -289,6 +295,8 @@ class VectorToMap:
 
             self.dlg.combo_presets.setItemData(0, "quadrado")
             self.dlg.combo_presets.setItemData(1, "75_altura")
+            # Adiciona a nova opção via código de forma invisível
+            self.dlg.combo_presets.addItem(self.tr("Mapa Vertical"), "vertical")
 
             self.dlg.setWindowIcon(QIcon(':/plugins/vector_to_map/icon.png'))
             self.dlg.setWindowTitle("VectorToMap")
@@ -321,10 +329,10 @@ class VectorToMap:
             if geometria: 
                 self.dlg.restoreGeometry(geometria)
             else: 
-                self.dlg.resize(1100, 750) 
+                self.dlg.resize(1050, 750) 
             
             if hasattr(self.dlg, 'splitter'): 
-                self.dlg.splitter.setSizes([550, 550]) 
+                self.dlg.splitter.setSizes([550, 500]) 
             
             self.dlg.lbl_preview.setFrameShape(QFrame.Shape.StyledPanel)
             self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
@@ -404,7 +412,9 @@ class VectorToMap:
 
         # Monta um nome base amigável já no diretório correto
         nome_sugerido = os.path.join(ultimo_dir, f"Mapas_{camada.name()}")
-        filtros = "PDF (*.pdf);;PNG (*.png);;JPEG (*.jpg)"
+        
+        # 1. ADICIONAMOS O SVG AQUI NO FILTRO
+        filtros = "PDF (*.pdf);;SVG (*.svg);;PNG (*.png);;JPEG (*.jpg)"
 
         caminho_arquivo, filtro_selecionado = QFileDialog.getSaveFileName(
             self.dlg, self.tr("Exportar Mapas"), nome_sugerido, filtros
@@ -415,17 +425,18 @@ class VectorToMap:
             diretorio_escolhido = os.path.dirname(caminho_arquivo)
             settings.setValue("/VectorToMap/ultimo_diretorio_exportacao", diretorio_escolhido)
 
-            # Descobre a extensão baseada no filtro escolhido
+            # 2. ADICIONAMOS A IDENTIFICAÇÃO DO SVG AQUI
             ext = ".pdf"
             if "PNG" in filtro_selecionado: ext = ".png"
             elif "JPEG" in filtro_selecionado: ext = ".jpg"
+            elif "SVG" in filtro_selecionado: ext = ".svg" 
 
             # Adiciona a extensão se o usuário esqueceu de digitar
             if not caminho_arquivo.lower().endswith(ext):
                 caminho_arquivo += ext
 
-            # Força 'individual' se for PNG ou JPEG
-            is_individual = self.dlg.chk_export_individual.isChecked() or ext in [".png", ".jpg"]
+            # 3. FORÇAMOS INDIVIDUAL PARA SVG TAMBÉM
+            is_individual = self.dlg.chk_export_individual.isChecked() or ext in [".png", ".jpg", ".svg"]
 
             # Armazena as configurações e dispara o gerador
             self.export_info = {
@@ -610,7 +621,7 @@ class VectorToMap:
         self.dlg.chk_selecionar_todos.blockSignals(False)
 
         self.dlg.combo_atlas.clear()
-        self.dlg.combo_atlas.addItem(self.tr("--- No Grouping (Each Feature) ---"), None)
+        self.dlg.combo_atlas.addItem(self.tr("--- Sem Agrupamento (Cada Feição) ---"), None)
 
         if not camada: 
             self.dlg.chk_modo_formulario.blockSignals(False)
@@ -1077,6 +1088,15 @@ class VectorToMap:
                         img_settings = QgsLayoutExporter.ImageExportSettings()
                         img_settings.dpi = 300 
                         exporter.exportToImage(caminho_final, img_settings)
+                        
+                    # ========================================================
+                    # NOVO BLOCO SVG: Entra aqui se o usuário escolheu .svg
+                    elif ext == ".svg":
+                        svg_settings = QgsLayoutExporter.SvgExportSettings()
+                        svg_settings.exportLabelsToPaths = False # ISSO É O SEGREDO: Garante texto editável!
+                        exporter.exportToSvg(caminho_final, svg_settings)
+                    # ========================================================
+                        
                     else:
                         pdf_settings = QgsLayoutExporter.PdfExportSettings()
                         pdf_settings.dpi = 300
@@ -1140,35 +1160,82 @@ class VectorToMap:
             gc.collect()
 
 
-    def montar_design_da_pagina(self, layout, camada, feicoes_da_pagina, preset, orientacao, pagina_index=0, is_preview=False, nome_sufixo=""):
-        """Factory Core v0.2.8: Usa dimensões dinâmicas do ComboBox."""
+    # ====================================================================================
+    # --- RENDERIZAÇÃO E DESIGN (ARQUITETURA REFATORADA v0.4.3) ---
+    # ====================================================================================
 
-        ##### CONFIGURAÇÕES DO TAMANHO E ORIENTAÇÃO DA PÁGINA #####
-        #Recebe as dimensões da página do combobox combo_tamanho_pagina
+    def montar_design_da_pagina(self, layout, camada, feicoes_da_pagina, preset, orientacao, pagina_index=0, is_preview=False, nome_sufixo=""):
+        """Maestro: Orquestra a montagem completa da página chamando sub-funções menores."""
+
+        # 1. Prepara o papel (Tamanho, Geometria e Fundo)
+        geometria, apenas_mapa, cor_fundo = self._configurar_papel_e_fundo(
+            layout, pagina_index, preset, orientacao, is_preview
+        )
+
+        # 2. Cria o item de mapa e o posiciona na página
+        map_item = self._adicionar_item_mapa(
+            layout, geometria, apenas_mapa, cor_fundo
+        )
+
+        # 3. Calcula o zoom geográfico exato das feições
+        self._aplicar_extensao_e_escala(
+            map_item, camada, feicoes_da_pagina, geometria['w_map'], geometria['h_map']
+        )
+
+        # 4. Define quais camadas (TOC e clones) aparecem no mapa
+        self._gerenciar_visibilidade_camadas(
+            map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index
+        )
+
+        # 5. Adiciona os textos e tabela de atributos (se houver espaço)
+        self._renderizar_textos_e_atributos(
+            layout, feicoes_da_pagina, preset, orientacao, geometria, apenas_mapa
+        )
+
+        # 6. Adiciona numeração da página no rodapé
+        if not apenas_mapa:
+            self.adicionar_numeracao_pagina(layout, geometria['w_pg'], geometria['h_pg'], geometria['y_zero'])
+
+
+    # ------------------------------------------------------------------------------------
+    # --- SUB-FUNÇÕES DE MONTAGEM ---
+    # ------------------------------------------------------------------------------------
+
+    def _configurar_papel_e_fundo(self, layout, pagina_index, preset, orientacao, is_preview):
+        """Calcula dimensões, recortes e o comportamento de fundo (transparência/PNG)."""
         dim = self.dlg.combo_tamanho_pagina.currentData()
-        #Se a dimensão nãoe estiver definida, usar o tamanho de folha A4
         if not dim: dim = (210.0, 297.0)
 
-        #Se a orientação estiver definida como paisagem -> dimensão maior para a largura e menor para comprimento
-        #Caso contrário (orientação retrato) -> dimensão menor para a lagura e maior para o comprimento
         w_pg, h_pg = (dim[1], dim[0]) if orientacao == "Paisagem" else (dim[0], dim[1])
-        #adiciona a nova página ao layout de impressão no índice definido ao chamar a função
         pagina = layout.pageCollection().pages()[pagina_index]
-        #passa a largura e altura definidas anteriormente como parâmetros para as dimensões da página em mm
         pagina.setPageSize(QgsLayoutSize(w_pg, h_pg, QgsUnitTypes.LayoutMillimeters))
-        
-        #coordenada y (mm) do ponto que a página começa (superior esquerdo)
+
         y_zero_folha = pagina_index * (h_pg + 10)
         margin_padrao = 10.0
-        
-        ##### CONFIGURAÇÕES DOS MODELOS DE PÁGINA PRÉ-DEFINIDOS #####
 
+        # Modelos Pré-definidos
         if preset == "75_altura":
             header_h = 35.0
             h_util = h_pg - (2 * margin_padrao) - header_h
             w_map_f, h_map_f = w_pg - (2 * margin_padrao), h_util * 0.75
             x_map_f, y_map_f = margin_padrao, y_zero_folha + margin_padrao + header_h
-        else:
+            
+        elif preset == "vertical":
+            if orientacao == "Retrato":
+                # Mantém a mesma base inferior do Mapa Quadrado, mas "estica" o topo para margem de 1cm
+                w_map_f = w_pg - (2 * margin_padrao)
+                x_map_f = margin_padrao
+                y_map_f = y_zero_folha + margin_padrao
+                h_map_f = w_pg + 10.0 # <-- Matemática: Fica cravado na mesma linha de base do mapa quadrado!
+            else:
+                # Paisagem: 50% da área útil na direita
+                largura_util = w_pg - (2 * margin_padrao)
+                h_map_f = h_pg - (2 * margin_padrao)
+                w_map_f = largura_util * 0.50
+                x_map_f = w_pg - margin_padrao - w_map_f
+                y_map_f = y_zero_folha + margin_padrao
+                
+        else: # "quadrado"
             if orientacao == "Retrato":
                 w_map_f, h_map_f = w_pg - (2 * margin_padrao), w_pg - (2 * margin_padrao)
                 x_map_f, y_map_f = margin_padrao, y_zero_folha + 40.0
@@ -1177,292 +1244,254 @@ class VectorToMap:
                 w_map_f = h_map_f
                 x_map_f, y_map_f = w_pg - margin_padrao - w_map_f, y_zero_folha + margin_padrao
 
-        # ====================================================================
-        # --- VERIFICAÇÃO DO MODO "APENAS MAPA" E COR DE FUNDO ---
+        # Checagem de Fundo e Exportação Avulsa
         apenas_mapa = hasattr(self.dlg, 'chk_apenas_mapa') and self.dlg.chk_apenas_mapa.isChecked()
-        
-        cor_fundo = QColor(255, 255, 255, 255) # Branco Padrão
+        cor_fundo = QColor(255, 255, 255, 255)
         if hasattr(self.dlg, 'btn_cor_fundo'):
             cor_fundo = self.dlg.btn_cor_fundo.color()
 
         if apenas_mapa:
-            # Encolhe a folha de papel para ficar do tamanho exato do quadro do mapa
-            w_pg = w_map_f
-            h_pg = h_map_f
+            w_pg, h_pg = w_map_f, h_map_f
             x_map_f = 0.0
             y_zero_folha = pagina_index * (h_pg + 10)
             y_map_f = y_zero_folha
             pagina.setPageSize(QgsLayoutSize(w_pg, h_pg, QgsUnitTypes.LayoutMillimeters))
 
-        # --- NOVA REGRA: COMPORTAMENTO DA PÁGINA (PAPEL) ---
-        # Descobre se estamos fazendo uma exportação final em PNG
         is_png_export = False
         if not is_preview:
             info = getattr(self, 'export_info', {}) or {}
-            if info.get('ext', '').lower() == '.png':
-                is_png_export = True
+            if info.get('ext', '').lower() == '.png': is_png_export = True
 
-        # Se for exportação PNG + Apenas Mapa, forçamos o "papel" a ser renderizado invisível
         if apenas_mapa and is_png_export:
             pagina.setBackgroundEnabled(True)
-            if pagina.pageStyleSymbol():
-                pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 0)) # Alpha 0 = 100% Transparente
+            if pagina.pageStyleSymbol(): pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 0))
         else:
-            # Caso contrário (Preview, PDF, ou página completa), o papel continua branco
             pagina.setBackgroundEnabled(True)
-            if pagina.pageStyleSymbol():
-                pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 255))
+            if pagina.pageStyleSymbol(): pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 255))
 
-        ##### CONFIGURAÇÕES DO ITEM DE MAPA E COR DO MAPA #####
-        # Cria o item de mapa no layout
+        # Empacota a geometria para facilitar o repasse entre funções
+        geometria = {
+            'w_pg': w_pg, 'h_pg': h_pg, 'w_map': w_map_f, 'h_map': h_map_f,
+            'x_map': x_map_f, 'y_map': y_map_f, 'y_zero': y_zero_folha, 'margin': margin_padrao
+        }
+        return geometria, apenas_mapa, cor_fundo
+
+
+    def _adicionar_item_mapa(self, layout, geo, apenas_mapa, cor_fundo):
+        """Cria e injeta o quadro do mapa no layout."""
         map_item = QgsLayoutItemMap(layout)
-        # Oculta a borda preta SE for "Apenas Mapa"
         map_item.setFrameEnabled(not apenas_mapa) 
-        
-        # O fundo do mapa recebe exatamente a cor (e a transparência) escolhidas no botão
         map_item.setBackgroundEnabled(True)
         map_item.setBackgroundColor(cor_fundo)
-            
-        # Adiciona o mapa ao layout
         layout.addLayoutItem(map_item)
-        # ====================================================================
         
-        #Define o tamanho do mapa
-        map_item.attemptResize(QgsLayoutSize(w_map_f, h_map_f, QgsUnitTypes.LayoutMillimeters))
-        #Posiciona o mapa no local da página pre-determinado para ele
-        map_item.attemptMove(QgsLayoutPoint(x_map_f, y_map_f, QgsUnitTypes.LayoutMillimeters))
+        map_item.attemptResize(QgsLayoutSize(geo['w_map'], geo['h_map'], QgsUnitTypes.LayoutMillimeters))
+        map_item.attemptMove(QgsLayoutPoint(geo['x_map'], geo['y_map'], QgsUnitTypes.LayoutMillimeters))
+        return map_item
+
+
+    def _aplicar_extensao_e_escala(self, map_item, camada, feicoes_da_pagina, w_map, h_map):
+        """Gerencia o BoundingBox, CRS e regras de zoom máximo do mapa."""
+        if not feicoes_da_pagina: return
+
+        ext = QgsRectangle()
+        ext.setMinimal()
+        for f in feicoes_da_pagina: ext.combineExtentWith(f.geometry().boundingBox())
         
-        #Se as feições da página foram passadas como parâmetro (se elas existem dentro dessa função)
-        if feicoes_da_pagina:
-            #Então cria um objeto de retângulo (que será a boundingbox)
-            ext = QgsRectangle()
-            #Estabelece esse retângulo com área mínima (sem área)
-            ext.setMinimal()
-
-            #Para cada feição passada como parâmetro dessa função (ou para a única feição, no caso de apenas uma)
-            #Aumenta o retângulo progressivamente a cada feição, até que ele cubra completamente todas as feições (boundingbox)
-            for f in feicoes_da_pagina: ext.combineExtentWith(f.geometry().boundingBox())
-            
-            #Captura o sistema de refência de coordenadas do projeto
-            project_crs = QgsProject.instance().crs()
-            #Instância que permite converter as coordenadas da camada para coordenadas do projeto
-            trans = QgsCoordinateTransform(camada.crs(), project_crs, QgsProject.instance().transformContext())
-            #A extensão inicial da tela do mapa será a extensão da boundingbox da(s) feição(ões)
-            ext_proj = trans.transformBoundingBox(ext)
-            
-            # IDENTIFICAÇÃO DE COORDENADA ÚNICA (Requisitos 2 e 3)
-            # Se a largura e altura são zero, significa que é um único ponto, 
-            # ou vários pontos sobrepostos na mesma exata coordenada.
-            is_coordenada_unica = (ext_proj.width() == 0 and ext_proj.height() == 0)
-            
-            # O "grow" ainda é necessário apenas para o QGIS não gerar erro ao 
-            # tentar definir uma extensão de mapa com tamanho absolutamente zero.
-            if is_coordenada_unica: 
-                respiro = 0.0001 if project_crs.isGeographic() else 1.0
-                ext_proj.grow(respiro)
-            
-            # Define a extensão (centraliza o mapa nas feições)
-            map_item.setExtent(ext_proj)
-            
-            # === CÁLCULO DA ESCALA ===
-            if self.dlg.rb_escala_fixa.isChecked():
-                escala_val = self.dlg.combo_escala_fixa.currentData()
-                map_item.setScale(float(escala_val) if escala_val else 10000.0)
-
+        project_crs = QgsProject.instance().crs()
+        trans = QgsCoordinateTransform(camada.crs(), project_crs, QgsProject.instance().transformContext())
+        ext_proj = trans.transformBoundingBox(ext)
+        
+        is_coordenada_unica = (ext_proj.width() == 0 and ext_proj.height() == 0)
+        if is_coordenada_unica: 
+            respiro = 0.0001 if project_crs.isGeographic() else 1.0
+            ext_proj.grow(respiro)
+        
+        map_item.setExtent(ext_proj)
+        
+        if self.dlg.rb_escala_fixa.isChecked():
+            escala_val = self.dlg.combo_escala_fixa.currentData()
+            map_item.setScale(float(escala_val) if escala_val else 10000.0)
+        else:
+            if is_coordenada_unica:
+                escala_final = 10000.0
             else:
-                if is_coordenada_unica:
-                    # Se for apenas um ponto (ou pontos sobrepostos), fixa em 1:10.000
-                    escala_final = 10000.0
-                else:
-                    unit_to_mm = QgsUnitTypes.fromUnitToUnitFactor(project_crs.mapUnits(), QgsUnitTypes.DistanceMillimeters)
-                    scale_w = (ext_proj.width() * unit_to_mm) / w_map_f
-                    scale_h = (ext_proj.height() * unit_to_mm) / h_map_f
-                    
-                    # Calcula a escala automática tradicional com respiro de 25% (Requisito 4)
-                    escala_calculada = max(scale_w, scale_h) * 1.25
-                    
-                    # TRAVA DE ZOOM MÁXIMO (Requisito 5)
-                    # Lembrete: Escalas maiores (mais zoom) têm denominadores menores.
-                    # Ex: 1:400 é maior (mais próximo) que 1:500.
-                    if escala_calculada < 500.0:
-                        escala_final = 10000.0
-                    else:
-                        escala_final = escala_calculada
-                
-                # Aplica a escala automática validada
-                map_item.setScale(escala_final)
-
-            # Atualiza o item de mapa
-            map_item.refresh()
-            #garante que o item de mapa tenha o tamanho predefinido
-            map_item.attemptResize(QgsLayoutSize(w_map_f, h_map_f, QgsUnitTypes.LayoutMillimeters))
-            #garante que o item de mapa esteja na posição predefinida
-            map_item.attemptMove(QgsLayoutPoint(x_map_f, y_map_f, QgsUnitTypes.LayoutMillimeters))
-
-        # ====================================================================================
-        # INÍCIO DO NOVO BLOCO DE CONTROLE DE CAMADAS
-        # ====================================================================================
+                unit_to_mm = QgsUnitTypes.fromUnitToUnitFactor(project_crs.mapUnits(), QgsUnitTypes.DistanceMillimeters)
+                scale_w = (ext_proj.width() * unit_to_mm) / w_map
+                scale_h = (ext_proj.height() * unit_to_mm) / h_map
+                escala_calculada = max(scale_w, scale_h) * 1.25
+                escala_final = 10000.0 if escala_calculada < 500.0 else escala_calculada
         
+            map_item.setScale(escala_final)
+
+        map_item.refresh()
+        map_item.attemptResize(QgsLayoutSize(w_map, h_map, QgsUnitTypes.LayoutMillimeters))
+        # Ajusta posição sem alterar o tamanho consolidado
+        map_item.attemptMove(QgsLayoutPoint(map_item.pos().x(), map_item.pos().y(), QgsUnitTypes.LayoutMillimeters))
+
+
+    def _gerenciar_visibilidade_camadas(self, map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index):
+        """Avalia as regras do TOC, cria camadas clone (se necessário) e trava os estilos."""
         camada_alvo = camada
 
-        # 1. SE FOR FILTRAR (Cria o clone da página)
+        # 1. Criação do Clone para Filtro
         if self.dlg.chk_filtrar_feicoes.isChecked():
-            # Pegamos o nome da camada original e removemos caracteres estranhos
             nome_camada_limpo = re.sub(r'[^a-zA-Z0-9_]', '_', unicodedata.normalize('NFD', camada.name()).encode('ascii', 'ignore').decode('utf-8'))
-            
-            # O nome provisório será: NomeDaCamada_Sufixo (ex: Bairros_Centro ou Bairros_1)
             nome_temp = f"{nome_camada_limpo}_{nome_sufixo}" if nome_sufixo else f"{nome_camada_limpo}_{pagina_index + 1}"
-            
             camada_alvo = self.criar_camada_temporaria(camada, feicoes_da_pagina, nome_temp, is_preview)
-            if is_preview:
-                self.clones_preview.append(camada_alvo.id())
+            if is_preview: self.clones_preview.append(camada_alvo.id())
 
-        # 2. SE FOR EXIBIR APENAS A CAMADA ATUAL (Ignora todo o resto do QGIS)
+        # 2. Definição do Array de Camadas Exibidas
         if self.dlg.chk_exibir_so_camada_atual.isChecked():
             map_item.setLayers([camada_alvo])
             
-        # 3. CASO CONTRÁRIO: Se for Filtrar OU Travar Camadas (Monta a lista exata da tela)
         elif self.dlg.chk_filtrar_feicoes.isChecked() or self.dlg.chk_travar_camadas.isChecked():            
             root = QgsProject.instance().layerTreeRoot()
             camadas_finais_para_layout = []
-            
-            # Variável que dita se DEVEMOS forçar a exibição do clone, ignorando o QGIS
             forcar_clone = self.dlg.chk_filtrar_feicoes.isChecked()
             
-            # Lemos as camadas na ordem em que estão desenhadas na tela
             for layer in root.layerOrder():
-                
-                # A camada atual do loop está visível na tela principal do QGIS?
                 is_visible_in_toc = root.findLayer(layer.id()).isVisible()
-                
                 if layer.id() == camada.id():
-                    # É a nossa camada principal!
-                    # Ela (na figura do clone alvo) entra se estiver visível NO QGIS 
-                    # *OU* se o filtro de feições estiver exigindo a presença dela.
                     if is_visible_in_toc or forcar_clone:
-                        if camada_alvo not in camadas_finais_para_layout:
-                            camadas_finais_para_layout.append(camada_alvo)
+                        if camada_alvo not in camadas_finais_para_layout: camadas_finais_para_layout.append(camada_alvo)
                 else:
-                    # São as outras camadas de contexto (ruas, satélite, etc)
-                    # Só entram se estiverem visíveis e não forem restos de preview
                     if is_visible_in_toc and layer.id() not in self.clones_preview and layer.id() != camada_alvo.id():
                         camadas_finais_para_layout.append(layer)
                         
             map_item.setLayers(camadas_finais_para_layout)
 
-        # 4. APLICA AS TRAVAS FINAIS NO LAYOUT
+        # 3. Travar Camadas e Estilos
         if self.dlg.chk_travar_camadas.isChecked():
             map_item.setKeepLayerSet(True)
-            
             if hasattr(self.dlg, 'chk_travar_estilos') and self.dlg.chk_travar_estilos.isChecked():
                 map_item.setKeepLayerStyles(True)
 
         map_item.refresh()
 
-        # Desativa a visibilidade do clone na tela principal do QGIS para não interferir nas próximas páginas
+        # Oculta da Legend principal se for exportação final com clone
         if self.dlg.chk_filtrar_feicoes.isChecked() and not is_preview:
             no_da_camada = QgsProject.instance().layerTreeRoot().findLayer(camada_alvo.id())
-            if no_da_camada:
-                no_da_camada.setItemVisibilityChecked(False)
-        # ====================================================================================
+            if no_da_camada: no_da_camada.setItemVisibilityChecked(False)
 
-        ##### EXIBIÇÃO DE CAMPOS DA TABELA DE ATRIBUTOS NO LAYOUT #####
-        #Variável colunas recebe uma lista com o texto de todos os checkboxes de colunas que estão marcados
+
+    def _renderizar_textos_e_atributos(self, layout, feicoes_da_pagina, preset, orientacao, geo, apenas_mapa):
+        """Posiciona e renderiza os labels em formato HTML ou linha a linha."""
         colunas = [cb.text() for cb in self.dlg.scrollAreaWidgetContents.findChildren(QCheckBox) if cb.isChecked()]
-        limite_fundo = y_zero_folha + h_pg - margin_padrao
+        limite_fundo = geo['y_zero'] + geo['h_pg'] - geo['margin']
 
-        # Renderiza os rótulos APENAS se a checkbox de exibição estiver ativada E NÃO for "apenas_mapa"
-        if colunas and feicoes_da_pagina and hasattr(self.dlg, 'chk_exibir_atributos') and self.dlg.chk_exibir_atributos.isChecked() and not apenas_mapa:
-            # --- ÁREAS DE POSICIONAMENTO ---
-            if preset == "75_altura":
-                # Layout de 1/3 lateral para o Preset 75 (Independente da orientação)
-                largura_util = w_pg - (2 * margin_padrao)
-                terco_x = margin_padrao + (largura_util * 0.33) 
-                
-                x_form, y_form = margin_padrao, y_map_f + h_map_f + 3.0
-                w_form = (largura_util * 0.33) - 2.0
-                h_form = limite_fundo - (y_map_f + h_map_f + 3.0)
-                
-                x_ind_start = terco_x + 2.0
-                y_ind_min = y_map_f + h_map_f + 2.0
-            else:
-                # Layout original para Mapas Quadrados
-                x_form = margin_padrao
-                
-                if orientacao =="Retrato":
-                    y_form = y_map_f + h_map_f + 5.0
-                    w_form = w_pg - (2 * margin_padrao)
+        if not (colunas and feicoes_da_pagina and hasattr(self.dlg, 'chk_exibir_atributos') and self.dlg.chk_exibir_atributos.isChecked() and not apenas_mapa):
+            return
 
-                else:
-                    y_form = y_map_f + (h_map_f / 2)
-                    w_form = x_map_f - (2 * margin_padrao)
+        # Zonas de renderização
+        if preset == "75_altura":
+            largura_util = geo['w_pg'] - (2 * geo['margin'])
+            terco_x = geo['margin'] + (largura_util * 0.33) 
+            
+            x_form, y_form = geo['margin'], geo['y_map'] + geo['h_map'] + 3.0
+            w_form = (largura_util * 0.33) - 2.0
+            h_form = limite_fundo - (geo['y_map'] + geo['h_map'] + 3.0)
+            
+            x_ind_start = terco_x + 2.0
+            y_ind_min = geo['y_map'] + geo['h_map'] + 2.0
+            
+        elif preset == "vertical":
+            x_form = geo['margin']
+            if orientacao == "Retrato":
+                y_form = geo['y_map'] + geo['h_map'] + 5.0
+                w_form = geo['w_pg'] - (2 * geo['margin'])
 
                 x_ind_start = x_form
-
                 if self.dlg.chk_modo_individual.isChecked():
                     h_form = (limite_fundo - y_form) * 0.5
                     y_ind_min = y_form + h_form + 2.0
-
                 else:
                     h_form = (limite_fundo - y_form)
                     y_ind_min = y_form
-
-        
-            # --- RENDERIZAÇÃO DO FORMULÁRIO ---
-            if self.dlg.chk_modo_formulario.isChecked():
-                txt_html = ""
-                for idx, f in enumerate(feicoes_da_pagina):                    
-                    for col in colunas:
-                        try: txt_html += f"<b>{col}:</b> {str(f.attribute(col) or '').strip()}<br>"
-                        except: continue
+            else:
+                # Paisagem: Divide a área à esquerda (50% da folha) em 3 blocos verticais
+                h_util = geo['h_map']
+                h_top = h_util * 0.34 # 34% Superior em branco
                 
-                lbl_f = QgsLayoutItemLabel(layout)
-    
-                if hasattr(QgsLayoutItemLabel, 'ContentMode'):
-                    # Padrão QGIS 4.x
-                    mode = QgsLayoutItemLabel.ContentMode.ModeHtml
-                elif hasattr(QgsLayoutItemLabel, 'ModeHtml'):
-                    # Padrão QGIS 3.x
-                    mode = QgsLayoutItemLabel.ModeHtml
-                else:
-                    mode = 1 
+                y_form = geo['y_map'] + h_top # Formulário começa na linha dos 34%
+                h_form = h_util * 0.33        # Formulário ocupa os 33% do meio
+                
+                # Largura do texto tem um "respiro" de 5mm para não colar na borda do mapa
+                w_form = (geo['x_map'] - geo['margin']) - 5.0 
 
-                lbl_f.setMode(mode)
+                x_ind_start = x_form
+                y_ind_min = y_form + h_form   # Textos Individuais ocupam os 33% de baixo
+                
+        else: # quadrado
+            x_form = geo['margin']
+            if orientacao =="Retrato":
+                y_form = geo['y_map'] + geo['h_map'] + 5.0
+                w_form = geo['w_pg'] - (2 * geo['margin'])
+            else:
+                y_form = geo['y_map'] + (geo['h_map'] / 2)
+                w_form = geo['x_map'] - (2 * geo['margin'])
 
-                lbl_f.setText(txt_html)
-                lbl_f.attemptMove(QgsLayoutPoint(x_form, y_form, QgsUnitTypes.LayoutMillimeters))
-                lbl_f.attemptResize(QgsLayoutSize(w_form, h_form, QgsUnitTypes.LayoutMillimeters))
-                layout.addLayoutItem(lbl_f)
-
-            # --- RENDERIZAÇÃO DOS RÓTULOS INDIVIDUAIS ---
+            x_ind_start = x_form
             if self.dlg.chk_modo_individual.isChecked():
-                campo_atlas = self.dlg.combo_atlas.currentData() 
+                h_form = (limite_fundo - y_form) * 0.5
+                y_ind_min = y_form + h_form + 2.0
+            else:
+                h_form = (limite_fundo - y_form)
+                y_ind_min = y_form
 
-                if campo_atlas is None:
-                    altura_linha = 5.5
-                    f = feicoes_da_pagina[0] 
+        # Modo Formulário (Bloco HTML)
+        if self.dlg.chk_modo_formulario.isChecked():
+            txt_html = ""
+            for idx, f in enumerate(feicoes_da_pagina):                    
+                for col in colunas:
+                    try: txt_html += f"<b>{col}:</b> {str(f.attribute(col) or '').strip()}<br>"
+                    except: continue
+            
+            lbl_f = QgsLayoutItemLabel(layout)
+            mode = QgsLayoutItemLabel.ContentMode.ModeHtml if hasattr(QgsLayoutItemLabel, 'ContentMode') else (QgsLayoutItemLabel.ModeHtml if hasattr(QgsLayoutItemLabel, 'ModeHtml') else 1)
+            lbl_f.setMode(mode)
+            lbl_f.setText(txt_html)
+            lbl_f.attemptMove(QgsLayoutPoint(x_form, y_form, QgsUnitTypes.LayoutMillimeters))
+            lbl_f.attemptResize(QgsLayoutSize(w_form, h_form, QgsUnitTypes.LayoutMillimeters))
+            layout.addLayoutItem(lbl_f)
+
+        # Modo Individual (Linhas isoladas)
+        if self.dlg.chk_modo_individual.isChecked():
+            campo_atlas = self.dlg.combo_atlas.currentData() 
+            altura_linha = 5.5
+
+            if campo_atlas is None:
+                f = feicoes_da_pagina[0] 
+                xi, yi = x_ind_start, y_ind_min
+                limite_colunas = (3 if orientacao == "Retrato" else 5) if preset == "75_altura" else (5 if orientacao == "Retrato" else 3)
+                
+                for idx, col in enumerate(colunas):
+                    if idx > 0 and idx % limite_colunas == 0:
+                        yi += altura_linha
+                        xi = x_ind_start
+                    try:
+                        lbl_i = QgsLayoutItemLabel(layout)
+                        val = f.attribute(col)
+                        lbl_i.setText(f"{col}: {str(val).strip() if val is not None else ''}")
+                        lbl_i.setFrameEnabled(True)
+                        lbl_i.adjustSizeToText()
+                        ancho_folga = lbl_i.rect().width() + 2.0
+                        lbl_i.attemptResize(QgsLayoutSize(ancho_folga, lbl_i.rect().height(), QgsUnitTypes.LayoutMillimeters))
+                        lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
+                        layout.addLayoutItem(lbl_i)
+                        xi += ancho_folga + 2.0
+                    except: continue
+            else:
+                altura_total = len(feicoes_da_pagina) * altura_linha
+                yi = (limite_fundo - altura_total) if (y_ind_min + altura_total) > limite_fundo else y_ind_min
+
+                for f in feicoes_da_pagina:
                     xi = x_ind_start
-                    yi = y_ind_min
-                    
-                    # --- DEFINIÇÃO RIGOROSA DOS LIMITES ---
-                    if preset == "75_altura":
-                        limite_colunas = 3 if orientacao == "Retrato" else 5
-                    else:
-                        # Casos de Mapa Quadrado
-                        limite_colunas = 5 if orientacao == "Retrato" else 3
-                    
-                    for idx, col in enumerate(colunas):
-                        if idx > 0 and idx % limite_colunas == 0:
-                            yi += altura_linha
-                            xi = x_ind_start
-                            
+                    for col in colunas:
                         try:
                             lbl_i = QgsLayoutItemLabel(layout)
-
                             val = f.attribute(col)
-                            display_val = str(val).strip() if val is not None else ""
-                            lbl_i.setText(f"{col}: {display_val}")
-
+                            lbl_i.setText(f"{col}: {str(val).strip() if val is not None else ''}")
                             lbl_i.setFrameEnabled(True)
                             lbl_i.adjustSizeToText()
                             ancho_folga = lbl_i.rect().width() + 2.0
@@ -1470,39 +1499,8 @@ class VectorToMap:
                             lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
                             layout.addLayoutItem(lbl_i)
                             xi += ancho_folga + 2.0
-                        except Exception as e:
-                            print(f"Erro ao processar campo {col}: {e}")
-                            continue
-                else:
-                    # Comportamento Agrupado (Uma linha por feição)
-                    altura_linha = 5.5
-                    altura_total = len(feicoes_da_pagina) * altura_linha
-                    yi = (limite_fundo - altura_total) if (y_ind_min + altura_total) > limite_fundo else y_ind_min
-
-                    for f in feicoes_da_pagina:
-                        xi = x_ind_start
-                        for col in colunas:
-                            try:
-                                lbl_i = QgsLayoutItemLabel(layout)
-
-                                val = f.attribute(col)
-                                display_val = str(val).strip() if val is not None else ""
-                                lbl_i.setText(f"{col}: {display_val}")
-
-                                lbl_i.setFrameEnabled(True)
-                                lbl_i.adjustSizeToText()
-                                ancho_folga = lbl_i.rect().width() + 2.0
-                                lbl_i.attemptResize(QgsLayoutSize(ancho_folga, lbl_i.rect().height(), QgsUnitTypes.LayoutMillimeters))
-                                lbl_i.attemptMove(QgsLayoutPoint(xi, yi, QgsUnitTypes.LayoutMillimeters))
-                                layout.addLayoutItem(lbl_i)
-                                xi += ancho_folga + 2.0
-                            except Exception as e:
-                                print(f"Erro ao processar campo {col}: {e}")
-                                continue
-                        yi += altura_linha
-        
-        if not apenas_mapa:
-            self.adicionar_numeracao_pagina(layout, w_pg, h_pg, y_zero_folha)
+                        except: continue
+                    yi += altura_linha
 
 
     def adicionar_numeracao_pagina(self, layout, w_pg, h_pg, y_zero_folha):

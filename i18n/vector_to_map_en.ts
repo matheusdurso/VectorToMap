@@ -10,8 +10,8 @@
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="74"/>
-        <source>CAMADAS &amp; GEOMETRIA</source>
-        <translation>LAYERS &amp; GEOMETRY</translation>
+        <source>CAMADAS &amp; GEOMETRIA:</source>
+        <translation>LAYERS &amp; GEOMETRY:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="96"/>
@@ -90,8 +90,8 @@
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="262"/>
-        <source>LAYOUT &amp; DESIGN</source>
-        <translation>LAYOUT &amp; DESIGN</translation>
+        <source>LAYOUT &amp; DESIGN:</source>
+        <translation>LAYOUT &amp; DESIGN:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="279"/>
@@ -121,7 +121,7 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="318"/>
         <source>Modelo de Layout:</source>
-        <translation>Layout Template:</translation>
+        <translation>Layout Model:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="330"/>
@@ -136,7 +136,7 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="339"/>
         <source>75% da Altura (Base fixada)</source>
-        <translation>75% Height (Fixed base)</translation>
+        <translation>75% Height (Fixed Base)</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="354"/>
@@ -145,8 +145,8 @@
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="357"/>
-        <source>Gerar Itens de Mapa Avulsos</source>
-        <translation>Export Map Only</translation>
+        <source>Gerar Mapa Avulsos</source>
+        <translation>Generate Single Maps</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="364"/>
@@ -166,7 +166,7 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="405"/>
         <source>Escolha o tamanho da folha</source>
-        <translation>Choose the paper size</translation>
+        <translation>Choose the sheet size</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="409"/>
@@ -230,13 +230,13 @@
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="517"/>
-        <source>Adicionar Numero de Página</source>
+        <source>Adicionar Número de Página</source>
         <translation>Add Page Number</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="542"/>
-        <source>TABELA DE ATRIBUTOS</source>
-        <translation>ATTRIBUTE TABLE</translation>
+        <source>TABELA DE ATRIBUTOS:</source>
+        <translation>ATTRIBUTE TABLE:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="559"/>
@@ -251,12 +251,12 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="583"/>
         <source>Seleciona todas as colunas da tabela de atributos para serem exibidas no mapa.</source>
-        <translation>Selects all columns from the attribute table to be displayed on the map.</translation>
+        <translation>Selects all columns of the attribute table to be displayed on the map.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="586"/>
         <source>Marcar Todas as Colunas</source>
-        <translation>Select All Columns</translation>
+        <translation>Check All Columns</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="610"/>
@@ -271,7 +271,7 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="703"/>
         <source>Pré-visualização dos campos da tabela de atributos</source>
-        <translation>Preview of attribute table fields</translation>
+        <translation>Preview of the attribute table fields</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="730"/>
@@ -291,7 +291,7 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="757"/>
         <source>Exibe os textos individuais dos atributos.</source>
-        <translation>Displays the individual texts of the attributes.</translation>
+        <translation>Displays individual attribute texts.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="760"/>
@@ -316,12 +316,12 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="845"/>
         <source>Pré-Visualização Automática</source>
-        <translation>Auto Preview</translation>
+        <translation>Automatic Preview</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="867"/>
         <source>Visualização da primeira página do layout.</source>
-        <translation>Preview of the first layout page.</translation>
+        <translation>Preview of the layout's first page.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="876"/>
@@ -337,7 +337,7 @@
         <translation>&amp;VectorToMap</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="275"/>
+        <location filename="../vector_to_map.py" line="281"/>
         <source>Preview</source>
         <translation>Preview</translation>
     </message>
@@ -347,92 +347,97 @@
         <translation>VectorToMap</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="274"/>
+        <location filename="../vector_to_map.py" line="280"/>
         <source>Exportar</source>
         <translation>Export</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="276"/>
+        <location filename="../vector_to_map.py" line="282"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="277"/>
+        <location filename="../vector_to_map.py" line="283"/>
         <source>Cancelar</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="356"/>
-        <source>Escolha a cor de fundo do mapa. Reduza a Opacidade para 0% para exportar transparente.</source>
-        <translation>Choose the background color of the map. Reduce Opacity to 0% to export as transparent.</translation>
+        <location filename="../vector_to_map.py" line="299"/>
+        <source>Mapa Vertical</source>
+        <translation>Vertical Map</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="409"/>
+        <location filename="../vector_to_map.py" line="364"/>
+        <source>Escolha a cor de fundo do mapa. Reduza a Opacidade para 0% para exportar transparente.</source>
+        <translation>Choose the map background color. Reduce Opacity to 0% to export transparent.</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map.py" line="419"/>
         <source>Exportar Mapas</source>
         <translation>Export Maps</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="541"/>
+        <location filename="../vector_to_map.py" line="552"/>
         <source>⚠️ Aviso: O filtro de feições cria camadas temporárias para cada feição ou grupo de feições.</source>
-        <translation>⚠️ Warning: The feature filter creates temporary layers for each feature or feature group.</translation>
+        <translation>⚠️ Warning: The feature filter creates temporary layers for each feature or group of features.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="562"/>
+        <location filename="../vector_to_map.py" line="573"/>
         <source>Exibe todos os atributos em um bloco único de texto (HTML).</source>
         <translation>Displays all attributes in a single text block (HTML).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="563"/>
+        <location filename="../vector_to_map.py" line="574"/>
         <source>Cria uma linha horizontal para cada feição (evita sobreposições).</source>
-        <translation>Creates a horizontal line for each feature (prevents overlapping).</translation>
+        <translation>Creates a horizontal line for each feature (avoids overlaps).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="564"/>
+        <location filename="../vector_to_map.py" line="575"/>
         <source>Marca ou desmarca todos os campos da lista de uma vez.</source>
-        <translation>Checks or unchecks all fields in the list at once.</translation>
+        <translation>Checks or unchecks all list fields at once.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="565"/>
+        <location filename="../vector_to_map.py" line="576"/>
         <source>Campo da tabela usado para agrupar as feições em cada página.</source>
         <translation>Table field used to group features on each page.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="566"/>
+        <location filename="../vector_to_map.py" line="577"/>
         <source>Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado).</source>
         <translation>Defines the map size on the sheet (e.g., 75% of the page or Square).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="567"/>
+        <location filename="../vector_to_map.py" line="578"/>
         <source>Gera uma prévia do layout com as configurações atuais.</source>
         <translation>Generates a layout preview with the current settings.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="568"/>
+        <location filename="../vector_to_map.py" line="579"/>
         <source>Exporta os mapas diretamente como PDF, PNG ou JPG.</source>
-        <translation>Exports the maps directly as PDF, PNG, or JPG.</translation>
+        <translation>Exports the maps directly as PDF, PNG or JPG.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="579"/>
+        <location filename="../vector_to_map.py" line="590"/>
         <source>Aviso</source>
         <translation>Warning</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="579"/>
+        <location filename="../vector_to_map.py" line="590"/>
         <source>Cancelando processamento... A janela permanecerá aberta.</source>
         <translation>Canceling processing... The window will remain open.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="613"/>
-        <source>--- No Grouping (Each Feature) ---</source>
+        <location filename="../vector_to_map.py" line="624"/>
+        <source>--- Sem Agrupamento (Cada Feição) ---</source>
         <translation>--- No Grouping (Each Feature) ---</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1017"/>
+        <location filename="../vector_to_map.py" line="1028"/>
         <source>Confirmar Sobrescrita</source>
         <translation>Confirm Overwrite</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1017"/>
+        <location filename="../vector_to_map.py" line="1028"/>
         <source>Arquivos com os mesmos nomes já existem no diretório de destino.
 
 Deseja sobrescrevê-los?</source>
@@ -441,27 +446,27 @@ Deseja sobrescrevê-los?</source>
 Do you want to overwrite them?</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1118"/>
+        <location filename="../vector_to_map.py" line="1138"/>
         <source>Sucesso</source>
         <translation>Success</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1118"/>
+        <location filename="../vector_to_map.py" line="1138"/>
         <source>Exportação concluída com sucesso!</source>
         <translation>Export completed successfully!</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1126"/>
+        <location filename="../vector_to_map.py" line="1146"/>
         <source>Cancelado</source>
         <translation>Canceled</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1126"/>
+        <location filename="../vector_to_map.py" line="1146"/>
         <source>O processamento foi interrompido.</source>
         <translation>Processing was interrupted.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1130"/>
+        <location filename="../vector_to_map.py" line="1150"/>
         <source>Erro</source>
         <translation>Error</translation>
     </message>
