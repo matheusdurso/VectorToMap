@@ -3,33 +3,30 @@ name=VectorToMap
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.99
 description=Automates the generation of professional, multi-page print layouts from vector layers. Features include real-time layout previews, dynamic scale calculation, smart attribute rendering, layer isolation, and Atlas-style grouping.
-about=VectorToMap is the ultimate cartographic automation tool for QGIS, designed to save hours of manual layout work. Whether you need to generate individual maps for hundreds of properties, inspect assets, or create thematic map books, this plugin handles the heavy lifting.
- 
- Key features include:
- - Automated Multi-Page Layouts: Instantly create map books grouped by attributes or iterate through individual features.
- - Smart Attribute Rendering: Display feature data elegantly using customizable HTML forms or organized label rows.
- - Dynamic & Fixed Scaling: Automatically fit features to the map frame with intelligent margins, or lock to standard scales (from 1:1,000 up to 1:1,000,000).
- - Advanced Layer Management: Cleanly isolate features without messing up your main project using temporary memory layers. Full support for locking layer visibility and styles per page.
- - Real-Time Preview: Visualize your final layout in a lightning-fast preview window before generating the final maps.
- - Flexible Page Designs: Support for A4 to A0 sizes, portrait/landscape orientations, and custom map frame proportions.
- 
- Boost your productivity and standardize your map production with just a few clicks!
- 
- -----------------------------------------------------------
- 
+about=[English]
+ VectorToMap automates the creation of multi-page layouts and map books in QGIS, saving hours of manual work. Easily export hundreds of individual or attribute-grouped maps with dynamic scaling, smart layer isolation, and real-time previews. Boost your productivity and standardize your cartographic production with just a few clicks!
+
  [Português]
- O VectorToMap é a ferramenta definitiva de automação cartográfica para o QGIS, projetada para economizar horas de trabalho manual na montagem de layouts. Se você precisa gerar mapas individuais para centenas de propriedades, inspecionar infraestruturas ou criar cadernos de mapas temáticos, este plugin faz o trabalho pesado.
- 
- Principais recursos incluem:
- - Layouts Automáticos de Múltiplas Páginas: Crie instantaneamente cadernos de mapas agrupados por atributos ou itere por feições individuais.
- - Renderização Inteligente de Atributos: Exiba os dados das feições de forma elegante usando formulários HTML personalizáveis ou linhas de rótulos organizadas.
- - Escala Dinâmica e Fixa: Enquadre feições automaticamente no mapa com margens inteligentes, ou trave em escalas padrão (de 1:1.000 até 1:1.000.000).
- - Gerenciamento Avançado de Camadas: Isole feições de forma limpa sem bagunçar seu projeto principal usando camadas temporárias em memória. Suporte total para travar a visibilidade e os estilos das camadas por página.
- - Pré-visualização em Tempo Real: Visualize seu layout em uma janela de preview super rápida antes de gerar os mapas finais.
- - Designs de Página Flexíveis: Suporte para tamanhos de A4 a A0, orientações retrato/paisagem e proporções personalizadas de quadro de mapa.
- 
- Aumente sua produtividade e padronize sua produção de mapas com apenas alguns cliques!
-version=0.4.2
+ O VectorToMap automatiza a criação de layouts de múltiplas páginas e cadernos de mapas no QGIS, economizando horas de trabalho manual. Exporte facilmente centenas de mapas individuais ou agrupados por atributos com escala dinâmica, isolamento inteligente de camadas e pré-visualização em tempo real. Aumente sua produtividade e padronize sua produção cartográfica em poucos cliques!
+
+ [中文]
+ VectorToMap 在 QGIS 中自动创建多页布局和地图册，为您节省数小时的手动工作时间。凭借动态比例尺、智能图层隔离和实时预览功能，您可以轻松导出数百张单独的或按属性分组的地图。只需点击几下，即可提高您的工作效率并标准化您的制图流程！
+
+ [Deutsch]
+ VectorToMap automatisiert die Erstellung von mehrseitigen Layouts und Kartensammlungen in QGIS und spart Stunden an manueller Arbeit. Exportieren Sie mühelos Hunderte von individuellen oder nach Attributen gruppierten Karten mit dynamischer Skalierung, intelligenter Layer-Isolierung und Echtzeit-Vorschau. Steigern Sie Ihre Produktivität und standardisieren Sie Ihre Kartenproduktion mit nur wenigen Klicks!
+
+ [Italiano]
+ VectorToMap automatizza la creazione di layout multipagina e atlanti cartografici in QGIS, risparmiando ore di lavoro manuale. Esporta facilmente centinaia di mappe singole o raggruppate per attributi con ridimensionamento dinamico, isolamento intelligente dei layer e anteprime in tempo reale. Aumenta la tua produttività e standardizza la tua produzione cartografica con pochi clic!
+
+ [Español]
+ VectorToMap automatiza la creación de diseños de múltiples páginas y libros de mapas en QGIS, ahorrando horas de trabajo manual. Exporte fácilmente cientos de mapas individuales o agrupados por atributos con escala dinámica, aislamiento inteligente de capas y vistas previas en tiempo real. ¡Aumente su productividad y estandarice su producción cartográfica con unos pocos clics!
+
+ [Français]
+ VectorToMap automatise la création de mises en page multipages et d'atlas dans QGIS, économisant des heures de travail manuel. Exportez facilement des centaines de cartes individuelles ou regroupées par attributs avec une échelle dynamique, une isolation intelligente des couches et des aperçus en temps réel. Boostez votre productivité et standardisez votre production cartographique en quelques clics !
+
+ [Русский]
+ VectorToMap автоматизирует создание многостраничных макетов и атласов в QGIS, экономя часы ручной работы. Легко экспортируйте сотни отдельных или сгруппированных по атрибутам карт с динамическим масштабированием, умной изоляцией слоев и предварительным просмотром в реальном времени. Повысьте свою производительность и стандартизируйте картографическое производство всего в несколько кликов!
+version=0.4.3
 author=Matheus Durso
 email=matheusdursonc@gmail.com
 repository=https://github.com/matheusdurso/VectorToMap

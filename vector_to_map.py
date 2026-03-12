@@ -14,7 +14,7 @@ import gc
 import traceback
 from qgis.PyQt import sip
 from qgis.PyQt.QtCore import QTranslator, QCoreApplication, Qt, QTimer
-from qgis.PyQt.QtGui import QIcon, QPixmap
+from qgis.PyQt.QtGui import QIcon, QPixmap, QColor
 from qgis.PyQt.QtWidgets import QAction, QCheckBox, QTableWidgetItem, QFrame, QPushButton, QDialogButtonBox, QButtonGroup, QApplication, QGridLayout, QFileDialog, QMessageBox
 from qgis.core import (
     QgsProject, QgsPrintLayout, QgsLayoutSize, QgsUnitTypes, QgsLayoutItemMap, 
@@ -213,8 +213,8 @@ class VectorToMap:
                     width: 0px;
                 }
                 /* 4. PADRONIZAÇÃO DOS WIDGETS DE TEXTO */
-                QCheckBox, QLabel, QRadioButton {
-                    font-size: 10pt; 
+                QCheckBox, QLabel, QRadioButton, QgsMapLayerComboBox, QComboBox {
+                    font-size: 9pt; 
                 }
             """
             self.dlg.setStyleSheet(estilo_consolidado)
@@ -347,13 +347,29 @@ class VectorToMap:
             # Força a verificação inicial da hierarquia ao abrir a janela
             self.atualizar_hierarquia_camadas()
 
+            # ==========================================================
+            # --- SETUP DA COR DE FUNDO (NOVA FUNCIONALIDADE) ---
+            if hasattr(self.dlg, 'btn_cor_fundo'):
+                self.dlg.btn_cor_fundo.setColor(QColor(255, 255, 255, 255)) # Padrão: Branco Opaco
+                self.dlg.btn_cor_fundo.setAllowOpacity(True)
+                self.dlg.btn_cor_fundo.colorChanged.connect(self.disparar_preview_se_autorizado)
+                self.dlg.btn_cor_fundo.setToolTip(self.tr("Escolha a cor de fundo do mapa. Reduza a Opacidade para 0% para exportar transparente."))
+
+            if hasattr(self.dlg, 'chk_apenas_mapa'):
+                self.dlg.chk_apenas_mapa.stateChanged.connect(self.disparar_preview_se_autorizado)
+            # ==========================================================
+
             # --- MONITORING WIDGETS ---
             widgets = [
                 self.dlg.combo_tamanho_pagina, self.dlg.combo_presets, 
                 self.dlg.rb_retrato, self.dlg.rb_paisagem, 
                 self.dlg.chk_modo_formulario, self.dlg.chk_modo_individual,
-                self.dlg.combo_atlas
+                self.dlg.combo_atlas, self.dlg.chk_exibir_atributos
             ]
+
+            if hasattr(self.dlg, 'chk_apenas_mapa'): widgets.append(self.dlg.chk_apenas_mapa)
+            if hasattr(self.dlg, 'btn_cor_fundo'): widgets.append(self.dlg.btn_cor_fundo)
+
             for w in widgets:
                 if hasattr(w, 'currentIndexChanged'): w.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
                 elif hasattr(w, 'stateChanged'): w.stateChanged.connect(self.disparar_preview_se_autorizado)
@@ -942,9 +958,7 @@ class VectorToMap:
                 paginas_dados, colunas_selecionadas, None,
                 export_info=getattr(self, 'export_info', None) # Passa o dicionário
             )
-            if not self.abort_processing:
-                self.dlg.accept()
-                
+            
         self.export_info = None # Reseta a variável para o botão OK padrão
 
 
@@ -1059,8 +1073,10 @@ class VectorToMap:
                     exporter = QgsLayoutExporter(layout_temp)
                     
                     if ext in [".png", ".jpg", ".jpeg"]:
-                        image = exporter.renderPageToImage(0)
-                        image.save(caminho_final, ext.strip(".").upper())
+                        # Usa o motor nativo para garantir transparência e 300 DPI
+                        img_settings = QgsLayoutExporter.ImageExportSettings()
+                        img_settings.dpi = 300 
+                        exporter.exportToImage(caminho_final, img_settings)
                     else:
                         pdf_settings = QgsLayoutExporter.PdfExportSettings()
                         pdf_settings.dpi = 300
@@ -1161,13 +1177,56 @@ class VectorToMap:
                 w_map_f = h_map_f
                 x_map_f, y_map_f = w_pg - margin_padrao - w_map_f, y_zero_folha + margin_padrao
 
-        ##### CONFIGURAÇÕES DO ITEM DE MAPA, BOUNDING BOX, SISTEMA DE COORDENADAS E ESCALA#####
-        #Cria o item de mapa no layout
+        # ====================================================================
+        # --- VERIFICAÇÃO DO MODO "APENAS MAPA" E COR DE FUNDO ---
+        apenas_mapa = hasattr(self.dlg, 'chk_apenas_mapa') and self.dlg.chk_apenas_mapa.isChecked()
+        
+        cor_fundo = QColor(255, 255, 255, 255) # Branco Padrão
+        if hasattr(self.dlg, 'btn_cor_fundo'):
+            cor_fundo = self.dlg.btn_cor_fundo.color()
+
+        if apenas_mapa:
+            # Encolhe a folha de papel para ficar do tamanho exato do quadro do mapa
+            w_pg = w_map_f
+            h_pg = h_map_f
+            x_map_f = 0.0
+            y_zero_folha = pagina_index * (h_pg + 10)
+            y_map_f = y_zero_folha
+            pagina.setPageSize(QgsLayoutSize(w_pg, h_pg, QgsUnitTypes.LayoutMillimeters))
+
+        # --- NOVA REGRA: COMPORTAMENTO DA PÁGINA (PAPEL) ---
+        # Descobre se estamos fazendo uma exportação final em PNG
+        is_png_export = False
+        if not is_preview:
+            info = getattr(self, 'export_info', {}) or {}
+            if info.get('ext', '').lower() == '.png':
+                is_png_export = True
+
+        # Se for exportação PNG + Apenas Mapa, forçamos o "papel" a ser renderizado invisível
+        if apenas_mapa and is_png_export:
+            pagina.setBackgroundEnabled(True)
+            if pagina.pageStyleSymbol():
+                pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 0)) # Alpha 0 = 100% Transparente
+        else:
+            # Caso contrário (Preview, PDF, ou página completa), o papel continua branco
+            pagina.setBackgroundEnabled(True)
+            if pagina.pageStyleSymbol():
+                pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 255))
+
+        ##### CONFIGURAÇÕES DO ITEM DE MAPA E COR DO MAPA #####
+        # Cria o item de mapa no layout
         map_item = QgsLayoutItemMap(layout)
-        #Ativa o frame do mapa
-        map_item.setFrameEnabled(True)
-        #Adiciona o mapa ao layout
+        # Oculta a borda preta SE for "Apenas Mapa"
+        map_item.setFrameEnabled(not apenas_mapa) 
+        
+        # O fundo do mapa recebe exatamente a cor (e a transparência) escolhidas no botão
+        map_item.setBackgroundEnabled(True)
+        map_item.setBackgroundColor(cor_fundo)
+            
+        # Adiciona o mapa ao layout
         layout.addLayoutItem(map_item)
+        # ====================================================================
+        
         #Define o tamanho do mapa
         map_item.attemptResize(QgsLayoutSize(w_map_f, h_map_f, QgsUnitTypes.LayoutMillimeters))
         #Posiciona o mapa no local da página pre-determinado para ele
@@ -1312,7 +1371,8 @@ class VectorToMap:
         colunas = [cb.text() for cb in self.dlg.scrollAreaWidgetContents.findChildren(QCheckBox) if cb.isChecked()]
         limite_fundo = y_zero_folha + h_pg - margin_padrao
 
-        if colunas and feicoes_da_pagina:
+        # Renderiza os rótulos APENAS se a checkbox de exibição estiver ativada E NÃO for "apenas_mapa"
+        if colunas and feicoes_da_pagina and hasattr(self.dlg, 'chk_exibir_atributos') and self.dlg.chk_exibir_atributos.isChecked() and not apenas_mapa:
             # --- ÁREAS DE POSICIONAMENTO ---
             if preset == "75_altura":
                 # Layout de 1/3 lateral para o Preset 75 (Independente da orientação)
@@ -1441,7 +1501,8 @@ class VectorToMap:
                                 continue
                         yi += altura_linha
         
-        self.adicionar_numeracao_pagina(layout, w_pg, h_pg, y_zero_folha)
+        if not apenas_mapa:
+            self.adicionar_numeracao_pagina(layout, w_pg, h_pg, y_zero_folha)
 
 
     def adicionar_numeracao_pagina(self, layout, w_pg, h_pg, y_zero_folha):

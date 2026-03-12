@@ -1,172 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="it_IT">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>Dialog</name>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="31"/>
         <source>Dialog</source>
-        <translation>Finestra di dialogo</translation>
+        <translation>Диалог</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="74"/>
         <source>CAMADAS &amp; GEOMETRIA</source>
-        <translation>LAYER E GEOMETRIA</translation>
+        <translation>СЛОИ И ГЕОМЕТРИЯ</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="96"/>
         <source>Camada Vetorial:</source>
-        <translation>Layer Vettoriale:</translation>
+        <translation>Векторный слой:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="108"/>
         <source>Selecione a camada vetorial de interesse</source>
-        <translation>Seleziona il layer vettoriale di interesse</translation>
+        <translation>Выберите интересующий векторный слой</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="127"/>
         <source>Agrupar por Atributo:</source>
-        <translation>Raggruppa per Attributo:</translation>
+        <translation>Группировать по атрибуту:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="139"/>
         <source>Escolha um campo para agrupar as feições</source>
-        <translation>Scegli un campo per raggruppare gli elementi</translation>
+        <translation>Выберите поле для группировки объектов</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="160"/>
         <source>Escala:</source>
-        <translation>Scala:</translation>
+        <translation>Масштаб:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="167"/>
         <source>Centralização e zoom automáticos. Para pontos individuais a escala automática e fixada em 1:10.000</source>
-        <translation>Centratura e zoom automatici. Per i singoli punti la scala automatica è fissata a 1:10.000</translation>
+        <translation>Автоматическое центрирование и масштабирование. Для отдельных точек автоматический масштаб фиксируется на 1:10 000</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="170"/>
         <source>Automática</source>
-        <translation>Automatica</translation>
+        <translation>Автоматический</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="177"/>
         <source>Escolha dentre as opções de escala fixa</source>
-        <translation>Scegli tra le opzioni di scala fissa</translation>
+        <translation>Выберите из вариантов фиксированного масштаба</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="180"/>
         <source>Fixa:</source>
-        <translation>Fissa:</translation>
+        <translation>Фиксированный:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="187"/>
         <source>Selecione a escala desejada</source>
-        <translation>Seleziona la scala desiderata</translation>
+        <translation>Выберите желаемый масштаб</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="204"/>
         <source>Filtrar Geometrias:</source>
-        <translation>Filtra Geometrie:</translation>
+        <translation>Фильтр геометрии:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="211"/>
         <source>Exibe apenas a camada atual</source>
-        <translation>Mostra solo il layer corrente</translation>
+        <translation>Отображать только текущий слой</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="214"/>
         <source>Camada Atual</source>
-        <translation>Layer Corrente</translation>
+        <translation>Текущий слой</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="221"/>
         <source>Exibe apenas as feições vinculadas à página</source>
-        <translation>Mostra solo gli elementi associati alla pagina</translation>
+        <translation>Отображать только объекты, привязанные к странице</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="224"/>
         <source>Feições da Página</source>
-        <translation>Elementi della Pagina</translation>
+        <translation>Объекты страницы</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="262"/>
         <source>LAYOUT &amp; DESIGN</source>
-        <translation>LAYOUT E DESIGN</translation>
+        <translation>МАКЕТ И ДИЗАЙН</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="279"/>
         <source>Exibição de Camadas:</source>
-        <translation>Visualizzazione Layer:</translation>
+        <translation>Отображение слоев:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="286"/>
         <source>Cria mapas com a opção "Travar Camadas" ativada</source>
-        <translation>Crea mappe con l'opzione "Blocca i layer" attivata</translation>
+        <translation>Создает карты с включенной опцией «Заблокировать слои»</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="289"/>
         <source>Travar Camadas</source>
-        <translation>Blocca i layer</translation>
+        <translation>Заблокировать слои</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="296"/>
         <source>Trava os estilos do mapa</source>
-        <translation>Blocca gli stili della mappa</translation>
+        <translation>Блокирует стили карты</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="299"/>
         <source>Travar Estilos</source>
-        <translation>Blocca gli stili</translation>
+        <translation>Заблокировать стили</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="318"/>
         <source>Modelo de Layout:</source>
-        <translation>Modello di Layout:</translation>
+        <translation>Шаблон макета:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="330"/>
         <source>Escolha uma pré-definição de layout</source>
-        <translation>Scegli un predefinito per il layout</translation>
+        <translation>Выберите предустановку макета</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="334"/>
         <source>Mapa Quadrado (Margem 1cm)</source>
-        <translation>Mappa Quadrata (Margine 1cm)</translation>
+        <translation>Квадратная карта (Поле 1 см)</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="339"/>
         <source>75% da Altura (Base fixada)</source>
-        <translation>75% dell'Altezza (Base fissa)</translation>
+        <translation>75% высоты (Фиксированная база)</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="354"/>
         <source>Cria layouts apenas com a área do item de mapa.</source>
-        <translation>Crea layout solo con l'area dell'elemento mappa.</translation>
+        <translation>Создает макеты только с областью элемента карты.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="357"/>
         <source>Gerar Itens de Mapa Avulsos</source>
-        <translation>Esporta solo la mappa</translation>
+        <translation>Экспортировать только карту</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="364"/>
         <source>Cor de Fundo do Mapa:</source>
-        <translation>Colore di sfondo della mappa:</translation>
+        <translation>Цвет фона карты:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="374"/>
         <source>Selecione a cor e transparência do fundo do item de mapa.</source>
-        <translation>Seleziona il colore e la trasparenza dello sfondo dell'elemento mappa.</translation>
+        <translation>Выберите цвет и прозрачность фона элемента карты.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="393"/>
         <source>Tamanho da Página:</source>
-        <translation>Dimensione della Pagina:</translation>
+        <translation>Размер страницы:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="405"/>
         <source>Escolha o tamanho da folha</source>
-        <translation>Scegli la dimensione del foglio</translation>
+        <translation>Выберите размер листа</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="409"/>
@@ -196,137 +196,137 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="452"/>
         <source>Orientação:</source>
-        <translation>Orientamento:</translation>
+        <translation>Ориентация:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="464"/>
         <source>Página Vertical</source>
-        <translation>Pagina Verticale</translation>
+        <translation>Вертикальная страница</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="467"/>
         <source>Retrato</source>
-        <translation>Verticale</translation>
+        <translation>Книжная</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="482"/>
         <source>Página na horizontal</source>
-        <translation>Pagina Orizzontale</translation>
+        <translation>Горизонтальная страница</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="485"/>
         <source>Paisagem</source>
-        <translation>Orizzontale</translation>
+        <translation>Альбомная</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="499"/>
         <source>Numeração de Página:</source>
-        <translation>Numerazione di Pagina:</translation>
+        <translation>Нумерация страниц:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="511"/>
         <source>Adiciona numeração sequencial às páginas.</source>
-        <translation>Aggiunge la numerazione sequenziale alle pagine.</translation>
+        <translation>Добавляет последовательную нумерацию страниц.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="517"/>
         <source>Adicionar Numero de Página</source>
-        <translation>Aggiungi Numero di Pagina</translation>
+        <translation>Добавить номер страницы</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="542"/>
         <source>TABELA DE ATRIBUTOS</source>
-        <translation>TABELLA DEGLI ATTRIBUTI</translation>
+        <translation>ТАБЛИЦА АТРИБУТОВ</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="559"/>
         <source>Habilita ou desabilita a exibição dos rótulos de atributos no mapa final.</source>
-        <translation>Abilita o disabilita la visualizzazione delle etichette degli attributi sulla mappa finale.</translation>
+        <translation>Включает или отключает отображение меток атрибутов на итоговой карте.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="562"/>
         <source>Exibir Atributos</source>
-        <translation>Mostra Attributi</translation>
+        <translation>Показывать атрибуты</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="583"/>
         <source>Seleciona todas as colunas da tabela de atributos para serem exibidas no mapa.</source>
-        <translation>Seleziona tutte le colonne della tabella degli attributi per mostrarle sulla mappa.</translation>
+        <translation>Выбирает все столбцы таблицы атрибутов для отображения на карте.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="586"/>
         <source>Marcar Todas as Colunas</source>
-        <translation>Seleziona Tutte le Colonne</translation>
+        <translation>Выбрать все столбцы</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="610"/>
         <source>Selecione os campos que deseja exibir no mapa.</source>
-        <translation>Seleziona i campi che desideri mostrare sulla mappa.</translation>
+        <translation>Выберите поля, которые вы хотите отобразить на карте.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="682"/>
         <source>Tabela de Atributos</source>
-        <translation>Tabella degli Attributi</translation>
+        <translation>Таблица атрибутов</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="703"/>
         <source>Pré-visualização dos campos da tabela de atributos</source>
-        <translation>Anteprima dei campi della tabella degli attributi</translation>
+        <translation>Предварительный просмотр полей таблицы атрибутов</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="730"/>
         <source>Modo de Exibição:</source>
-        <translation>Modalità di Visualizzazione:</translation>
+        <translation>Режим отображения:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="742"/>
         <source>Exibe os atributos no modo formulário.</source>
-        <translation>Mostra gli attributi in modalità modulo.</translation>
+        <translation>Отображает атрибуты в режиме формы.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="745"/>
         <source>Formulário</source>
-        <translation>Modulo</translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="757"/>
         <source>Exibe os textos individuais dos atributos.</source>
-        <translation>Mostra i testi individuali degli attributi.</translation>
+        <translation>Отображает отдельные тексты атрибутов.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="760"/>
         <source>Texto Individual</source>
-        <translation>Testo Individuale</translation>
+        <translation>Отдельный текст</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="787"/>
         <source>Exporta cada página como um arquivo PDF individual.</source>
-        <translation>Esporta ogni pagina come file PDF individuale.</translation>
+        <translation>Экспортирует каждую страницу как отдельный PDF-файл.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="793"/>
         <source>Exportar PDFs Individuais</source>
-        <translation>Esporta PDF Individuali</translation>
+        <translation>Экспорт отдельных PDF</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="839"/>
         <source>Atualiza a pré-visualização automaticamente sempre que um campo é alterado.</source>
-        <translation>Aggiorna l'anteprima automaticamente ogni volta che viene modificato un campo.</translation>
+        <translation>Автоматически обновляет предварительный просмотр при изменении поля.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="845"/>
         <source>Pré-Visualização Automática</source>
-        <translation>Anteprima Automatica</translation>
+        <translation>Автоматический предпросмотр</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="867"/>
         <source>Visualização da primeira página do layout.</source>
-        <translation>Anteprima della prima pagina del layout.</translation>
+        <translation>Предварительный просмотр первой страницы макета.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="876"/>
         <source>Aguardando configuração de pré-visualização...</source>
-        <translation>In attesa della configurazione dell'anteprima...</translation>
+        <translation>Ожидание настройки предпросмотра...</translation>
     </message>
 </context>
 <context>
@@ -339,7 +339,7 @@
     <message>
         <location filename="../vector_to_map.py" line="275"/>
         <source>Preview</source>
-        <translation>Anteprima</translation>
+        <translation>Предпросмотр</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="105"/>
@@ -349,121 +349,121 @@
     <message>
         <location filename="../vector_to_map.py" line="274"/>
         <source>Exportar</source>
-        <translation>Esporta</translation>
+        <translation>Экспорт</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="276"/>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation>ОК</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="277"/>
         <source>Cancelar</source>
-        <translation>Annulla</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="356"/>
         <source>Escolha a cor de fundo do mapa. Reduza a Opacidade para 0% para exportar transparente.</source>
-        <translation>Scegli il colore di sfondo della mappa. Riduci l'opacità allo 0% per esportare con sfondo trasparente.</translation>
+        <translation>Выберите цвет фона карты. Уменьшите непрозрачность до 0% для экспорта с прозрачным фоном.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="409"/>
         <source>Exportar Mapas</source>
-        <translation>Esporta Mappe</translation>
+        <translation>Экспорт карт</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="541"/>
         <source>⚠️ Aviso: O filtro de feições cria camadas temporárias para cada feição ou grupo de feições.</source>
-        <translation>⚠️ Avviso: Il filtro degli elementi crea layer temporanei per ogni elemento o gruppo di elementi.</translation>
+        <translation>⚠️ Внимание: Фильтр объектов создает временные слои для каждого объекта или группы объектов.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="562"/>
         <source>Exibe todos os atributos em um bloco único de texto (HTML).</source>
-        <translation>Mostra tutti gli attributi in un singolo blocco di testo (HTML).</translation>
+        <translation>Отображает все атрибуты в едином текстовом блоке (HTML).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="563"/>
         <source>Cria uma linha horizontal para cada feição (evita sobreposições).</source>
-        <translation>Crea una linea orizzontale per ogni elemento (evita sovrapposizioni).</translation>
+        <translation>Создает горизонтальную линию для каждого объекта (предотвращает наложение).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="564"/>
         <source>Marca ou desmarca todos os campos da lista de uma vez.</source>
-        <translation>Seleziona o deseleziona tutti i campi della lista in una sola volta.</translation>
+        <translation>Отмечает или снимает отметки со всех полей в списке одновременно.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="565"/>
         <source>Campo da tabela usado para agrupar as feições em cada página.</source>
-        <translation>Campo della tabella utilizzato per raggruppare gli elementi in ogni pagina.</translation>
+        <translation>Поле таблицы, используемое для группировки объектов на каждой странице.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="566"/>
         <source>Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado).</source>
-        <translation>Definisce la dimensione della mappa sul foglio (es: 75% della pagina o Quadrata).</translation>
+        <translation>Определяет размер карты на листе (например, 75% страницы или квадрат).</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="567"/>
         <source>Gera uma prévia do layout com as configurações atuais.</source>
-        <translation>Genera un'anteprima del layout con le impostazioni attuali.</translation>
+        <translation>Генерирует предварительный просмотр макета с текущими настройками.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="568"/>
         <source>Exporta os mapas diretamente como PDF, PNG ou JPG.</source>
-        <translation>Esporta le mappe direttamente come PDF, PNG o JPG.</translation>
+        <translation>Экспортирует карты напрямую в форматы PDF, PNG или JPG.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="579"/>
         <source>Aviso</source>
-        <translation>Avviso</translation>
+        <translation>Предупреждение</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="579"/>
         <source>Cancelando processamento... A janela permanecerá aberta.</source>
-        <translation>Annullamento dell'elaborazione... La finestra rimarrà aperta.</translation>
+        <translation>Отмена обработки... Окно останется открытым.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="613"/>
         <source>--- No Grouping (Each Feature) ---</source>
-        <translation>--- Nessun Raggruppamento (Ogni Elemento) ---</translation>
+        <translation>--- Без группировки (каждый объект) ---</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1017"/>
         <source>Confirmar Sobrescrita</source>
-        <translation>Conferma Sovrascrittura</translation>
+        <translation>Подтвердить перезапись</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1017"/>
         <source>Arquivos com os mesmos nomes já existem no diretório de destino.
 
 Deseja sobrescrevê-los?</source>
-        <translation>I file con gli stessi nomi esistono già nella directory di destinazione.
+        <translation>Файлы с такими же именами уже существуют в целевом каталоге.
 
-Vuoi sovrascriverli?</translation>
+Вы хотите их перезаписать?</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1118"/>
         <source>Sucesso</source>
-        <translation>Successo</translation>
+        <translation>Успешно</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1118"/>
         <source>Exportação concluída com sucesso!</source>
-        <translation>Esportazione completata con successo!</translation>
+        <translation>Экспорт успешно завершен!</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1126"/>
         <source>Cancelado</source>
-        <translation>Annullato</translation>
+        <translation>Отменено</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1126"/>
         <source>O processamento foi interrompido.</source>
-        <translation>L'elaborazione è stata interrotta.</translation>
+        <translation>Обработка была прервана.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="1130"/>
         <source>Erro</source>
-        <translation>Errore</translation>
+        <translation>Ошибка</translation>
     </message>
 </context>
 </TS>
