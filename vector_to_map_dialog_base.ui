@@ -143,54 +143,6 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,2,0,3">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="label_8">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Escala:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="rb_escala_auto">
-            <property name="toolTip">
-             <string>Centralização e zoom automáticos. Para pontos individuais a escala automática e fixada em 1:10.000</string>
-            </property>
-            <property name="text">
-             <string>Automática</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="rb_escala_fixa">
-            <property name="toolTip">
-             <string>Escolha dentre as opções de escala fixa</string>
-            </property>
-            <property name="text">
-             <string>Fixa:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="combo_escala_fixa">
-            <property name="toolTip">
-             <string>Selecione a escala desejada</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,0,0">
           <property name="topMargin">
            <number>0</number>
@@ -239,6 +191,54 @@
            <set>Qt::AlignCenter</set>
           </property>
          </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,0,2">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_8">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Escala:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rb_escala_auto">
+            <property name="toolTip">
+             <string>Centralização e zoom automáticos. Para pontos individuais a escala automática e fixada em 1:10.000</string>
+            </property>
+            <property name="text">
+             <string>Automática</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rb_escala_fixa">
+            <property name="toolTip">
+             <string>Escolha dentre as opções de escala fixa</string>
+            </property>
+            <property name="text">
+             <string>Fixa:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="combo_escala_fixa">
+            <property name="toolTip">
+             <string>Selecione a escala desejada</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_16">
