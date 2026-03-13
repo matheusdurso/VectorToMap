@@ -3,11 +3,11 @@ name=VectorToMap
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.99
 description=Automates the generation of professional, multi-page print layouts from vector layers. Features include real-time layout previews, dynamic scale calculation, smart attribute rendering, layer isolation, and Atlas-style grouping.
-about=[English]
- VectorToMap automates the creation of multi-page layouts and map books in QGIS, saving hours of manual work. Easily export hundreds of individual or attribute-grouped maps with dynamic scaling, smart layer isolation, and real-time previews. Boost your productivity and standardize your cartographic production with just a few clicks!
-
- [Português]
+about=[Português]
  O VectorToMap automatiza a criação de layouts de múltiplas páginas e cadernos de mapas no QGIS, economizando horas de trabalho manual. Exporte facilmente centenas de mapas individuais ou agrupados por atributos com escala dinâmica, isolamento inteligente de camadas e pré-visualização em tempo real. Aumente sua produtividade e padronize sua produção cartográfica em poucos cliques!
+
+ [English]
+ VectorToMap automates the creation of multi-page layouts and map books in QGIS, saving hours of manual work. Easily export hundreds of individual or attribute-grouped maps with dynamic scaling, smart layer isolation, and real-time previews. Boost your productivity and standardize your cartographic production with just a few clicks!
 
  [中文]
  VectorToMap 在 QGIS 中自动创建多页布局和地图册，为您节省数小时的手动工作时间。凭借动态比例尺、智能图层隔离和实时预览功能，您可以轻松导出数百张单独的或按属性分组的地图。只需点击几下，即可提高您的工作效率并标准化您的制图流程！
@@ -26,7 +26,7 @@ about=[English]
 
  [Русский]
  VectorToMap автоматизирует создание многостраничных макетов и атласов в QGIS, экономя часы ручной работы. Легко экспортируйте сотни отдельных или сгруппированных по атрибутам карт с динамическим масштабированием, умной изоляцией слоев и предварительным просмотром в реальном времени. Повысьте свою производительность и стандартизируйте картографическое производство всего в несколько кликов!
-version=0.4.4
+version=0.4.5
 author=Matheus Durso
 email=matheusdursonc@gmail.com
 repository=https://github.com/matheusdurso/VectorToMap

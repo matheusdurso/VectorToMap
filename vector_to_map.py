@@ -145,260 +145,268 @@ class VectorToMap:
         # 5. Coleta de lixo final
         gc.collect()
 
-    ##################################################################################
-    # --- 2. INTERFACE E DIÁLOGO ---
-    ##################################################################################
+    
+    # ##################################################################################
+    # --- 2. INTERFACE E DIÁLOGO (REFATORADO v0.4.4) ---
+    # ##################################################################################
 
     def run(self):
-        """Initialize the UI and set up window flags and button logic."""
+        """Maestro da Interface: Inicializa a UI e orquestra a montagem da janela."""
         if self.first_start:
             self.first_start = False
             self.dlg = VectorToMapDialog()
 
-            # 1. Tenta desconectar qualquer link automático que o Qt Designer criou
-            try:
-                self.dlg.button_box.accepted.disconnect()
-                self.dlg.button_box.rejected.disconnect()
-            except:
-                pass # Caso não haja conexão prévia
+            # 1. Aplica as cores e estilos visuais
+            self._aplicar_estilos()
 
-            # --- ESTILO CONSOLIDADO V0.3.0 (AZUL PROFISSIONAL & CLEAN) ---
-            estilo_consolidado = """
-                /* 1. ESTILO GERAL DAS BARRAS DE PROGRESSO */
-                QProgressBar {
-                    border: 1px solid #dcdcdc;
-                    border-radius: 4px;
-                    text-align: center;
-                    background-color: #f0f0f0;
-                    height: 14px;
-                    font-size: 10px;
-                    color: #333;
-                }
-                QProgressBar::chunk {
-                    background-color: #3498db; /* Azul Claro */
-                    border-radius: 3px;
-                }
+            # 2. Preenche as listas e cria os botões personalizados
+            self._configurar_widgets_iniciais()
 
-                /* 2. BARRA DA PREVIEW (ULTRA-FINA ESTILO YOUTUBE) */
-                QProgressBar#previewProgressBar {
-                    border: 1px solid #dcdcdc;
-                    border-radius: 4px;
-                    background-color: #f0f0f0;
-                    height: 3px;
-                    color: #333; 
-                }
-                QProgressBar#previewProgressBar::chunk {
-                    background-color: #3498db;
-                    border-radius: 3px;
-                }
+            # 3. Conecta os cliques e gatilhos de eventos
+            self._conectar_sinais()
 
-                /* 3. BARRAS DE ROLAGEM MODERNAS (SCROLLBARS) */
-                QScrollBar:vertical, QScrollBar:horizontal {
-                    border: none;
-                    background: #f8f8f8;
-                    width: 8px;
-                    height: 8px;
-                    margin: 0px;
-                }
-                QScrollBar::handle {
-                    background: #cccccc;
-                    border-radius: 4px;
-                    min-height: 20px;
-                    min-width: 20px;
-                }
-                QScrollBar::handle:hover {
-                    background: #707070; /* cinza */
-                }
-                QScrollBar::add-line, QScrollBar::sub-line {
-                    border: none;
-                    background: none;
-                    height: 0px;
-                    width: 0px;
-                }
-                /* 4. PADRONIZAÇÃO DOS WIDGETS DE TEXTO */
-                QCheckBox, QLabel, QRadioButton, QgsMapLayerComboBox, QComboBox {
-                    font-size: 9pt; 
-                }
-            """
-            self.dlg.setStyleSheet(estilo_consolidado)
-            self.dlg.previewProgressBar.hide()
-            self.dlg.progressBar.hide()
+            # 4. Ajusta o tamanho, posição e comportamento da janela no Windows/Mac
+            self._configurar_janela()
 
-            # --- ISOLAMENTO DOS RADIO BUTTONS (v0.2.8) ---
-            self.grupo_orientacao = QButtonGroup(self.dlg)
-            self.grupo_orientacao.addButton(self.dlg.rb_retrato)
-            self.grupo_orientacao.addButton(self.dlg.rb_paisagem)
+            # 5. Prepara os textos para tradução
+            self.setup_ui_strings()  
 
-            self.grupo_escala = QButtonGroup(self.dlg)
-            self.grupo_escala.addButton(self.dlg.rb_escala_auto)
-            self.grupo_escala.addButton(self.dlg.rb_escala_fixa)
+        self.dlg.show()
 
-            # --- SETUP TAMANHOS DE PÁGINA (v0.2.8) ---
-            self.dlg.combo_tamanho_pagina.clear()
-            tamanhos_disponiveis = [
-                ("A5 (148 x 210 mm)", (148.0, 210.0)),
-                ("A4 (210 x 297 mm)", (210.0, 297.0)),
-                ("A3 (297 x 420 mm)", (297.0, 420.0)),
-                ("A2 (420 x 594 mm)", (420.0, 594.0)),
-                ("A1 (594 x 841 mm)", (594.0, 841.0)),
-                ("A0 (841 x 1189 mm)", (841.0, 1189.0))
-            ]
-            for texto, dimensoes in tamanhos_disponiveis:
-                self.dlg.combo_tamanho_pagina.addItem(texto, dimensoes)
-            
-            # Força o A4 (índice 1) a ser o padrão selecionado ao abrir a janela
-            self.dlg.combo_tamanho_pagina.setCurrentIndex(1)
 
-            # --- SETUP ESCALA (v0.2.8) ---
-            self.dlg.combo_escala_fixa.clear()
-            escalas = [
-                ("1:1.000", 1000), ("1:5.000", 5000), ("1:10.000", 10000),
-                ("1:50.000", 50000), ("1:100.000", 100000), 
-                ("1:250.000", 250000), ("1:500.000", 500000), ("1:1.000.000", 1000000),
-                ("1:2.500.000", 2500000), ("1:5.000.000", 5000000), ("1:7.500.000", 7500000),
-                ("1:10.000.000", 10000000)
-            ]
-            for texto, valor in escalas:
-                self.dlg.combo_escala_fixa.addItem(texto, valor)
-            self.dlg.combo_escala_fixa.setCurrentIndex(2)
+    # ------------------------------------------------------------------------------------
+    # --- SUB-FUNÇÕES DE INTERFACE ---
+    # ------------------------------------------------------------------------------------
 
-            self.dlg.mMapLayerComboBox.layerChanged.connect(self.configurar_escala_ao_mudar_camada)
-            self.configurar_escala_ao_mudar_camada() 
+    def _aplicar_estilos(self):
+        """Injeta o CSS consolidado (Azul Profissional & Clean) e esconde barras padrão."""
+        estilo_consolidado = """
+            /* 1. ESTILO GERAL DAS BARRAS DE PROGRESSO */
+            QProgressBar {
+                border: 1px solid #dcdcdc;
+                border-radius: 4px;
+                text-align: center;
+                background-color: #f0f0f0;
+                height: 14px;
+                font-size: 10px;
+                color: #333;
+            }
+            QProgressBar::chunk {
+                background-color: #3498db; /* Azul Claro */
+                border-radius: 3px;
+            }
 
-            self.dlg.rb_escala_auto.toggled.connect(self.validar_geometria_escala)
-            self.dlg.rb_escala_fixa.toggled.connect(self.validar_geometria_escala)
-            self.dlg.rb_escala_auto.toggled.connect(self.disparar_preview_se_autorizado)
-            self.dlg.rb_escala_fixa.toggled.connect(self.disparar_preview_se_autorizado)
-            self.dlg.combo_escala_fixa.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
-            
-            # --- SETUP DE BOTÕES COM ORDEM FORÇADA ---
-            
-            # 1. Limpa qualquer botão que tenha vindo do Qt Designer
-            self.dlg.button_box.clear()
-            
-            # 2. Criamos TODOS os botões manualmente (inclusive OK e Cancelar)
-            self.btn_export = QPushButton(self.tr("Exportar"))
-            self.btn_render = QPushButton(self.tr("Preview"))
-            self.btn_ok = QPushButton(self.tr("OK"))
-            self.btn_cancel = QPushButton(self.tr("Cancelar"))
+            /* 2. BARRA DA PREVIEW (ULTRA-FINA ESTILO YOUTUBE) */
+            QProgressBar#previewProgressBar {
+                border: 1px solid #dcdcdc;
+                border-radius: 4px;
+                background-color: #f0f0f0;
+                height: 3px;
+                color: #333; 
+            }
+            QProgressBar#previewProgressBar::chunk {
+                background-color: #3498db;
+                border-radius: 3px;
+            }
 
-            # 3. Adicionamos todos com a 'ActionRole' para obrigar o Qt a enfileirá-los da esquerda para a direita
-            self.dlg.button_box.addButton(self.btn_export, QDialogButtonBox.ButtonRole.ActionRole)
-            self.dlg.button_box.addButton(self.btn_render, QDialogButtonBox.ButtonRole.ActionRole)
-            self.dlg.button_box.addButton(self.btn_ok, QDialogButtonBox.ButtonRole.ActionRole)
-            self.dlg.button_box.addButton(self.btn_cancel, QDialogButtonBox.ButtonRole.ActionRole)
+            /* 3. BARRAS DE ROLAGEM MODERNAS (SCROLLBARS) */
+            QScrollBar:vertical, QScrollBar:horizontal {
+                border: none;
+                background: #f8f8f8;
+                width: 8px;
+                height: 8px;
+                margin: 0px;
+            }
+            QScrollBar::handle {
+                background: #cccccc;
+                border-radius: 4px;
+                min-height: 20px;
+                min-width: 20px;
+            }
+            QScrollBar::handle:hover {
+                background: #707070; /* cinza */
+            }
+            QScrollBar::add-line, QScrollBar::sub-line {
+                border: none;
+                background: none;
+                height: 0px;
+                width: 0px;
+            }
+            /* 4. PADRONIZAÇÃO DOS WIDGETS DE TEXTO */
+            QCheckBox, QLabel, QRadioButton, QgsMapLayerComboBox, QComboBox {
+                font-size: 9pt; 
+            }
+        """
+        self.dlg.setStyleSheet(estilo_consolidado)
+        self.dlg.previewProgressBar.hide()
+        self.dlg.progressBar.hide()
+        self.dlg.lbl_preview.setFrameShape(QFrame.Shape.StyledPanel)
 
-            # 4. Conexões dos botões extras
-            self.btn_export.clicked.connect(self.preparar_exportacao)
-            self.btn_render.clicked.connect(self.atualizar_preview)
-            self.export_info = None
 
-            self.dlg.combo_presets.setItemData(0, "quadrado")
-            self.dlg.combo_presets.setItemData(1, "75_altura")
-            # Adiciona a nova opção via código de forma invisível
-            self.dlg.combo_presets.addItem(self.tr("Mapa Vertical"), "vertical")
+    def _configurar_widgets_iniciais(self):
+        """Popula as ComboBoxes, recria os botões na ordem certa e define variáveis de estado."""
+        # Isolamento dos Radio Buttons
+        self.grupo_orientacao = QButtonGroup(self.dlg)
+        self.grupo_orientacao.addButton(self.dlg.rb_retrato)
+        self.grupo_orientacao.addButton(self.dlg.rb_paisagem)
 
-            self.dlg.setWindowIcon(QIcon(':/plugins/vector_to_map/icon.png'))
-            self.dlg.setWindowTitle("VectorToMap")
-            # Garante que o aviso de feições comece escondido
-            if hasattr(self.dlg, 'lbl_aviso_feicoes'):
-                self.dlg.lbl_aviso_feicoes.hide()
+        self.grupo_escala = QButtonGroup(self.dlg)
+        self.grupo_escala.addButton(self.dlg.rb_escala_auto)
+        self.grupo_escala.addButton(self.dlg.rb_escala_fixa)
 
-            # --- CONFIGURAÇÃO DE JANELA PROFISSIONAL ---
-            self.dlg.setWindowFlags(
-                Qt.WindowType.Window | 
-                Qt.WindowType.WindowMinimizeButtonHint | 
-                Qt.WindowType.WindowMaximizeButtonHint | 
-                Qt.WindowType.WindowCloseButtonHint
+        # Setup Tamanhos de Página
+        self.dlg.combo_tamanho_pagina.clear()
+        tamanhos_disponiveis = [
+            ("A5 (148 x 210 mm)", (148.0, 210.0)),
+            ("A4 (210 x 297 mm)", (210.0, 297.0)),
+            ("A3 (297 x 420 mm)", (297.0, 420.0)),
+            ("A2 (420 x 594 mm)", (420.0, 594.0)),
+            ("A1 (594 x 841 mm)", (594.0, 841.0)),
+            ("A0 (841 x 1189 mm)", (841.0, 1189.0))
+        ]
+        for texto, dimensoes in tamanhos_disponiveis:
+            self.dlg.combo_tamanho_pagina.addItem(texto, dimensoes)
+        self.dlg.combo_tamanho_pagina.setCurrentIndex(1) # Força o A4
+
+        # Setup Escala
+        self.dlg.combo_escala_fixa.clear()
+        escalas = [
+            ("1:1.000", 1000), ("1:5.000", 5000), ("1:10.000", 10000),
+            ("1:50.000", 50000), ("1:100.000", 100000), 
+            ("1:250.000", 250000), ("1:500.000", 500000), ("1:1.000.000", 1000000),
+            ("1:2.500.000", 2500000), ("1:5.000.000", 5000000), ("1:7.500.000", 7500000),
+            ("1:10.000.000", 10000000)
+        ]
+        for texto, valor in escalas:
+            self.dlg.combo_escala_fixa.addItem(texto, valor)
+        self.dlg.combo_escala_fixa.setCurrentIndex(2)
+
+        # Filtro de Camadas Vectoriais
+        self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
+
+        # Setup de Presets
+        self.dlg.combo_presets.setItemData(0, "quadrado")
+        self.dlg.combo_presets.setItemData(1, "75_altura")
+        self.dlg.combo_presets.addItem(self.tr("Mapa Vertical"), "vertical")
+
+        # Setup de Cor de Fundo
+        if hasattr(self.dlg, 'btn_cor_fundo'):
+            self.dlg.btn_cor_fundo.setColor(QColor(255, 255, 255, 255))
+            self.dlg.btn_cor_fundo.setAllowOpacity(True)
+            self.dlg.btn_cor_fundo.setToolTip(self.tr("Escolha a cor de fundo do mapa. Reduza a Opacidade para 0% para exportar transparente."))
+
+        # Reconstrução Segura dos Botões
+        try:
+            self.dlg.button_box.accepted.disconnect()
+            self.dlg.button_box.rejected.disconnect()
+        except: pass
+
+        self.dlg.button_box.clear()
+        self.btn_export = QPushButton(self.tr("Exportar"))
+        self.btn_render = QPushButton(self.tr("Preview"))
+        self.btn_ok = QPushButton(self.tr("OK"))
+        self.btn_cancel = QPushButton(self.tr("Cancelar"))
+
+        self.dlg.button_box.addButton(self.btn_export, QDialogButtonBox.ButtonRole.ActionRole)
+        self.dlg.button_box.addButton(self.btn_render, QDialogButtonBox.ButtonRole.ActionRole)
+        self.dlg.button_box.addButton(self.btn_ok, QDialogButtonBox.ButtonRole.ActionRole)
+        self.dlg.button_box.addButton(self.btn_cancel, QDialogButtonBox.ButtonRole.ActionRole)
+
+        # Variáveis de Estado
+        self.export_info = None
+        self.abort_processing = False
+        self.is_rendering = False
+        
+        # Setup Timer Preview
+        self.timer_preview = QTimer()
+        self.timer_preview.setSingleShot(True)
+
+
+    def _conectar_sinais(self):
+        """Faz todas as ligações entre as ações do usuário (cliques) e as funções lógicas."""
+        # Botões Principais
+        self.btn_export.clicked.connect(self.preparar_exportacao)
+        self.btn_render.clicked.connect(self.atualizar_preview)
+        self.btn_ok.clicked.connect(self.processar_clique_ok)
+        self.btn_cancel.clicked.connect(self.cancelar_e_fechar)
+
+        # Timer e Preview Auto
+        self.timer_preview.timeout.connect(self.atualizar_preview)
+        if hasattr(self.dlg, 'chk_preview_auto'):
+            self.dlg.chk_preview_auto.setChecked(False)
+            self.dlg.chk_preview_auto.stateChanged.connect(
+                lambda state: self.timer_preview.start(250) if state == Qt.CheckState.Checked else None
             )
+
+        # Gatilhos de Escala e Camada
+        self.dlg.mMapLayerComboBox.layerChanged.connect(self.configurar_escala_ao_mudar_camada)
+        self.dlg.mMapLayerComboBox.layerChanged.connect(self.disparar_preview_se_autorizado)
+        self.dlg.rb_escala_auto.toggled.connect(self.validar_geometria_escala)
+        self.dlg.rb_escala_fixa.toggled.connect(self.validar_geometria_escala)
+        
+        # Gatilhos de Layout
+        self.dlg.chk_selecionar_todos.stateChanged.connect(self.marcar_desmarcar_todos)
+        self.dlg.chk_numeracao.toggled.connect(self.disparar_preview_se_autorizado)
+        if hasattr(self.dlg, 'chk_apenas_mapa'): self.dlg.chk_apenas_mapa.stateChanged.connect(self.disparar_preview_se_autorizado)
+        if hasattr(self.dlg, 'btn_cor_fundo'): self.dlg.btn_cor_fundo.colorChanged.connect(self.disparar_preview_se_autorizado)
+
+        # Gatilhos de Hierarquia e Trava de Estilos
+        self.dlg.chk_filtrar_feicoes.stateChanged.connect(self.atualizar_hierarquia_camadas)
+        self.dlg.chk_exibir_so_camada_atual.stateChanged.connect(self.atualizar_hierarquia_camadas)
+        self.dlg.chk_travar_camadas.stateChanged.connect(self.atualizar_estado_travar_estilos)
+
+        # Monitoramento em Massa para Disparo de Preview
+        widgets_preview = [
+            self.dlg.combo_tamanho_pagina, self.dlg.combo_presets, self.dlg.combo_atlas,
+            self.dlg.rb_retrato, self.dlg.rb_paisagem, self.dlg.combo_escala_fixa,
+            self.dlg.chk_modo_formulario, self.dlg.chk_modo_individual, self.dlg.chk_exibir_atributos,
+            self.dlg.rb_escala_auto, self.dlg.rb_escala_fixa, 
+            self.dlg.chk_filtrar_feicoes, self.dlg.chk_exibir_so_camada_atual
+        ]
+        for w in widgets_preview:
+            if hasattr(w, 'currentIndexChanged'): w.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
+            elif hasattr(w, 'stateChanged'): w.stateChanged.connect(self.disparar_preview_se_autorizado)
+            elif hasattr(w, 'toggled'): w.toggled.connect(self.disparar_preview_se_autorizado)
             
-            self.is_rendering = False
-            self.timer_preview = QTimer()
-            self.timer_preview.setSingleShot(True)
-            self.timer_preview.timeout.connect(self.atualizar_preview)
-            
-            if hasattr(self.dlg, 'chk_preview_auto'):
-                self.dlg.chk_preview_auto.setChecked(False)
-                self.dlg.chk_preview_auto.stateChanged.connect(
-                    lambda state: self.timer_preview.start(250) if state == Qt.CheckState.Checked else None
-                )
+        self.dlg.resizeEvent = lambda event: self.disparar_preview_se_autorizado()
 
-            # Restore window geometry
-            settings = QgsSettings()
-            geometria = settings.value("/VectorToMap/geometry")
-            if geometria: 
-                self.dlg.restoreGeometry(geometria)
-            else: 
-                self.dlg.resize(1050, 750) 
-            
-            if hasattr(self.dlg, 'splitter'): 
-                self.dlg.splitter.setSizes([550, 500]) 
-            
-            self.dlg.lbl_preview.setFrameShape(QFrame.Shape.StyledPanel)
-            self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
+        # Força o estado inicial dos gatilhos
+        self.configurar_escala_ao_mudar_camada()
+        self.atualizar_hierarquia_camadas()
 
-            self.dlg.mMapLayerComboBox.layerChanged.connect(self.disparar_preview_se_autorizado)
-            self.dlg.chk_selecionar_todos.stateChanged.connect(self.marcar_desmarcar_todos)
-            self.dlg.chk_numeracao.toggled.connect(self.disparar_preview_se_autorizado)
 
-            # --- CONEXÕES DA HIERARQUIA DE CAMADAS ---
-            self.dlg.chk_filtrar_feicoes.stateChanged.connect(self.atualizar_hierarquia_camadas)
-            self.dlg.chk_exibir_so_camada_atual.stateChanged.connect(self.atualizar_hierarquia_camadas)
-            
-            # Conecta a dependência do estilo ao travar camadas
-            self.dlg.chk_travar_camadas.stateChanged.connect(self.atualizar_estado_travar_estilos)
-            
-            # Atualiza a Preview APENAS se o utilizador interagir com filtros ou visibilidade
-            self.dlg.chk_filtrar_feicoes.stateChanged.connect(self.disparar_preview_se_autorizado)
-            self.dlg.chk_exibir_so_camada_atual.stateChanged.connect(self.disparar_preview_se_autorizado)
-            
-            # Força a verificação inicial da hierarquia ao abrir a janela
-            self.atualizar_hierarquia_camadas()
+    def _configurar_janela(self):
+        """Define ícones, comportamento do sistema operacional, restaura tamanho e centraliza."""
+        self.dlg.setWindowIcon(QIcon(':/plugins/vector_to_map/icon.png'))
+        self.dlg.setWindowTitle("VectorToMap")
+        
+        self.dlg.setWindowFlags(
+            Qt.WindowType.Window | 
+            Qt.WindowType.WindowMinimizeButtonHint | 
+            Qt.WindowType.WindowMaximizeButtonHint | 
+            Qt.WindowType.WindowCloseButtonHint
+        )
 
-            # ==========================================================
-            # --- SETUP DA COR DE FUNDO (NOVA FUNCIONALIDADE) ---
-            if hasattr(self.dlg, 'btn_cor_fundo'):
-                self.dlg.btn_cor_fundo.setColor(QColor(255, 255, 255, 255)) # Padrão: Branco Opaco
-                self.dlg.btn_cor_fundo.setAllowOpacity(True)
-                self.dlg.btn_cor_fundo.colorChanged.connect(self.disparar_preview_se_autorizado)
-                self.dlg.btn_cor_fundo.setToolTip(self.tr("Escolha a cor de fundo do mapa. Reduza a Opacidade para 0% para exportar transparente."))
+        if hasattr(self.dlg, 'lbl_aviso_feicoes'):
+            self.dlg.lbl_aviso_feicoes.hide()
 
-            if hasattr(self.dlg, 'chk_apenas_mapa'):
-                self.dlg.chk_apenas_mapa.stateChanged.connect(self.disparar_preview_se_autorizado)
-            # ==========================================================
+        # Restore window geometry
+        settings = QgsSettings()
+        geometria = settings.value("/VectorToMap/geometry")
+        if geometria: 
+            self.dlg.restoreGeometry(geometria)
+        else: 
+            self.dlg.resize(1050, 750) 
+        
+        if hasattr(self.dlg, 'splitter'): 
+            self.dlg.splitter.setSizes([550, 500]) 
 
-            # --- MONITORING WIDGETS ---
-            widgets = [
-                self.dlg.combo_tamanho_pagina, self.dlg.combo_presets, 
-                self.dlg.rb_retrato, self.dlg.rb_paisagem, 
-                self.dlg.chk_modo_formulario, self.dlg.chk_modo_individual,
-                self.dlg.combo_atlas, self.dlg.chk_exibir_atributos
-            ]
-
-            if hasattr(self.dlg, 'chk_apenas_mapa'): widgets.append(self.dlg.chk_apenas_mapa)
-            if hasattr(self.dlg, 'btn_cor_fundo'): widgets.append(self.dlg.btn_cor_fundo)
-
-            for w in widgets:
-                if hasattr(w, 'currentIndexChanged'): w.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
-                elif hasattr(w, 'stateChanged'): w.stateChanged.connect(self.disparar_preview_se_autorizado)
-                elif hasattr(w, 'toggled'): w.toggled.connect(self.disparar_preview_se_autorizado)
-
-            self.dlg.resizeEvent = lambda event: self.disparar_preview_se_autorizado()
-            self.btn_ok.clicked.connect(self.processar_clique_ok)
-            self.abort_processing = False
-            self.btn_cancel.clicked.connect(self.cancelar_e_fechar)
-            self.configurar_escala_ao_mudar_camada()
-
-        # --- CENTRALIZAR NA TELA ---        
+        # Centralizar na Tela
         screen_geometry = QApplication.primaryScreen().availableGeometry()
         centro_tela = screen_geometry.center()
-        
         geometria_janela = self.dlg.frameGeometry()
         geometria_janela.moveCenter(centro_tela)
         self.dlg.move(geometria_janela.topLeft())
-        
-        self.setup_ui_strings()  
-        self.dlg.show()
     
 
     def preparar_exportacao(self):
@@ -1330,6 +1338,19 @@ class VectorToMap:
         map_item.attemptMove(QgsLayoutPoint(map_item.pos().x(), map_item.pos().y(), QgsUnitTypes.LayoutMillimeters))
 
 
+    def atualizar_mapa_para_canvas(self, map_item):
+        """Força o layout a refletir a tela principal do QGIS sem travar as camadas."""
+        # 1. Desliga qualquer trava de camadas ou estilos
+        map_item.setKeepLayerSet(False)
+        map_item.setKeepLayerStyles(False)
+        
+        # 2. Invalida o cache atual para forçar o QGIS a redesenhar com base no canvas
+        map_item.invalidateCache()
+        
+        # 3. Atualiza o item no layout
+        map_item.refresh()
+
+
     def _gerenciar_visibilidade_camadas(self, map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index):
         """Avalia as regras do TOC, cria camadas clone (se necessário) e trava os estilos."""
         camada_alvo = camada
@@ -1341,31 +1362,46 @@ class VectorToMap:
             camada_alvo = self.criar_camada_temporaria(camada, feicoes_da_pagina, nome_temp, is_preview)
             if is_preview: self.clones_preview.append(camada_alvo.id())
 
-        # 2. Definição do Array de Camadas Exibidas
-        if self.dlg.chk_exibir_so_camada_atual.isChecked():
-            map_item.setLayers([camada_alvo])
-            
-        elif self.dlg.chk_filtrar_feicoes.isChecked() or self.dlg.chk_travar_camadas.isChecked():            
-            root = QgsProject.instance().layerTreeRoot()
-            camadas_finais_para_layout = []
-            forcar_clone = self.dlg.chk_filtrar_feicoes.isChecked()
-            
-            for layer in root.layerOrder():
-                is_visible_in_toc = root.findLayer(layer.id()).isVisible()
-                if layer.id() == camada.id():
-                    if is_visible_in_toc or forcar_clone:
-                        if camada_alvo not in camadas_finais_para_layout: camadas_finais_para_layout.append(camada_alvo)
-                else:
-                    if is_visible_in_toc and layer.id() not in self.clones_preview and layer.id() != camada_alvo.id():
-                        camadas_finais_para_layout.append(layer)
-                        
-            map_item.setLayers(camadas_finais_para_layout)
+        # =====================================================================
+        # NOVA LÓGICA DE BLINDAGEM: Trava Saudável vs Mapa Livre
+        # =====================================================================
+        
+        is_isolado = self.dlg.chk_exibir_so_camada_atual.isChecked()
+        is_filtrado = self.dlg.chk_filtrar_feicoes.isChecked()
+        is_travado_manualmente = self.dlg.chk_travar_camadas.isChecked()
 
-        # 3. Travar Camadas e Estilos
-        if self.dlg.chk_travar_camadas.isChecked():
+        # CENÁRIO A: O usuário ativou qualquer opção que exige alterar/congelar camadas
+        if is_isolado or is_filtrado or is_travado_manualmente:
+            
+            camadas_finais_para_layout = []
+            
+            if is_isolado:
+                camadas_finais_para_layout = [camada_alvo]
+            else:
+                root = QgsProject.instance().layerTreeRoot()
+                for layer in root.layerOrder():
+                    is_visible_in_toc = root.findLayer(layer.id()).isVisible()
+                    if layer.id() == camada.id():
+                        if is_visible_in_toc or is_filtrado:
+                            if camada_alvo not in camadas_finais_para_layout: 
+                                camadas_finais_para_layout.append(camada_alvo)
+                    else:
+                        if is_visible_in_toc and layer.id() not in self.clones_preview and layer.id() != camada_alvo.id():
+                            camadas_finais_para_layout.append(layer)
+            
+            # Injeta a lista e OBRIGATORIAMENTE aplica a trava para não bugar o QGIS
+            map_item.setLayers(camadas_finais_para_layout)
             map_item.setKeepLayerSet(True)
+            
+            # Trava estilos se solicitado
             if hasattr(self.dlg, 'chk_travar_estilos') and self.dlg.chk_travar_estilos.isChecked():
                 map_item.setKeepLayerStyles(True)
+
+        # CENÁRIO B: Exportação normal sem restrições. O mapa nasce 100% livre.
+        else:
+            self.atualizar_mapa_para_canvas(map_item)
+
+        # =====================================================================
 
         map_item.refresh()
 
