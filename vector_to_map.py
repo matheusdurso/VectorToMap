@@ -15,11 +15,12 @@ import traceback
 import sentry_sdk
 from qgis.PyQt import sip
 from qgis.PyQt.QtCore import QTranslator, QCoreApplication, Qt, QTimer
-from qgis.PyQt.QtGui import QIcon, QPixmap, QColor
+from qgis.PyQt.QtGui import QIcon, QPixmap, QColor, QFont
 from qgis.PyQt.QtWidgets import (
     QAction, QCheckBox, QTableWidgetItem, QFrame, QPushButton,
     QDialogButtonBox, QButtonGroup, QApplication, QGridLayout,
-    QFileDialog, QMessageBox, QDialog, QVBoxLayout, QHBoxLayout, QLabel)
+    QFileDialog, QMessageBox, QDialog, QVBoxLayout, QHBoxLayout, QLabel,
+    QFontDialog)
 from qgis.core import (
     QgsProject, QgsPrintLayout, QgsLayoutSize, QgsUnitTypes, QgsLayoutItemMap, 
     QgsLayoutPoint, QgsMapLayerProxyModel, QgsFeatureRequest, QgsSettings, 
@@ -33,33 +34,34 @@ from .vector_to_map_dialog import VectorToMapDialog
 
 class BoasVindasDialog(QDialog):
     """Janela customizada de boas-vindas com consentimento explícito, integrada ao estilo QGIS."""
-
     def __init__(self, parent=None):
         super().__init__(parent)
-        # Barra superior limpa apenas com o nome
+        
+        # --- NOVO: Atalho interno para tradução ---
+        def tr(texto):
+            return QCoreApplication.translate('VectorToMap', texto)
+        # ------------------------------------------
+
         self.setWindowTitle("VectorToMap")
-        self.resize(450, 220) # <-- Altura aumentada levemente para dar mais respiro
+        self.resize(450, 220) 
         
         self.setWindowIcon(QIcon(':/plugins/vector_to_map/icon.png'))
-
-        # Remove o botão chato de ajuda (?) da barra superior da janela
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
 
-        # Configura o layout principal
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(15)
 
-        # 1. Título
-        lbl_titulo = QLabel("Bem-vindo ao VectorToMap!")
+        # Envelopando o título
+        lbl_titulo = QLabel(tr("Bem-vindo ao VectorToMap!"))
         fonte_titulo = lbl_titulo.font()
         fonte_titulo.setPointSize(fonte_titulo.pointSize() + 4) 
         fonte_titulo.setBold(True)
         lbl_titulo.setFont(fonte_titulo)
         layout.addWidget(lbl_titulo)
 
-        # 2. Texto Explicativo
-        texto = (
+        # Envelopando o texto principal
+        texto = tr(
             "Para manter este plugin sempre funcionando perfeitamente, nós "
             "gostaríamos da sua ajuda.\n\n"
             "Você aceita enviar relatórios automáticos e totalmente anônimos "
@@ -72,24 +74,21 @@ class BoasVindasDialog(QDialog):
         fonte_texto = lbl_texto.font()
         fonte_texto.setPointSize(fonte_texto.pointSize() + 1)
         lbl_texto.setFont(fonte_texto)
-        
         layout.addWidget(lbl_texto)
 
-        # --- AJUSTE DE ESPAÇAMENTO AQUI ---
-        layout.addSpacing(20) # Força um buraco vazio de 20 pixels
-        layout.addStretch()   # E depois empurra o resto para o fundo
-        # ----------------------------------
+        layout.addSpacing(20) 
+        layout.addStretch()  
 
-        # 3. Layout Horizontal para os Botões
         layout_botoes = QHBoxLayout()
         
-        self.btn_recusar = QPushButton("Não aceito, apenas começar")
+        # Envelopando os botões
+        self.btn_recusar = QPushButton(tr("Não aceito, apenas começar"))
         self.btn_recusar.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_recusar.clicked.connect(self.reject) 
 
-        self.btn_aceitar = QPushButton("Aceitar e Começar")
+        self.btn_aceitar = QPushButton(tr("Aceitar e Começar"))
         self.btn_aceitar.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.btn_aceitar.setDefault(True) # Destaque nativo do sistema
+        self.btn_aceitar.setDefault(True) 
         self.btn_aceitar.clicked.connect(self.accept) 
 
         layout_botoes.addWidget(self.btn_recusar)
@@ -248,7 +247,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@0.4.5" 
+                release="vectortomap@0.4.7" 
             )
             self.sentry_ativo = True
             
@@ -407,8 +406,10 @@ class VectorToMap:
         self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
 
         # Setup de Presets
+        self.dlg.combo_presets.setItemText(0, self.tr("Mapa Quadrado"))
         self.dlg.combo_presets.setItemData(0, "quadrado")
-        self.dlg.combo_presets.setItemData(1, "75_altura")
+        self.dlg.combo_presets.setItemText(1, self.tr("Mapa Horizontal"))
+        self.dlg.combo_presets.setItemData(1, "horizontal")
         self.dlg.combo_presets.addItem(self.tr("Mapa Vertical"), "vertical")
 
         # Setup de Cor de Fundo
@@ -433,6 +434,25 @@ class VectorToMap:
         self.dlg.button_box.addButton(self.btn_render, QDialogButtonBox.ButtonRole.ActionRole)
         self.dlg.button_box.addButton(self.btn_ok, QDialogButtonBox.ButtonRole.ActionRole)
         self.dlg.button_box.addButton(self.btn_cancel, QDialogButtonBox.ButtonRole.ActionRole)
+
+        # --- NOVO: SETUP DO TÍTULO E ALINHAMENTO ---
+        self.fonte_titulo = QFont("Arial", 20, QFont.Weight.Bold)
+
+        if hasattr(self.dlg, 'lineEdit_titulo'):
+            self.dlg.lineEdit_titulo.textChanged.connect(self.disparar_preview_se_autorizado)
+            
+        if hasattr(self.dlg, 'btn_fonte_titulo'):
+            self.dlg.btn_fonte_titulo.clicked.connect(self.escolher_fonte_titulo)
+            
+        # Preenche a ComboBox de Alinhamento e conecta ao gerador de Preview
+        if hasattr(self.dlg, 'combo_alinhamento_titulo'):
+            self.dlg.combo_alinhamento_titulo.clear()
+            self.dlg.combo_alinhamento_titulo.addItem(self.tr("Esquerda"), Qt.AlignmentFlag.AlignLeft)
+            self.dlg.combo_alinhamento_titulo.addItem(self.tr("Centro"), Qt.AlignmentFlag.AlignHCenter)
+            self.dlg.combo_alinhamento_titulo.addItem(self.tr("Direita"), Qt.AlignmentFlag.AlignRight)
+            self.dlg.combo_alinhamento_titulo.setCurrentIndex(1) # Força o "Centro" como padrão
+            self.dlg.combo_alinhamento_titulo.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
+        # -------------------------------------------
 
         # Variáveis de Estado
         self.export_info = None
@@ -1344,6 +1364,11 @@ class VectorToMap:
             layout, pagina_index, preset, orientacao, is_preview
         )
 
+        # --- NOVO: 1.5 Desenha o Título no topo ---
+        if not apenas_mapa:
+            self._adicionar_titulo(layout, geometria)
+        # ------------------------------------------
+
         # 2. Cria o item de mapa e o posiciona na página
         map_item = self._adicionar_item_mapa(
             layout, geometria, apenas_mapa, cor_fundo
@@ -1386,21 +1411,33 @@ class VectorToMap:
         margin_padrao = 10.0
 
         # Modelos Pré-definidos
-        if preset == "75_altura":
+        if preset == "horizontal":
             header_h = 35.0
             h_util = h_pg - (2 * margin_padrao) - header_h
-            w_map_f, h_map_f = w_pg - (2 * margin_padrao), h_util * 0.75
-            x_map_f, y_map_f = margin_padrao, y_zero_folha + margin_padrao + header_h
+            w_map_f = w_pg - (2 * margin_padrao)
             
+            if orientacao == "Paisagem":
+                # Paisagem: Exatamente como era antes (intocado)
+                h_map_f = h_util * 0.75
+                x_map_f = margin_padrao
+                y_map_f = y_zero_folha + margin_padrao + header_h
+            else:
+                # Retrato: Nova altura (75% da LARGURA) mantendo o centro vertical intacto
+                altura_antiga = h_util * 0.75
+                y_antigo = y_zero_folha + margin_padrao + header_h
+                centro_y = y_antigo + (altura_antiga / 2.0)
+                
+                h_map_f = w_map_f * 0.75
+                x_map_f = margin_padrao
+                y_map_f = centro_y - (h_map_f / 2.0)
+                
         elif preset == "vertical":
             if orientacao == "Retrato":
-                # Mantém a mesma base inferior do Mapa Quadrado, mas "estica" o topo para margem de 1cm
                 w_map_f = w_pg - (2 * margin_padrao)
                 x_map_f = margin_padrao
-                y_map_f = y_zero_folha + margin_padrao
-                h_map_f = w_pg + 10.0 # <-- Matemática: Fica cravado na mesma linha de base do mapa quadrado!
+                y_map_f = y_zero_folha + margin_padrao + 30.0
+                h_map_f = w_pg + 10.0 
             else:
-                # Paisagem: 50% da área útil na direita
                 largura_util = w_pg - (2 * margin_padrao)
                 h_map_f = h_pg - (2 * margin_padrao)
                 w_map_f = largura_util * 0.50
@@ -1441,12 +1478,55 @@ class VectorToMap:
             pagina.setBackgroundEnabled(True)
             if pagina.pageStyleSymbol(): pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 255))
 
-        # Empacota a geometria para facilitar o repasse entre funções
         geometria = {
             'w_pg': w_pg, 'h_pg': h_pg, 'w_map': w_map_f, 'h_map': h_map_f,
             'x_map': x_map_f, 'y_map': y_map_f, 'y_zero': y_zero_folha, 'margin': margin_padrao
         }
         return geometria, apenas_mapa, cor_fundo
+    
+
+    def escolher_fonte_titulo(self):
+        """Abre a janela nativa do Windows/Mac para escolher fonte, tamanho e estilo."""
+        fonte, ok = QFontDialog.getFont(self.fonte_titulo, self.dlg, self.tr("Escolher Fonte do Título"))
+        if ok:
+            self.fonte_titulo = fonte
+            self.disparar_preview_se_autorizado()
+
+
+    def _adicionar_titulo(self, layout, geo):
+        """Renderiza o título a 1cm das margens superiores e laterais."""
+        if not hasattr(self.dlg, 'lineEdit_titulo'): return
+        
+        texto = self.dlg.lineEdit_titulo.text().strip()
+        if not texto: return
+
+        lbl_titulo = QgsLayoutItemLabel(layout)
+        lbl_titulo.setText(texto)
+        lbl_titulo.setFont(self.fonte_titulo)
+        
+        # --- NOVO: Lê a ComboBox para decidir o alinhamento ---
+        alinhamento = Qt.AlignmentFlag.AlignHCenter # Backup caso não ache a ComboBox
+        if hasattr(self.dlg, 'combo_alinhamento_titulo'):
+            alinhamento = self.dlg.combo_alinhamento_titulo.currentData()
+            
+        lbl_titulo.setHAlign(alinhamento)
+        # ------------------------------------------------------
+        
+        lbl_titulo.setVAlign(Qt.AlignmentFlag.AlignTop)
+        
+        x = geo['margin'] 
+        y = geo['y_zero'] + geo['margin'] 
+        largura = geo['w_pg'] - (2 * geo['margin'])
+        altura_livre = 60.0 
+        
+        lbl_titulo.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
+        lbl_titulo.attemptResize(QgsLayoutSize(largura, altura_livre, QgsUnitTypes.LayoutMillimeters))
+        
+        # --- NOVO: Garante que o título flutue sempre por cima do mapa ---
+        lbl_titulo.setZValue(50) 
+        # -----------------------------------------------------------------
+        
+        layout.addLayoutItem(lbl_titulo)
 
 
     def _adicionar_item_mapa(self, layout, geo, apenas_mapa, cor_fundo):
@@ -1459,6 +1539,7 @@ class VectorToMap:
         
         map_item.attemptResize(QgsLayoutSize(geo['w_map'], geo['h_map'], QgsUnitTypes.LayoutMillimeters))
         map_item.attemptMove(QgsLayoutPoint(geo['x_map'], geo['y_map'], QgsUnitTypes.LayoutMillimeters))
+        map_item.setZValue(0)
         return map_item
 
 
@@ -1603,7 +1684,10 @@ class VectorToMap:
         limite_fundo = geo['y_zero'] + geo['h_pg'] - geo['margin']
         geom = {'limite_fundo': limite_fundo}
 
-        if preset == "75_altura":
+        # --- NOVA LÓGICA UNIFICADA ---
+        # Se for Retrato (qualquer mapa) OU se for Paisagem no "Mapa Horizontal",
+        # os textos ficam embaixo do mapa, divididos em 1/3 (esquerda) e 2/3 (direita)
+        if orientacao == "Retrato" or preset == "horizontal":
             largura_util = geo['w_pg'] - (2 * geo['margin'])
             terco_x = geo['margin'] + (largura_util * 0.33) 
             
@@ -1615,37 +1699,23 @@ class VectorToMap:
             geom['x_ind_start'] = terco_x + 2.0
             geom['y_ind_min'] = geo['y_map'] + geo['h_map'] + 2.0
             
+        # --- LÓGICA ESPECÍFICA PARA PAISAGEM (Vertical e Quadrado) ---
         elif preset == "vertical":
+            # Textos ficam na lateral esquerda, centralizados
             geom['x_form'] = geo['margin']
-            if orientacao == "Retrato":
-                geom['y_form'] = geo['y_map'] + geo['h_map'] + 5.0
-                geom['w_form'] = geo['w_pg'] - (2 * geo['margin'])
-                geom['x_ind_start'] = geom['x_form']
-                
-                if self.dlg.chk_modo_individual.isChecked():
-                    geom['h_form'] = (limite_fundo - geom['y_form']) * 0.5
-                    geom['y_ind_min'] = geom['y_form'] + geom['h_form'] + 2.0
-                else:
-                    geom['h_form'] = limite_fundo - geom['y_form']
-                    geom['y_ind_min'] = geom['y_form']
-            else:
-                # Paisagem
-                h_util = geo['h_map']
-                h_top = h_util * 0.34 
-                geom['y_form'] = geo['y_map'] + h_top 
-                geom['h_form'] = h_util * 0.33        
-                geom['w_form'] = (geo['x_map'] - geo['margin']) - 5.0 
-                geom['x_ind_start'] = geom['x_form']
-                geom['y_ind_min'] = geom['y_form'] + geom['h_form'] 
-                
-        else: # quadrado
+            h_util = geo['h_map']
+            h_top = h_util * 0.34 
+            geom['y_form'] = geo['y_map'] + h_top 
+            geom['h_form'] = h_util * 0.33       
+            geom['w_form'] = (geo['x_map'] - geo['margin']) - 5.0 
+            geom['x_ind_start'] = geom['x_form']
+            geom['y_ind_min'] = geom['y_form'] + geom['h_form'] 
+            
+        else: # "quadrado"
+            # Textos ficam na lateral esquerda, usando a metade inferior
             geom['x_form'] = geo['margin']
-            if orientacao == "Retrato":
-                geom['y_form'] = geo['y_map'] + geo['h_map'] + 5.0
-                geom['w_form'] = geo['w_pg'] - (2 * geo['margin'])
-            else:
-                geom['y_form'] = geo['y_map'] + (geo['h_map'] / 2)
-                geom['w_form'] = geo['x_map'] - (2 * geo['margin'])
+            geom['y_form'] = geo['y_map'] + (geo['h_map'] / 2)
+            geom['w_form'] = geo['x_map'] - (2 * geo['margin'])
 
             geom['x_ind_start'] = geom['x_form']
             if self.dlg.chk_modo_individual.isChecked():
@@ -1705,6 +1775,7 @@ class VectorToMap:
 
     def _renderizar_modo_individual(self, layout, feicoes_da_pagina, colunas, geom, preset, orientacao):
         """Constrói as caixas de texto individuais em grade ou em formato de lista."""
+
         campo_atlas = self.dlg.combo_atlas.currentData() 
         altura_linha = 5.5
         xi, yi = geom['x_ind_start'], geom['y_ind_min']
@@ -1712,8 +1783,18 @@ class VectorToMap:
         if campo_atlas is None:
             # Sem Atlas: Distribui as colunas de UMA feição numa "Grade" (Grid)
             f = feicoes_da_pagina[0]
-            limite_colunas = (3 if orientacao == "Retrato" else 5) if preset == "75_altura" else (5 if orientacao == "Retrato" else 3)
             
+            # --- NOVA REGRA DE COLUNAS ---
+            if orientacao == "Retrato":
+                limite_colunas = 3 # Todos os mapas Retrato usam 3 colunas
+            else:
+                # No modo Paisagem:
+                if preset == "horizontal":
+                    limite_colunas = 5 # Espaço largo (embaixo do mapa)
+                else:
+                    limite_colunas = 3 # Espaço curto (lateral esquerda)
+            # -----------------------------
+
             for idx, col in enumerate(colunas):
                 if idx > 0 and idx % limite_colunas == 0:
                     yi += altura_linha
@@ -1722,12 +1803,11 @@ class VectorToMap:
                     val = f.attribute(col)
                     texto = f"{col}: {str(val).strip() if val is not None else ''}"
                     largura_ocupada = self._inserir_label_no_layout(layout, texto, xi, yi, auto_resize=True)
-                    xi += largura_ocupada + 2.0 # Empurra a próxima caixa para o lado
+                    xi += largura_ocupada + 2.0 
                 except: continue
         else:
             # Com Atlas: Cria uma linha em formato de "Lista" para CADA feição do grupo
             altura_total = len(feicoes_da_pagina) * altura_linha
-            # Previne que o texto estoure a margem inferior
             yi = (geom['limite_fundo'] - altura_total) if (geom['y_ind_min'] + altura_total) > geom['limite_fundo'] else geom['y_ind_min']
 
             for f in feicoes_da_pagina:
@@ -1739,7 +1819,7 @@ class VectorToMap:
                         largura_ocupada = self._inserir_label_no_layout(layout, texto, xi, yi, auto_resize=True)
                         xi += largura_ocupada + 2.0
                     except: continue
-                yi += altura_linha # Pula para a próxima linha da lista
+                yi += altura_linha
 
 
     def adicionar_numeracao_pagina(self, layout, w_pg, h_pg, y_zero_folha):
