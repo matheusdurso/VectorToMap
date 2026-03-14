@@ -39,7 +39,7 @@ class BoasVindasDialog(QDialog):
         
         # --- NOVO: Atalho interno para tradução ---
         def tr(texto):
-            return QCoreApplication.translate('VectorToMap', texto)
+            return QCoreApplication.translate('@default', texto)
         # ------------------------------------------
 
         self.setWindowTitle("VectorToMap")
@@ -247,7 +247,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@0.4.7" 
+                release="vectortomap@0.5.0" 
             )
             self.sentry_ativo = True
             
