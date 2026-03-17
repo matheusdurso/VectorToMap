@@ -1,11 +1,23 @@
 # -*- coding: utf-8 -*-
-"""
-/***************************************************************************
- VectorToMap - QGIS Plugin
- Automates the generation of print layouts for vector features.
- Author: Matheus Durso
- ***************************************************************************/
-"""
+
+# /***************************************************************************
+#  VectorToMap - QGIS Plugin
+#  Automates the generation of print layouts for vector features.
+#  Author: Matheus Durso Neves Caetano
+# 
+#  Copyright (C) 2026 Matheus Durso Neves Caetano
+# 
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+# 
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#  ***************************************************************************/
+
 import math
 import re
 import unicodedata
@@ -254,7 +266,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@1.0.0" 
+                release="vectortomap@1.1.0" 
             )
             self.sentry_ativo = True
             

@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
-"""
-/***************************************************************************
- VectorToMapDialog - QGIS Plugin
- ---------------------------------------------------------------------------
- This script manages the dialog window for the VectorToMap plugin.
- It uses uic to dynamically load the UI design from the .ui file.
-
- Author: Matheus Durso
- Date: 2026-02-20
- ***************************************************************************/
-"""
+# /***************************************************************************
+#  VectorToMap - QGIS Plugin
+#  Automates the generation of print layouts for vector features.
+#  Author: Matheus Durso Neves Caetano
+# 
+#  Copyright (C) 2026 Matheus Durso Neves Caetano
+# 
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+# 
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#  ***************************************************************************/
 
 import os
 

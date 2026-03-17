@@ -26,9 +26,10 @@ about=[Português]
 
  [Русский]
  VectorToMap автоматизирует создание многостраничных макетов и атласов в QGIS, экономя часы ручной работы. Легко экспортируйте сотни отдельных или сгруппированных по атрибутам карт с динамическим масштабированием, умной изоляцией слоев и предварительным просмотром в реальном времени. Повысьте свою производительность и стандартизируйте картографическое производство всего в несколько кликов!
-version=1.0.0
-author=Matheus Durso
+version=1.1.0
+author=Matheus Durso Neves Caetano
 email=matheusdursonc@gmail.com
+license=GNU GPLv2
 repository=https://github.com/matheusdurso/VectorToMap
 tracker=https://github.com/matheusdurso/VectorToMap/issues
 homepage=https://github.com/matheusdurso/VectorToMap
