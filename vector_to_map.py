@@ -33,7 +33,7 @@ if plugin_dir not in sys.path:
 import sentry_sdk
 from qgis.PyQt import sip
 from qgis.PyQt.QtCore import QTranslator, QCoreApplication, Qt, QTimer, QUrl
-from qgis.PyQt.QtGui import QIcon, QPixmap, QColor, QFont
+from qgis.PyQt.QtGui import QIcon, QPixmap, QColor, QFont, QDesktopServices
 from qgis.PyQt.QtWidgets import (
     QAction, QCheckBox, QTableWidgetItem, QFrame, QPushButton,
     QDialogButtonBox, QButtonGroup, QApplication, QGridLayout,
@@ -52,7 +52,7 @@ from .vector_to_map_dialog import VectorToMapDialog
 
 
 class BoasVindasDialog(QDialog):
-    """Janela customizada de boas-vindas com consentimento explícito, integrada ao estilo QGIS."""
+    """Janela de Boas-Vindas limpa, alinhada e profissional."""
     def __init__(self, parent=None):
         super().__init__(parent)
         
@@ -62,59 +62,121 @@ class BoasVindasDialog(QDialog):
         # ------------------------------------------
 
         self.setWindowTitle("VectorToMap")
-        self.resize(450, 220) 
+        self.resize(550, 350) # Ajustado o tamanho para o novo layout sem o card
         
         self.setWindowIcon(QIcon(':/plugins/vector_to_map/icon.png'))
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
 
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(15)
+        # --- Layout Principal ---
+        layout_principal = QVBoxLayout(self)
+        # Margens confortáveis para respirar: Esquerda, Topo, Direita, Baixo.
+        layout_principal.setContentsMargins(30, 25, 30, 20) 
+        layout_principal.setSpacing(12) # Espaçamento padrão entre linhas
 
-        # Envelopando o título
+        # --- 1. CABEÇALHO (Ícone + Título alinhados horizontalmente) ---
+        layout_cabecalho = QHBoxLayout()
+        layout_cabecalho.setSpacing(15)
+
+        # Ícone do Plugin (tamanho controlado 48x48)
+        self.lbl_icone = QLabel()
+        pixmap = QPixmap(':/plugins/vector_to_map/icon.png').scaled(48, 48, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        self.lbl_icone.setPixmap(pixmap)
+        layout_cabecalho.addWidget(self.lbl_icone)
+
+        # Título
         lbl_titulo = QLabel(tr("Bem-vindo ao VectorToMap!"))
         fonte_titulo = lbl_titulo.font()
-        fonte_titulo.setPointSize(fonte_titulo.pointSize() + 4) 
+        fonte_titulo.setPointSize(fonte_titulo.pointSize() + 6) 
         fonte_titulo.setBold(True)
         lbl_titulo.setFont(fonte_titulo)
-        layout.addWidget(lbl_titulo)
+        layout_cabecalho.addWidget(lbl_titulo)
+        
+        layout_cabecalho.addStretch() # Alinha tudo à esquerda
 
-        # Envelopando o texto principal
-        texto = tr(
-            "Para manter este plugin sempre funcionando perfeitamente, nós "
-            "gostaríamos da sua ajuda.\n\n"
-            "Você aceita enviar relatórios automáticos e totalmente anônimos "
-            "caso algum erro ocorra no sistema? Nenhuma informação pessoal, "
-            "nome de arquivo ou dado geográfico será enviado."
+        layout_principal.addLayout(layout_cabecalho)
+        layout_principal.addSpacing(10) # Espaço extra após cabeçalho
+
+        # --- 2. TEXTO DE BOAS-VINDAS ---
+        texto_welcome = tr("Obrigado por instalar o VectorToMap para automatizar sua cartografia técnica!")
+        lbl_welcome = QLabel(texto_welcome)
+        lbl_welcome.setWordWrap(True)
+        lbl_welcome.setStyleSheet("font-size: 10pt; color: #333;")
+        layout_principal.addWidget(lbl_welcome)
+
+        layout_principal.addSpacing(5) # Pequeno espaço antes da seção pro
+
+        # --- 3. SEÇÃO PRO (LIMPA - SEM RETÂNGULO E SEM INCRA/IBAMA) ---
+        # Texto HTML direto, sem o card QFrame
+        texto_pro_html = tr(
+            "<h3 style='margin: 0; color: #2c3e50;'>🚀 Quer economizar ainda mais tempo?</h3>"
+            "<p style='margin: 10px 0 12px 0; color: #333;'>Apoie o desenvolvimento e ganhe acesso à "
+            "<b>Versão Pro</b>, que inclui suporte prioritário e modelos de layout exclusivos.</p>"
+            "<p style='margin: 0;'><a href='https://matheusdurso.gumroad.com/l/vectortomap' style='color: #3498db; text-decoration: none;'><b>👉 Clique aqui para conhecer a Versão Pro</b></a></p>"
         )
-        lbl_texto = QLabel(texto)
-        lbl_texto.setWordWrap(True)
         
-        fonte_texto = lbl_texto.font()
-        fonte_texto.setPointSize(fonte_texto.pointSize() + 1)
-        lbl_texto.setFont(fonte_texto)
-        layout.addWidget(lbl_texto)
+        lbl_pro_texto = QLabel(texto_pro_html)
+        lbl_pro_texto.setWordWrap(True)
+        lbl_pro_texto.setOpenExternalLinks(True) 
+        # Garante o alinhamento total à esquerda
+        lbl_pro_texto.setAlignment(Qt.AlignmentFlag.AlignLeft) 
+        layout_principal.addWidget(lbl_pro_texto)
 
-        layout.addSpacing(20) 
-        layout.addStretch()  
+        layout_principal.addSpacing(5) # Espaço antes da linha divisória
 
+        # --- 4. LINHA DIVISÓRIA ---
+        linha = QFrame()
+        linha.setFrameShape(QFrame.Shape.HLine)
+        linha.setFrameShadow(QFrame.Shadow.Sunken)
+        linha.setStyleSheet("border: 1px solid #dcdcdc; background-color: transparent;")
+        layout_principal.addWidget(linha)
+
+        # --- 5. TEXTO DE CONSENTIMENTO DO SENTRY ---
+        texto_sentry = tr(
+            "<b>Relatórios de Erro:</b><br>"
+            "Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? "
+            "Nenhuma informação pessoal ou dado geográfico será enviado."
+        )
+        lbl_sentry = QLabel(texto_sentry)
+        lbl_sentry.setWordWrap(True)
+        lbl_sentry.setStyleSheet("font-size: 9pt; color: #555;")
+        layout_principal.addWidget(lbl_sentry)
+
+        # --- 6. ESPAÇADOR VERTICAL (EMPURRA BOTÕES PARA O RODAPÉ) ---
+        layout_principal.addStretch()  
+
+        # --- 7. BOTÕES DE AÇÃO ---
         layout_botoes = QHBoxLayout()
+        layout_botoes.setContentsMargins(0, 10, 0, 0) # Margem superior
         
-        # Envelopando os botões
         self.btn_recusar = QPushButton(tr("Não aceito, apenas começar"))
         self.btn_recusar.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_recusar.setStyleSheet("padding: 8px 15px;") # Conforto no clique
         self.btn_recusar.clicked.connect(self.reject) 
 
         self.btn_aceitar = QPushButton(tr("Aceitar e Começar"))
         self.btn_aceitar.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_aceitar.setDefault(True) 
+        # CSS refinado para o botão de aceitar
+        self.btn_aceitar.setStyleSheet("""
+            QPushButton {
+                background-color: #3498db; 
+                color: white; 
+                font-weight: bold; 
+                padding: 8px 25px; 
+                border: none; 
+                border-radius: 4px;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+        """)
         self.btn_aceitar.clicked.connect(self.accept) 
 
         layout_botoes.addWidget(self.btn_recusar)
-        layout_botoes.addStretch()
+        layout_botoes.addStretch() # Mola entre os botões
         layout_botoes.addWidget(self.btn_aceitar)
 
-        layout.addLayout(layout_botoes)
+        layout_principal.addLayout(layout_botoes)
 
 
 class VectorToMap:
@@ -266,7 +328,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@1.1.0" 
+                release="vectortomap@1.2.0" 
             )
             self.sentry_ativo = True
             
@@ -331,6 +393,7 @@ class VectorToMap:
 
     def _aplicar_estilos(self):
         """Injeta o CSS consolidado (Azul Profissional & Clean) e esconde barras padrão."""
+
         estilo_consolidado = """
             /* 1. ESTILO GERAL DAS BARRAS DE PROGRESSO */
             QProgressBar {
@@ -383,9 +446,36 @@ class VectorToMap:
                 height: 0px;
                 width: 0px;
             }
+            
             /* 4. PADRONIZAÇÃO DOS WIDGETS DE TEXTO */
             QCheckBox, QLabel, QRadioButton, QgsMapLayerComboBox, QComboBox {
                 font-size: 9pt; 
+            }
+            
+            /* --- 5. BOTÕES DA ABA DE SUPORTE --- */
+            QPushButton#pushButton_apoiar {
+                background-color: #3498db;
+                color: white;
+                font-weight: bold;
+                font-size: 13px;
+                padding: 8px 20px;
+                border: none;
+                border-radius: 4px;
+            }
+            QPushButton#pushButton_apoiar:hover {
+                background-color: #2980b9;
+            }
+
+            QPushButton#pushButton_bugreport {
+                background-color: transparent;
+                color: #333333;
+                font-size: 12px;
+                padding: 8px 15px;
+                border: 1px solid #cccccc;
+                border-radius: 4px;
+            }
+            QPushButton#pushButton_bugreport:hover {
+                background-color: #e0e0e0;
             }
         """
         self.dlg.setStyleSheet(estilo_consolidado)
@@ -504,6 +594,10 @@ class VectorToMap:
         self.timer_preview = QTimer()
         self.timer_preview.setSingleShot(True)
 
+        # --- Força a janela a abrir sempre na primeira aba (Configurações) ---
+        if hasattr(self.dlg, 'tabWidget'):
+            self.dlg.tabWidget.setCurrentIndex(0)
+
 
     def _conectar_sinais(self):
         """Faz todas as ligações entre as ações do usuário (cliques) e as funções lógicas."""
@@ -512,6 +606,9 @@ class VectorToMap:
         self.btn_render.clicked.connect(self.atualizar_preview)
         self.btn_ok.clicked.connect(self.processar_clique_ok)
         self.btn_cancel.clicked.connect(self.cancelar_e_fechar)
+        # --- Atalhos de Navegação ---
+        if hasattr(self.dlg, 'pushButton_ir_suporte'):
+            self.dlg.pushButton_ir_suporte.clicked.connect(self.ir_para_suporte)
 
         # Timer e Preview Auto
         self.timer_preview.timeout.connect(self.atualizar_preview)
@@ -537,6 +634,10 @@ class VectorToMap:
         self.dlg.chk_filtrar_feicoes.stateChanged.connect(self.atualizar_hierarquia_camadas)
         self.dlg.chk_exibir_so_camada_atual.stateChanged.connect(self.atualizar_hierarquia_camadas)
         self.dlg.chk_travar_camadas.stateChanged.connect(self.atualizar_estado_travar_estilos)
+
+        # --- Conexões da Aba Suporte ---
+        self.dlg.pushButton_apoiar.clicked.connect(self.abrir_gumroad)
+        self.dlg.pushButton_bugreport.clicked.connect(self.abrir_github)
 
         # Monitoramento em Massa para Disparo de Preview
         widgets_preview = [
@@ -654,7 +755,7 @@ class VectorToMap:
         
         # Forma mais robusta de montar a URI para memory layers
         uri = f"{QgsWkbTypes.displayString(camada_original.wkbType())}?crs={camada_original.crs().authid()}"
-        camada_temp = QgsVectorLayer(uri, f"Mapa_{nome_pagina}", "memory")
+        camada_temp = QgsVectorLayer(uri, f"{self.tr('Mapa')}_{nome_pagina}", "memory")
 
         # --- NOVO: A BLINDAGEM DO CRS ---
         # Força a cópia exata do CRS, mesmo que a camada original não tenha código EPSG
@@ -684,7 +785,7 @@ class VectorToMap:
             
             # --- NOVA LÓGICA DE GRUPO DINÂMICO ---
             # Define o nome do grupo específico para esta camada
-            nome_grupo_temp = f"Temp - VectorToMap ({camada_original.name()})"
+            nome_grupo_temp = f"{self.tr('Temp')} - VectorToMap ({camada_original.name()})"
             
             # Procura se o grupo ESPECÍFICO desta camada já existe
             grupo = root.findGroup(nome_grupo_temp)
@@ -794,6 +895,25 @@ class VectorToMap:
         else:
             # Se não houver nada rodando, o comportamento de fechar é seguro
             self.dlg.reject()
+    
+
+    def abrir_gumroad(self):
+        """Abre a página do Gumroad para apoiar o projeto."""
+        url_gumroad = "https://matheusdurso.gumroad.com/l/vectortomap"
+        QDesktopServices.openUrl(QUrl(url_gumroad))
+
+    def abrir_github(self):
+        """Abre a página de Issues do GitHub para relatar bugs."""
+        url_github = "https://github.com/matheusdurso/VectorToMap/issues"
+        QDesktopServices.openUrl(QUrl(url_github))
+    
+
+    def ir_para_suporte(self):
+        """Muda a aba ativa para a página de Desenvolvimento e Suporte."""
+        if hasattr(self.dlg, 'tabWidget'):
+            # setCurrentIndex(1) muda para a segunda aba. 
+            # Se a aba de suporte for a terceira no seu layout, mude para 2.
+            self.dlg.tabWidget.setCurrentIndex(1)
 
     #################################################################################
     # --- 3. GESTÃO DE ATRIBUTOS E WIDGETS ---
@@ -1188,7 +1308,7 @@ class VectorToMap:
                     sentry_sdk.flush(timeout=2.0)
                 except Exception:
                     pass
-            self.iface.messageBar().pushMessage(self.tr("Erro"), f"Falha ao ler atributos da camada: {str(e)}", level=2)
+            self.iface.messageBar().pushMessage(self.tr("Erro"), f"{self.tr('Falha ao ler atributos da camada:')} {str(e)}", level=2)
         # -------------------------------------------------------------------------
         
         finally:
