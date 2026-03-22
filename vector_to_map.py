@@ -25,10 +25,10 @@ import os
 import gc
 import traceback
 import sys
-# --- NOVO: Força o Python a enxergar as bibliotecas dentro da pasta do plugin ---
+# --- NOVO: Ajuda o Python a enxergar bibliotecas externas (como o Sentry) ---
 plugin_dir = os.path.dirname(__file__)
 if plugin_dir not in sys.path:
-    sys.path.insert(0, plugin_dir)
+    sys.path.append(plugin_dir) # Use APPEND em vez de insert(0)
 # -------------------------------------------------------------------------------
 import sentry_sdk
 from qgis.PyQt import sip
