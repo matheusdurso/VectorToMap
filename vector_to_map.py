@@ -328,7 +328,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@1.2.0" 
+                release="vectortomap@1.3.0" 
             )
             self.sentry_ativo = True
             
@@ -476,6 +476,16 @@ class VectorToMap:
             }
             QPushButton#pushButton_bugreport:hover {
                 background-color: #e0e0e0;
+            }
+            
+            /* --- ESTILO DOS RECURSOS PRO (Falso Inativo) --- */
+            QCheckBox#chk_export_individual, QCheckBox#chk_abrir_arquivo, QLabel#lbl_cor_pagina {
+                color: #888888; /* Um cinza que parece inativo, mas aceita clique */
+                font-style: italic;
+            }
+            QCheckBox#chk_export_individual:hover, QCheckBox#chk_abrir_arquivo:hover, QLabel#lbl_cor_pagina:hover {
+                color: #3498db; /* Fica azul quando passa o mouse, convidando ao clique! */
+                cursor: pointer;
             }
         """
         self.dlg.setStyleSheet(estilo_consolidado)
@@ -639,6 +649,28 @@ class VectorToMap:
         self.dlg.pushButton_apoiar.clicked.connect(self.abrir_gumroad)
         self.dlg.pushButton_bugreport.clicked.connect(self.abrir_github)
 
+        if hasattr(self.dlg, 'chk_export_individual'):
+            # O lambda permite passar o próprio checkbox como argumento para a nossa função!
+            self.dlg.chk_export_individual.clicked.connect(
+                lambda: self._bloquear_recurso_pro(self.dlg.chk_export_individual)
+            )
+        
+        if hasattr(self.dlg, 'chk_abrir_arquivo'):
+            # O lambda permite passar o próprio checkbox como argumento para a nossa função!
+            self.dlg.chk_abrir_arquivo.clicked.connect(
+                lambda: self._bloquear_recurso_pro(self.dlg.chk_abrir_arquivo)
+            )
+        
+        # Função anônima (lambda) que ignora o clique real e chama nosso segurança
+        # O parâmetro 'e' representa o evento do mouse (que nós vamos descartar)
+        bloqueio_mouse = lambda e: self._bloquear_recurso_pro(None)
+
+        if hasattr(self.dlg, 'lbl_cor_pagina'):
+            self.dlg.lbl_cor_pagina.mousePressEvent = bloqueio_mouse
+            
+        if hasattr(self.dlg, 'btn_cor_pagina'):
+            self.dlg.btn_cor_pagina.mousePressEvent = bloqueio_mouse
+
         # Monitoramento em Massa para Disparo de Preview
         widgets_preview = [
             self.dlg.combo_tamanho_pagina, self.dlg.combo_presets, self.dlg.combo_atlas,
@@ -702,6 +734,7 @@ class VectorToMap:
 
     def preparar_exportacao(self):
         """Abre o diálogo, sugere o último diretório e configura a exportação."""
+
         camada = self.dlg.mMapLayerComboBox.currentLayer()
         if not camada: return
 
@@ -720,6 +753,17 @@ class VectorToMap:
         )
 
         if caminho_arquivo:
+            if "PDF" in filtro_selecionado or "SVG" in filtro_selecionado:
+                QMessageBox.warning(
+                    self.dlg,
+                    self.tr("Recurso Exclusivo Pro 👑"),
+                    self.tr("A exportação em PDF (Múltiplas páginas) e SVG (Vetorial) "
+                            "é exclusiva da Versão Pro.\n\n"
+                            "Na versão gratuita, você pode exportar imagens em alta qualidade (PNG e JPG).\n\n"
+                            "Clique no link na tela inicial para conhecer a Versão Pro!")
+                )
+                return
+
             # --- SALVA O DIRETÓRIO ESCOLHIDO PARA A PRÓXIMA VEZ ---
             diretorio_escolhido = os.path.dirname(caminho_arquivo)
             settings.setValue("/VectorToMap/ultimo_diretorio_exportacao", diretorio_escolhido)
@@ -818,6 +862,34 @@ class VectorToMap:
         return camada_temp
 
 
+    def _adicionar_marca_dagua_free(self, layout, y_zero, h_pg):
+        """Adiciona marca d'água no rodapé da versão Free."""
+
+        try:
+            lbl = QgsLayoutItemLabel(layout)
+            lbl.setText(self.tr("Gerado por VectorToMap (Versão Free) - Adquira a Pro"))
+            
+            # Forma 100% segura de configurar a fonte no PyQt
+            fonte = QFont("Arial", 8)
+            fonte.setItalic(True)
+            lbl.setFont(fonte)
+            
+            lbl.setFontColor(QColor(120, 120, 120, 180)) # Cinza levemente transparente
+            lbl.adjustSizeToText()
+            
+            # Boa prática do QGIS: adicionar ao layout ANTES de mover
+            layout.addLayoutItem(lbl)
+            
+            # Posiciona no canto inferior esquerdo
+            lbl.attemptMove(QgsLayoutPoint(5.0, y_zero + h_pg - 5.0, QgsUnitTypes.LayoutMillimeters))
+            lbl.setZValue(100) # Por cima de tudo
+            
+        except Exception as e:
+            # Se a marca d'água falhar (ex: fonte Arial não instalada), 
+            # não trava a geração do mapa do usuário. Apenas loga o erro.
+            QgsMessageLog.logMessage(f"Erro na marca d'água: {str(e)}", "VectorToMap", Qgis.MessageLevel.Warning)
+
+
     def limpar_clones_preview(self):
         """Remove da memória apenas os clones gerados invisivelmente para a preview."""
         
@@ -914,6 +986,28 @@ class VectorToMap:
             # setCurrentIndex(1) muda para a segunda aba. 
             # Se a aba de suporte for a terceira no seu layout, mude para 2.
             self.dlg.tabWidget.setCurrentIndex(1)
+    
+
+    def _bloquear_recurso_pro(self, widget_clicado=None, event=None):
+        """Intercepta o clique em recursos Pro, reverte a ação e manda pra aba de compra."""
+        
+        # Só tenta desmarcar se for um checkbox (se tiver a função setChecked)
+        if widget_clicado and hasattr(widget_clicado, 'setChecked'):
+            widget_clicado.blockSignals(True)
+            widget_clicado.setChecked(False)
+            widget_clicado.blockSignals(False)
+
+        # Muda para a aba 2 (Suporte/Pro)
+        if hasattr(self.dlg, 'tabWidget'):
+            self.dlg.tabWidget.setCurrentIndex(1)
+
+        # Mostra o aviso na barra do QGIS
+        self.iface.messageBar().pushMessage(
+            self.tr("Recurso Pro 👑"),
+            self.tr("Este recurso é exclusivo da versão Pro. Veja como fazer o upgrade abaixo!"),
+            level=3, 
+            duration=5
+        )
 
     #################################################################################
     # --- 3. GESTÃO DE ATRIBUTOS E WIDGETS ---
@@ -1292,6 +1386,18 @@ class VectorToMap:
                         paginas_dados.append({'feicoes': feicoes_do_grupo})
             
             if paginas_dados: 
+                LIMITE_FREE = 15
+                if len(paginas_dados) > LIMITE_FREE:
+                    QMessageBox.information(
+                        self.dlg,
+                        self.tr("Limite da Versão Free 👑"),
+                        self.tr(f"A versão gratuita permite exportar até {LIMITE_FREE} mapas por vez.\n\n"
+                                f"Apenas os {LIMITE_FREE} primeiros serão gerados nesta rodada.\n\n"
+                                "🚀 Atualize para a Versão Pro para remover este limite e exportar centenas de mapas em lote!"),
+                    )
+                    # Corta a lista para o limite da versão free
+                    paginas_dados = paginas_dados[:LIMITE_FREE]
+
                 self.criar_layout_multi_paginas(
                     self.dlg.combo_presets.currentData(), camada, 
                     "Retrato" if self.dlg.rb_retrato.isChecked() else "Paisagem", 
@@ -1571,6 +1677,8 @@ class VectorToMap:
         # 6. Adiciona numeração da página no rodapé
         if not apenas_mapa:
             self.adicionar_numeracao_pagina(layout, geometria['w_pg'], geometria['h_pg'], geometria['y_zero'])
+        
+        self._adicionar_marca_dagua_free(layout, geometria['y_zero'], geometria['h_pg'])
 
 
     # ------------------------------------------------------------------------------------
@@ -1645,17 +1753,12 @@ class VectorToMap:
             y_map_f = y_zero_folha
             pagina.setPageSize(QgsLayoutSize(w_pg, h_pg, QgsUnitTypes.LayoutMillimeters))
 
-        is_png_export = False
-        if not is_preview:
-            info = getattr(self, 'export_info', {}) or {}
-            if info.get('ext', '').lower() == '.png': is_png_export = True
-
-        if apenas_mapa and is_png_export:
-            pagina.setBackgroundEnabled(True)
-            if pagina.pageStyleSymbol(): pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 0))
-        else:
-            pagina.setBackgroundEnabled(True)
-            if pagina.pageStyleSymbol(): pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 255))
+        # --- A COR DA PÁGINA ---
+        # Na versão Free, a folha de papel é SEMPRE branca sólida.
+        # A transparência (se o usuário escolher) será aplicada apenas ao quadro do mapa.
+        pagina.setBackgroundEnabled(True)
+        if pagina.pageStyleSymbol(): 
+            pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 255))
 
         geometria = {
             'w_pg': w_pg, 'h_pg': h_pg, 'w_map': w_map_f, 'h_map': h_map_f,

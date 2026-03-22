@@ -82,9 +82,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-196</y>
-             <width>701</width>
-             <height>984</height>
+             <y>0</y>
+             <width>703</width>
+             <height>957</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -347,7 +347,7 @@
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0,0,0">
+                <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0,0,0,0,0">
                  <property name="spacing">
                   <number>7</number>
                  </property>
@@ -357,7 +357,7 @@
                  <item>
                   <widget class="QLabel" name="label_4">
                    <property name="toolTip">
-                    <string>Seleciona a cor e transparência do fundo do mapa.</string>
+                    <string>Seleciona a cor e transparência do fundo do mapa. Dica: Para criar imagem de fundo transparente, deixe o fundo do mapa e da página transparentes e salve como PNG.</string>
                    </property>
                    <property name="text">
                     <string>Cor de Fundo do Mapa:</string>
@@ -376,7 +376,7 @@
                     </size>
                    </property>
                    <property name="toolTip">
-                    <string>Selecione a cor e transparência do fundo do item de mapa.</string>
+                    <string>Seleciona a cor e transparência do fundo do mapa. Dica: Para criar imagem de fundo transparente, deixe o fundo do mapa e da página transparentes e salve como PNG.</string>
                    </property>
                   </widget>
                  </item>
@@ -392,6 +392,23 @@
                     </size>
                    </property>
                   </spacer>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lbl_cor_pagina">
+                   <property name="toolTip">
+                    <string>Seleciona a cor e transparência do fundo do mapa. Dica: Para criar imagem de fundo transparente, deixe o fundo do mapa e da página transparentes e salve como PNG.</string>
+                   </property>
+                   <property name="text">
+                    <string>Cor da Página👑:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QgsColorButton" name="btn_cor_pagina">
+                   <property name="toolTip">
+                    <string>Escolha a cor e transparência do fundo da página. Dica: Para criar imagem de fundo transparente, deixe o fundo do mapa e da página transparentes e salve como PNG.</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -727,7 +744,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>659</width>
+                     <width>661</width>
                      <height>53</height>
                     </rect>
                    </property>
@@ -919,8 +936,54 @@
                 </widget>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <layout class="QHBoxLayout" name="horizontalLayout_15">
                  <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="chk_abrir_arquivo">
+                   <property name="toolTip">
+                    <string>Recurso Pro. Abre automaticamente o leitor de PDF ou a pasta com as imagens assim que a exportação terminar.</string>
+                   </property>
+                   <property name="text">
+                    <string>Abrir Arquivo/Pasta 👑</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="chk_export_individual">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="toolTip">
+                    <string>Recurso Pro. Exporta cada página como um arquivo PDF individual.</string>
+                   </property>
+                   <property name="layoutDirection">
+                    <enum>Qt::LeftToRight</enum>
+                   </property>
+                   <property name="text">
+                    <string>Exportar PDFs Individuais 👑</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="chk_apenas_mapa">
+                   <property name="toolTip">
+                    <string>Cria layouts apenas com a área do item de mapa.</string>
+                   </property>
+                   <property name="text">
+                    <string>Gerar Mapas Avulsos</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_20">
+                 <property name="spacing">
+                  <number>7</number>
+                 </property>
+                 <property name="leftMargin">
                   <number>0</number>
                  </property>
                  <item>
@@ -932,59 +995,19 @@
                     <string>Apoiar Desenvolvimento</string>
                    </property>
                    <property name="description">
-                    <string>Ganhe acesso antecipado a recursos exclusivos.</string>
+                    <string/>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_15">
-                   <property name="spacing">
-                    <number>7</number>
+                  <widget class="QDialogButtonBox" name="button_box">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
                    </property>
-                   <property name="leftMargin">
-                    <number>0</number>
+                   <property name="standardButtons">
+                    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
                    </property>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_15">
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <item>
-                      <widget class="QCheckBox" name="chk_export_individual">
-                       <property name="toolTip">
-                        <string>Exporta cada página como um arquivo PDF individual.</string>
-                       </property>
-                       <property name="layoutDirection">
-                        <enum>Qt::LeftToRight</enum>
-                       </property>
-                       <property name="text">
-                        <string>Exportar PDFs Individuais</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCheckBox" name="chk_apenas_mapa">
-                       <property name="toolTip">
-                        <string>Cria layouts apenas com a área do item de mapa.</string>
-                       </property>
-                       <property name="text">
-                        <string>Gerar Mapas Avulsos</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <widget class="QDialogButtonBox" name="button_box">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="standardButtons">
-                      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -1011,7 +1034,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>440</width>
+             <width>438</width>
              <height>788</height>
             </rect>
            </property>
@@ -1174,13 +1197,17 @@ border: none;</string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;O VectorToMap é um software livre criado para automatizar a cartografia técnica. Contamos com o apoio da comunidade para garantir que o plugin continue evoluindo com correções rápidas de bugs e novas funcionalidades. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;O VectorToMap é um software livre criado para automatizar e otimizar a sua cartografia técnica. O projeto se mantém vivo e em constante evolução graças ao apoio da comunidade.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Ao apoiar o desenvolvimento, você ajuda a manter o projeto vivo e garante acesso à &lt;span style=&quot; font-weight:600;&quot;&gt;Versão Pro&lt;/span&gt;, que inclui os seguintes benefícios:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Ao adquirir a &lt;span style=&quot; font-weight:600;&quot;&gt;Versão Pro&lt;/span&gt;, além de garantir que a ferramenta continue recebendo melhorias, você desbloqueia todo o potencial do plugin para o seu fluxo de trabalho, economizando horas de tarefas repetitivas.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot;&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;💎 &lt;span style=&quot; font-weight:600;&quot;&gt;Suporte Prioritário:&lt;/span&gt; Suas dúvidas e relatos de bugs possuem prioridade máxima na nossa fila de análise.&lt;/li&gt;
-&lt;li style=&quot;&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;🚀 &lt;span style=&quot; font-weight:600;&quot;&gt;Evolução Contínua:&lt;/span&gt; Receba em primeira mão melhorias de performance e recursos avançados de automação.&lt;/li&gt;
-&lt;li style=&quot;&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;📑 &lt;span style=&quot; font-weight:600;&quot;&gt;Ferramentas Premium:&lt;/span&gt; Acesso total a recursos exclusivos, isolamento de camadas, escalas e rotulagem inteligente.&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Conheça os benefícios exclusivos da Versão Pro:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;🚀 &lt;span style=&quot; font-weight:600;&quot;&gt;Produtividade Sem Limites:&lt;/span&gt; Gere um número ilimitado de mapas em lote de uma só vez (removendo a trava da versão Free) e automatize grandes projetos.&lt;/li&gt;
+&lt;li style=&quot;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;🗂️ &lt;span style=&quot; font-weight:600;&quot;&gt;Formatos Profissionais:&lt;/span&gt; Desbloqueie a exportação avançada em PDF (Multipáginas ou Individuais) e SVG (Vetores editáveis).&lt;/li&gt;
+&lt;li style=&quot;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;🎨 &lt;span style=&quot; font-weight:600;&quot;&gt;Apresentação Impecável:&lt;/span&gt; Entregue mapas 100% livres de marcas d'água. Tenha controle total sobre a cor e transparência do fundo da página, incluindo a geração de PNGs transparentes.&lt;/li&gt;
+&lt;li style=&quot;&quot; style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;⚡ &lt;span style=&quot; font-weight:600;&quot;&gt;Fluxo de Trabalho Ágil:&lt;/span&gt; Encontre rapidamente o que precisa com o filtro dinâmico de colunas na tabela de atributos e ganhe tempo com a abertura automática de pastas após a exportação.&lt;/li&gt;
+&lt;li style=&quot;&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;🛡️ &lt;span style=&quot; font-weight:600;&quot;&gt;Performance e Suporte VIP:&lt;/span&gt; Motor de renderização otimizado para maior estabilidade. Suas dúvidas e relatos de bugs têm prioridade máxima na fila de suporte direto.&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="tabStopWidth">
               <number>80</number>
@@ -1218,7 +1245,7 @@ p, li { white-space: pre-wrap; }
                 </font>
                </property>
                <property name="text">
-                <string>Obter Versão Pro / Apoiar no Gumroad</string>
+                <string>🚀 Obter Versão Pro / Apoiar no Gumroad</string>
                </property>
               </widget>
              </item>
