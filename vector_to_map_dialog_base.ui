@@ -84,7 +84,7 @@
              <x>0</x>
              <y>0</y>
              <width>703</width>
-             <height>957</height>
+             <height>1022</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -230,24 +230,24 @@
                 </widget>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,0,2">
+                <widget class="QLabel" name="label_8">
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                   <weight>50</weight>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Escalas:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
                  <property name="topMargin">
                   <number>0</number>
                  </property>
-                 <item>
-                  <widget class="QLabel" name="label_8">
-                   <property name="font">
-                    <font>
-                     <pointsize>10</pointsize>
-                     <weight>50</weight>
-                     <bold>false</bold>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Escala:</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item>
                   <widget class="QRadioButton" name="rb_escala_auto">
                    <property name="toolTip">
@@ -258,6 +258,72 @@
                    </property>
                   </widget>
                  </item>
+                 <item>
+                  <widget class="QgsFieldExpressionWidget" name="exp_ddo_auto">
+                   <property name="title" stdset="0">
+                    <string>GroupBox</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="btn_info_ddo_auto">
+                   <property name="minimumSize">
+                    <size>
+                     <width>23</width>
+                     <height>23</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>23</width>
+                     <height>23</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Arial</family>
+                     <pointsize>9</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">/* --- BOTÕES DE INFORMAÇÃO (AJUDA DA ESCALA) --- */
+            QToolButton#btn_info_ddo_auto, QToolButton#btn_info_ddo_fixa {
+                background-color: #3498db;
+                color: white;
+                border-radius: 5px; /* Metade do tamanho (20x20) para ficar redondo */
+                font-weight: bold;
+                font-family: Arial;
+                border: none;
+            }
+            QToolButton#btn_info_ddo_auto:hover, QToolButton#btn_info_ddo_fixa:hover {
+                background-color: #2980b9;
+                cursor: pointer;
+            }</string>
+                   </property>
+                   <property name="text">
+                    <string>?</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0">
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
                  <item>
                   <widget class="QRadioButton" name="rb_escala_fixa">
                    <property name="toolTip">
@@ -272,6 +338,65 @@
                   <widget class="QComboBox" name="combo_escala_fixa">
                    <property name="toolTip">
                     <string>Selecione a escala desejada</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QgsFieldExpressionWidget" name="exp_ddo_fixa">
+                   <property name="title" stdset="0">
+                    <string>GroupBox</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_14">
+                   <property name="text">
+                    <string>⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="btn_info_ddo_fixa">
+                   <property name="minimumSize">
+                    <size>
+                     <width>23</width>
+                     <height>23</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>23</width>
+                     <height>23</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Arial</family>
+                     <pointsize>9</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">/* --- BOTÕES DE INFORMAÇÃO (AJUDA DA ESCALA) --- */
+            QToolButton#btn_info_ddo_auto, QToolButton#btn_info_ddo_fixa {
+                background-color: #3498db;
+                color: white;
+                border-radius: 5px; /* Metade do tamanho (20x20) para ficar redondo */
+                font-weight: bold;
+                font-family: Arial;
+                border: none;
+            }
+            QToolButton#btn_info_ddo_auto:hover, QToolButton#btn_info_ddo_fixa:hover {
+                background-color: #2980b9;
+                cursor: pointer;
+            }</string>
+                   </property>
+                   <property name="text">
+                    <string>?</string>
                    </property>
                   </widget>
                  </item>
@@ -399,7 +524,7 @@
                     <string>Seleciona a cor e transparência do fundo do mapa. Dica: Para criar imagem de fundo transparente, deixe o fundo do mapa e da página transparentes e salve como PNG.</string>
                    </property>
                    <property name="text">
-                    <string>Cor da Página👑:</string>
+                    <string>Cor da Página⭐:</string>
                    </property>
                   </widget>
                  </item>
@@ -716,7 +841,7 @@
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
-                    <height>55</height>
+                    <height>65</height>
                    </size>
                   </property>
                   <property name="font">
@@ -745,7 +870,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>661</width>
-                     <height>53</height>
+                     <height>63</height>
                     </rect>
                    </property>
                    <property name="font">
@@ -829,7 +954,7 @@
                      <property name="minimumSize">
                       <size>
                        <width>0</width>
-                       <height>65</height>
+                       <height>85</height>
                       </size>
                      </property>
                      <property name="toolTip">
@@ -943,10 +1068,10 @@
                  <item>
                   <widget class="QCheckBox" name="chk_abrir_arquivo">
                    <property name="toolTip">
-                    <string>Recurso Pro. Abre automaticamente o leitor de PDF ou a pasta com as imagens assim que a exportação terminar.</string>
+                    <string>Abre automaticamente o leitor de PDF ou a pasta com as imagens assim que a exportação terminar.</string>
                    </property>
                    <property name="text">
-                    <string>Abrir Arquivo/Pasta 👑</string>
+                    <string>Abrir Arquivo/Pasta ⭐</string>
                    </property>
                   </widget>
                  </item>
@@ -956,13 +1081,13 @@
                     <bool>true</bool>
                    </property>
                    <property name="toolTip">
-                    <string>Recurso Pro. Exporta cada página como um arquivo PDF individual.</string>
+                    <string>Exporta cada página como um arquivo PDF individual.</string>
                    </property>
                    <property name="layoutDirection">
                     <enum>Qt::LeftToRight</enum>
                    </property>
                    <property name="text">
-                    <string>Exportar PDFs Individuais 👑</string>
+                    <string>Exportar PDFs Individuais ⭐</string>
                    </property>
                   </widget>
                  </item>
@@ -1298,6 +1423,11 @@ p, li { white-space: pre-wrap; }
    <class>QgsColorButton</class>
    <extends>QToolButton</extends>
    <header>qgscolorbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsFieldExpressionWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsfieldexpressionwidget.h</header>
   </customwidget>
   <customwidget>
    <class>QgsMapLayerComboBox</class>
