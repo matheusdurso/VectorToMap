@@ -347,7 +347,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@1.4.0" 
+                release="vectortomap@1.4.1" 
             )
             self.sentry_ativo = True
             
@@ -885,7 +885,7 @@ class VectorToMap:
             self.dlg.resize(1050, 750) 
         
         if hasattr(self.dlg, 'splitter'): 
-            self.dlg.splitter.setSizes([550, 500]) 
+            self.dlg.splitter.setSizes([600, 450]) 
 
         # Centralizar na Tela
         screen_geometry = QApplication.primaryScreen().availableGeometry()

@@ -12,7 +12,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1130</width>
+    <width>1150</width>
     <height>700</height>
    </size>
   </property>
@@ -42,7 +42,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
