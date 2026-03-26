@@ -283,7 +283,7 @@ class VectorToMap:
         )
 
         # Adiciona atalho para o plugin
-        self.action.setShortcut("Ctrl+Alt+V")
+        self.action.setShortcut("Ctrl+Alt+B")
 
 
     def unload(self):
@@ -341,13 +341,36 @@ class VectorToMap:
 
 
     def inicializar_sentry(self):
-        """Liga o motor do Sentry se o usuário permitiu."""
+        """Liga o motor do Sentry se o usuário permitiu e filtra erros externos."""
         self.sentry_ativo = False
+        
+        def filtro_sentry(event, hint):
+            """Analisa o rastro do erro. Só envia se vier do VectorToMap."""
+            # 1. Verifica se a mensagem de log menciona o seu plugin
+            log_msg = event.get('logentry', {}).get('message', '')
+            if 'VectorToMap' in log_msg:
+                return event
+                
+            # 2. Verifica a pilha de erros (traceback)
+            try:
+                frames = event.get('exception', {}).get('values', [])[0].get('stacktrace', {}).get('frames', [])
+                for frame in frames:
+                    arquivo = frame.get('filename', '').lower()
+                    # Se o erro passou por algum arquivo com 'vector_to_map' no nome ou caminho, é nosso!
+                    if 'vector_to_map' in arquivo:
+                        return event
+            except Exception:
+                pass
+                
+            # Se chegou aqui, o erro é de outro plugin do QGIS. Nós descartamos.
+            return None
+
         try:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@1.4.1" 
+                release="vectortomap@1.4.3",
+                before_send=filtro_sentry  # <--- INSERIMOS O FILTRO AQUI
             )
             self.sentry_ativo = True
             
@@ -524,7 +547,7 @@ class VectorToMap:
     
 
     def _adicionar_aba_sobre(self):
-        """Injeta dinamicamente a aba 'Sobre' sincronizada com a tipografia e espaçamentos nativos do QGIS."""
+        """Injeta dinamicamente a aba 'Sobre' sincronizada com a tradução em blocos e Registro INPI."""
         if not hasattr(self.dlg, 'tabWidget'): return
 
         aba_sobre = QWidget()
@@ -535,68 +558,69 @@ class VectorToMap:
         txt_browser.setOpenExternalLinks(True)
         txt_browser.setStyleSheet("border: none; background-color: transparent;")
 
-        # HTML gerado no padrão restrito do Qt (Rich Text) para harmonizar 100% com a aba Pro
-        html_content = self.tr(
-            "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-            "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-            "p, li { white-space: pre-wrap; }\n"
-            "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
-            
-            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-size:14pt; font-weight:600; color:#2c3e50;\">VectorToMap</span></p>\n"
-            
-            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-size:10pt; color:#7f8c8d;\">Motor de Renderização Cartográfica Automatizada</span></p>\n"
-            
-            "<hr style=\"border: 1px solid #eaeaea; margin-top:12px; margin-bottom:12px;\" />\n"
-            
-            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-size:13pt; font-weight:600; color:#2c3e50;\">Visão Geral do Sistema</span></p>\n"
-            
-            "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-            
-            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "O VectorToMap é uma solução avançada de automação para Sistemas de Informação Geográfica (SIG). Projetado para lidar com rotinas de alta demanda cartográfica, o complemento atua diretamente sobre a API de layouts nativa (<span style=\" font-style:italic;\">QgsPrintLayout</span>), permitindo a renderização em lote de feições espaciais com parâmetros de enquadramento escaláveis.</p>\n"
-            
-            "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-            
-            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-size:13pt; font-weight:600; color:#2c3e50;\">Aplicações Técnicas</span></p>\n"
-            
-            "<ul style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;\">\n"
-            "<li style=\" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-weight:600;\">Engenharia e Licenciamento:</span> Geração massiva de plantas de situação, croquis de acesso e anexos cartográficos padronizados para estudos ambientais.</li>\n"
-            "<li style=\" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-weight:600;\">Gestão Fundiária:</span> Automatização de pranchas para o Cadastro Ambiental Rural (CAR), regularização fundiária e cadastros técnicos multifinalitários urbanos.</li>\n"
-            "<li style=\" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-weight:600;\">Inspeção e Laudos:</span> Padronização visual e geração rápida de encartes de mapas para relatórios de vistoria em campo.</li>\n"
-            "</ul>\n"
-            
-            "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-            
-            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-size:13pt; font-weight:600; color:#2c3e50;\">Arquitetura e Funcionalidades Core</span></p>\n"
-            
-            "<ul style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;\">\n"
-            "<li style=\" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-weight:600;\">Integração QGIS Expressions:</span> Suporte nativo a <span style=\" font-style:italic;\">Data-Defined Overrides (DDO)</span>. O motor lê funções SQL inseridas pelo usuário para calcular dinamicamente margens e escalas com base no contexto geométrico.</li>\n"
-            "<li style=\" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-weight:600;\">Isolamento em Memória:</span> Utiliza rotinas de instanciamento de camadas transitórias (<span style=\" font-style:italic;\">Memory Layers</span>) e filtros de visibilidade sem afetar a <span style=\" font-style:italic;\">Layer Tree</span> principal do projeto.</li>\n"
-            "<li style=\" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-weight:600;\">Engine de Exportação:</span> Suporte multi-thread e multi-formato dinâmico perfeitamente ajustado para lotes de impressão.</li>\n"
-            "</ul>\n"
-            
-            "<hr style=\"border: 1px solid #eaeaea; margin-top:16px; margin-bottom:12px;\" />\n"
-            
-            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-            "<span style=\" font-size:11pt; color:#555555;\">"
-            "<span style=\" font-weight:600;\">Desenvolvido por:</span> Matheus Durso Neves Caetano<br />"
-            "<span style=\" font-weight:600;\">Contato:</span> <a href=\"mailto:matheusdursonc@gmail.com\"><span style=\" text-decoration: underline; color:#3498db;\">matheusdursonc@gmail.com</span></a><br />"
-            "<span style=\" font-weight:600;\">Licença:</span> GNU GPLv2"
-            "</span></p>\n"
-            
-            "</body></html>"
-        )
+        # 1. TRADUZIMOS APENAS OS TEXTOS CURTOS E LIMPOS
+        t_sub = self.tr("Motor de Renderização Cartográfica Automatizada")
+        t_h1 = self.tr("Visão Geral do Sistema")
+        t_p1 = self.tr("O VectorToMap é uma solução avançada de automação para Sistemas de Informação Geográfica (SIG). Projetado para lidar com rotinas de alta demanda cartográfica, o complemento atua diretamente sobre a API de layouts nativa (QgsPrintLayout), permitindo a renderização em lote de feições espaciais com parâmetros de enquadramento escaláveis.")
+        
+        t_h2 = self.tr("Aplicações Técnicas")
+        t_li1 = self.tr("<b>Engenharia e Licenciamento:</b> Geração massiva de plantas de situação, croquis de acesso e anexos cartográficos padronizados para estudos ambientais.")
+        t_li2 = self.tr("<b>Gestão Fundiária:</b> Automatização de pranchas para o Cadastro Ambiental Rural (CAR), regularização fundiária e cadastros técnicos multifinalitários urbanos.")
+        t_li3 = self.tr("<b>Inspeção e Laudos:</b> Padronização visual e geração rápida de encartes de mapas para relatórios de vistoria em campo.")
+        
+        t_h3 = self.tr("Arquitetura e Funcionalidades Core")
+        t_li4 = self.tr("<b>Integração QGIS Expressions:</b> Suporte nativo a Data-Defined Overrides (DDO). O motor lê funções SQL inseridas pelo usuário para calcular dinamicamente margens e escalas com base no contexto geométrico.")
+        t_li5 = self.tr("<b>Isolamento em Memória:</b> Utiliza rotinas de instanciamento de camadas transitórias (Memory Layers) e filtros de visibilidade sem afetar a Layer Tree principal do projeto.")
+        t_li6 = self.tr("<b>Engine de Exportação:</b> Suporte multi-thread e multi-formato dinâmico perfeitamente ajustado para lotes de impressão.")
+        
+        t_dev = self.tr("Desenvolvido por:")
+        t_inpi = self.tr("Registro INPI:")
+        t_contato = self.tr("Contato:")
+        t_licenca = self.tr("Licença:")
+
+        # 2. INJETAMOS NO HTML COM F-STRINGS (As chaves {{ }} protegem o CSS)
+        html_content = f"""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html><head><meta name="qrichtext" content="1" /><style type="text/css">
+p, li {{ white-space: pre-wrap; }}
+</style></head><body style=" font-family:'MS Shell Dlg 2'; font-size:12pt; font-weight:400; font-style:normal;">
+
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:14pt; font-weight:600; color:#2c3e50;">VectorToMap</span></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:10pt; color:#7f8c8d;">{t_sub}</span></p>
+
+<hr style="border: 1px solid #eaeaea; margin-top:12px; margin-bottom:12px;" />
+
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:13pt; font-weight:600; color:#2c3e50;">{t_h1}</span></p>
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">{t_p1}</p>
+
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>
+
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:13pt; font-weight:600; color:#2c3e50;">{t_h2}</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">{t_li1}</li>
+<li style=" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">{t_li2}</li>
+<li style=" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">{t_li3}</li>
+</ul>
+
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>
+
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:13pt; font-weight:600; color:#2c3e50;">{t_h3}</span></p>
+<ul style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;">
+<li style=" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">{t_li4}</li>
+<li style=" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">{t_li5}</li>
+<li style=" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">{t_li6}</li>
+</ul>
+
+<hr style="border: 1px solid #eaeaea; margin-top:16px; margin-bottom:12px;" />
+
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:11pt; color:#555555;">
+<span style=" font-weight:600;">{t_dev}</span> Matheus Durso Neves Caetano<br />
+<span style=" font-weight:600;">{t_inpi}</span> BR 51 2026 001755-6<br />
+<span style=" font-weight:600;">{t_contato}</span> <a href="mailto:matheusdursonc@gmail.com"><span style=" text-decoration: underline; color:#3498db;">matheusdursonc@gmail.com</span></a><br />
+<span style=" font-weight:600;">{t_licenca}</span> GNU GPLv2
+</span></p>
+
+</body></html>"""
 
         txt_browser.setHtml(html_content)
         layout.addWidget(txt_browser)
@@ -882,10 +906,10 @@ class VectorToMap:
         if geometria: 
             self.dlg.restoreGeometry(geometria)
         else: 
-            self.dlg.resize(1050, 750) 
+            self.dlg.resize(1100, 750) 
         
         if hasattr(self.dlg, 'splitter'): 
-            self.dlg.splitter.setSizes([600, 450]) 
+            self.dlg.splitter.setSizes([600, 500]) 
 
         # Centralizar na Tela
         screen_geometry = QApplication.primaryScreen().availableGeometry()
@@ -1057,6 +1081,11 @@ class VectorToMap:
         """Remove da memória apenas os clones gerados invisivelmente para a preview."""
         
         if hasattr(self, 'clones_preview') and self.clones_preview:
+            # --- NOVO: Libera a referência da ComboBox antes de deletar a camada ---
+            if hasattr(self, 'dlg') and self.dlg and hasattr(self.dlg, 'mMapLayerComboBox'):
+                self.dlg.mMapLayerComboBox.setExceptedLayerList([])
+            # -----------------------------------------------------------------------
+
             QgsProject.instance().removeMapLayers(self.clones_preview)
             self.clones_preview.clear()
 
@@ -1920,8 +1949,16 @@ class VectorToMap:
         # Na versão Free, a folha de papel é SEMPRE branca sólida.
         # A transparência (se o usuário escolher) será aplicada apenas ao quadro do mapa.
         pagina.setBackgroundEnabled(True)
-        if pagina.pageStyleSymbol(): 
-            pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 255))
+        
+        # Correção: Compatibilidade entre versões antigas e novas do QGIS
+        if hasattr(pagina, 'pageStyleSymbol'):
+            # Para QGIS 3.40 ou superior
+            if pagina.pageStyleSymbol(): 
+                pagina.pageStyleSymbol().setColor(QColor(255, 255, 255, 255))
+        else:
+            # Para QGIS anterior a 3.40 (ex: 3.28 LTR, 3.34 LTR)
+            if layout.pageCollection().pageStyleSymbol():
+                layout.pageCollection().pageStyleSymbol().setColor(QColor(255, 255, 255, 255))
 
         geometria = {
             'w_pg': w_pg, 'h_pg': h_pg, 'w_map': w_map_f, 'h_map': h_map_f,
@@ -2050,7 +2087,15 @@ class VectorToMap:
             nome_camada_limpo = re.sub(r'[^a-zA-Z0-9_]', '_', unicodedata.normalize('NFD', camada.name()).encode('ascii', 'ignore').decode('utf-8'))
             nome_temp = f"{nome_camada_limpo}_{nome_sufixo}" if nome_sufixo else f"{nome_camada_limpo}_{pagina_index + 1}"
             camada_alvo = self.criar_camada_temporaria(camada, feicoes_da_pagina, nome_temp, is_preview)
-            if is_preview: self.clones_preview.append(camada_alvo.id())
+            if is_preview:
+                self.clones_preview.append(camada_alvo.id())
+
+                # --- NOVO: Esconde a camada fantasma da ComboBox instantaneamente ---
+                camadas_excluidas = self.dlg.mMapLayerComboBox.exceptedLayerList()
+                if camada_alvo not in camadas_excluidas:
+                    camadas_excluidas.append(camada_alvo)
+                    self.dlg.mMapLayerComboBox.setExceptedLayerList(camadas_excluidas)
+                # --------------------------------------------------------------------
 
         # =====================================================================
         # NOVA LÓGICA DE BLINDAGEM: Trava Saudável vs Mapa Livre

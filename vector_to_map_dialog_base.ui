@@ -42,7 +42,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -82,9 +82,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-120</y>
              <width>703</width>
-             <height>1022</height>
+             <height>1023</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -792,45 +792,69 @@
                 <number>4</number>
                </property>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="1,2">
-                 <property name="topMargin">
-                  <number>0</number>
+                <widget class="QFrame" name="frame">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>25</height>
+                  </size>
                  </property>
-                 <item>
-                  <widget class="QCheckBox" name="chk_exibir_atributos">
-                   <property name="toolTip">
-                    <string>Habilita ou desabilita a exibição dos rótulos de atributos no mapa final.</string>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <widget class="QWidget" name="">
+                  <property name="geometry">
+                   <rect>
+                    <x>20</x>
+                    <y>0</y>
+                    <width>663</width>
+                    <height>24</height>
+                   </rect>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="1,2">
+                   <property name="topMargin">
+                    <number>0</number>
                    </property>
-                   <property name="text">
-                    <string>Exibir Atributos</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="chk_selecionar_todos">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>9</pointsize>
-                    </font>
-                   </property>
-                   <property name="toolTip">
-                    <string>Seleciona todas as colunas da tabela de atributos para serem exibidas no mapa.</string>
-                   </property>
-                   <property name="text">
-                    <string>Marcar Todas as Colunas</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+                   <item>
+                    <widget class="QCheckBox" name="chk_exibir_atributos">
+                     <property name="toolTip">
+                      <string>Habilita ou desabilita a exibição dos rótulos de atributos no mapa final.</string>
+                     </property>
+                     <property name="text">
+                      <string>Exibir Atributos</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="chk_selecionar_todos">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>9</pointsize>
+                      </font>
+                     </property>
+                     <property name="toolTip">
+                      <string>Seleciona todas as colunas da tabela de atributos para serem exibidas no mapa.</string>
+                     </property>
+                     <property name="text">
+                      <string>Marcar Todas as Colunas</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </widget>
                </item>
                <item>
                 <widget class="QSplitter" name="splitter_2">
