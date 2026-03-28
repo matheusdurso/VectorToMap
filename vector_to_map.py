@@ -39,7 +39,7 @@ from qgis.PyQt.QtWidgets import (
     QDialogButtonBox, QButtonGroup, QApplication, QGridLayout,
     QFileDialog, QMessageBox, QDialog, QVBoxLayout, QHBoxLayout, QLabel,
     QFontDialog, QGraphicsDropShadowEffect, QGraphicsOpacityEffect, QWidget,
-    QTextBrowser)
+    QTextBrowser, QComboBox)
 from qgis.core import (
     QgsProject, QgsPrintLayout, QgsLayoutSize, QgsUnitTypes, QgsLayoutItemMap, 
     QgsLayoutPoint, QgsMapLayerProxyModel, QgsFeatureRequest, QgsSettings, 
@@ -125,13 +125,18 @@ class BoasVindasDialog(QDialog):
         layout_principal.addSpacing(5) # Pequeno espaço antes da seção pro
 
         # --- 3. SEÇÃO PRO (LIMPA - SEM RETÂNGULO E SEM INCRA/IBAMA) ---
-        # Texto HTML direto, sem o card QFrame
-        texto_pro_html = tr(
-            "<h3 style='margin: 0; color: #2c3e50;'>🚀 Quer economizar ainda mais tempo?</h3>"
-            "<p style='margin: 10px 0 12px 0; color: #333;'>Apoie o desenvolvimento e ganhe acesso à "
-            "<b>Versão Pro</b>, que inclui suporte prioritário e modelos de layout exclusivos.</p>"
-            "<p style='margin: 0;'><a href='https://matheusdurso.gumroad.com/l/vectortomap' style='color: #3498db; text-decoration: none;'><b>👉 Clique aqui para conhecer a Versão Pro</b></a></p>"
-        )
+
+        # 1. Traduz apenas o texto legível
+        t_tit_pro = tr("🚀 Quer economizar ainda mais tempo?")
+        t_desc_pro = tr("Apoie o desenvolvimento e ganhe acesso à <b>Versão Pro</b>, que inclui suporte prioritário e modelos de layout exclusivos.")
+        t_link_pro = tr("👉 Clique aqui para conhecer a Versão Pro")
+
+        # 2. Injeta no HTML via f-string
+        texto_pro_html = f"""
+            <h3 style='margin: 0; color: #2c3e50;'>{t_tit_pro}</h3>
+            <p style='margin: 10px 0 12px 0; color: #333;'>{t_desc_pro}</p>
+            <p style='margin: 0;'><a href='https://matheusdurso.gumroad.com/l/vectortomap' style='color: #3498db; text-decoration: none;'><b>{t_link_pro}</b></a></p>
+        """
         
         lbl_pro_texto = QLabel(texto_pro_html)
         lbl_pro_texto.setWordWrap(True)
@@ -150,11 +155,11 @@ class BoasVindasDialog(QDialog):
         layout_principal.addWidget(linha)
 
         # --- 5. TEXTO DE CONSENTIMENTO DO SENTRY ---
-        texto_sentry = tr(
-            "<b>Relatórios de Erro:</b><br>"
-            "Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? "
-            "Nenhuma informação pessoal ou dado geográfico será enviado."
-        )
+        t_tit_sentry = tr("Relatórios de Erro:")
+        t_desc_sentry = tr("Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? Nenhuma informação pessoal ou dado geográfico será enviado.")
+        
+        texto_sentry = f"<b>{t_tit_sentry}</b><br>{t_desc_sentry}"
+
         lbl_sentry = QLabel(texto_sentry)
         lbl_sentry.setWordWrap(True)
         lbl_sentry.setStyleSheet("font-size: 9pt; color: #555;")
@@ -285,6 +290,19 @@ class VectorToMap:
         # Adiciona atalho para o plugin
         self.action.setShortcut("Ctrl+Alt+B")
 
+        # ==========================================================
+        # --- NOVO: CÓDIGO PARA COLOCAR ÍCONE NO MENU PAI (RAIZ) ---
+        # ==========================================================
+        menu_complementos = self.iface.pluginMenu()
+        
+        # Varre todos os itens do menu "Complementos"
+        for acao_menu in menu_complementos.actions():
+            # Se encontrar o texto que criamos (self.menu = '&VectorToMap')
+            if acao_menu.text() == self.menu:
+                # Injeta o ícone na pasta principal
+                acao_menu.setIcon(QIcon(icon_path))
+                break
+
 
     def unload(self):
         """Limpa os recursos do plugin ao ser desativado."""
@@ -369,7 +387,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@1.4.3",
+                release="vectortomap@1.4.4",
                 before_send=filtro_sentry  # <--- INSERIMOS O FILTRO AQUI
             )
             self.sentry_ativo = True
@@ -521,10 +539,18 @@ class VectorToMap:
             }
             
             /* --- ESTILO DOS RECURSOS PRO (Falso Inativo) --- */
-            QCheckBox#chk_export_individual, QCheckBox#chk_abrir_arquivo, QLabel#lbl_cor_pagina {
-                color: #888888; /* Um cinza que parece inativo, mas aceita clique */
+            QCheckBox#chk_export_individual, QCheckBox#chk_abrir_arquivo, QLabel#lbl_cor_pagina,
+            QCheckBox#chk_map_fundo_transp, QCheckBox#chk_pag_fundo_transp,
+            QCheckBox#chk_legenda, QCheckBox#chk_norte, QCheckBox#chk_escala, QCheckBox#chk_grid,
+            QLabel#lblLegenda, QLabel#lblNorte, QLabel#lblEscala, QLabel#lblGrid,
+            QComboBox#comboLegenda, QComboBox#comboNorte, QComboBox#comboEscala, QComboBox#comboGrid {
+                color: #888888; /* Cinza que parece inativo */
             }
-            QCheckBox#chk_export_individual:hover, QCheckBox#chk_abrir_arquivo:hover, QLabel#lbl_cor_pagina:hover {
+            QCheckBox#chk_export_individual:hover, QCheckBox#chk_abrir_arquivo:hover, QLabel#lbl_cor_pagina:hover,
+            QCheckBox#chk_map_fundo_transp:hover, QCheckBox#chk_pag_fundo_transp:hover,
+            QCheckBox#chk_legenda:hover, QCheckBox#chk_norte:hover, QCheckBox#chk_escala:hover, QCheckBox#chk_grid:hover,
+            QLabel#lblLegenda:hover, QLabel#lblNorte:hover, QLabel#lblEscala:hover, QLabel#lblGrid:hover,
+            QComboBox#comboLegenda:hover, QComboBox#comboNorte:hover, QComboBox#comboEscala:hover, QComboBox#comboGrid:hover {
                 color: #3498db; /* Fica azul quando passa o mouse, convidando ao clique! */
                 cursor: pointer;
             }
@@ -677,6 +703,32 @@ p, li {{ white-space: pre-wrap; }}
         self.dlg.combo_presets.setItemData(1, "horizontal")
         self.dlg.combo_presets.addItem(self.tr("Mapa Vertical"), "vertical")
 
+        # Setup das Posições das Decorações (Legenda, Norte, Escala)
+        opcoes_posicao = [
+            (self.tr("Superior Esquerdo"), "SE"),
+            (self.tr("Superior Direito"), "SD"),
+            (self.tr("Inferior Esquerdo"), "IE"),
+            (self.tr("Inferior Direito"), "ID")
+        ]
+        
+        for combo_name in ['comboLegenda', 'comboEscala', 'comboNorte']:
+            if hasattr(self.dlg, combo_name):
+                combo = getattr(self.dlg, combo_name)
+                combo.clear()
+                for texto, dado in opcoes_posicao:
+                    combo.addItem(texto, dado)
+                    
+        # Define os padrões visuais iniciais (Legenda=InfEsq, Escala=InfDir, Norte=SupDir)
+        if hasattr(self.dlg, 'comboLegenda'): self.dlg.comboLegenda.setCurrentIndex(2)
+        if hasattr(self.dlg, 'comboEscala'): self.dlg.comboEscala.setCurrentIndex(3)
+        if hasattr(self.dlg, 'comboNorte'): self.dlg.comboNorte.setCurrentIndex(1)
+
+        # Setup da Grade (Grid)
+        if hasattr(self.dlg, 'comboGrid'):
+            self.dlg.comboGrid.clear()
+            self.dlg.comboGrid.addItem(self.tr("Linhas Sólidas + Zebra"), "solido")
+            self.dlg.comboGrid.addItem(self.tr("Apenas Cruzes"), "cruz")
+
         # Setup de Cor de Fundo
         if hasattr(self.dlg, 'btn_cor_fundo'):
             self.dlg.btn_cor_fundo.setColor(QColor(255, 255, 255, 255))
@@ -786,6 +838,8 @@ p, li {{ white-space: pre-wrap; }}
         self.dlg.chk_exibir_so_camada_atual.stateChanged.connect(self.atualizar_hierarquia_camadas)
         self.dlg.chk_travar_camadas.stateChanged.connect(self.atualizar_estado_travar_estilos)
 
+        self.dlg.combo_atlas.currentIndexChanged.connect(self.atualizar_estado_filtro_feicoes)
+
         # --- Conexões da Aba Suporte ---
         self.dlg.pushButton_apoiar.clicked.connect(self.abrir_gumroad)
         self.dlg.pushButton_bugreport.clicked.connect(self.abrir_github)
@@ -802,6 +856,17 @@ p, li {{ white-space: pre-wrap; }}
                 lambda: self._bloquear_recurso_pro(self.dlg.chk_abrir_arquivo)
             )
         
+        # --- BLOQUEIO DAS NOVAS OPÇÕES DE FUNDO TRANSPARENTE (PRO) ---
+        if hasattr(self.dlg, 'chk_map_fundo_transp'):
+            self.dlg.chk_map_fundo_transp.clicked.connect(
+                lambda: self._bloquear_recurso_pro(self.dlg.chk_map_fundo_transp)
+            )
+
+        if hasattr(self.dlg, 'chk_pag_fundo_transp'):
+            self.dlg.chk_pag_fundo_transp.clicked.connect(
+                lambda: self._bloquear_recurso_pro(self.dlg.chk_pag_fundo_transp)
+            )
+        
         # Função anônima (lambda) que ignora o clique real e chama nosso segurança
         # O parâmetro 'e' representa o evento do mouse (que nós vamos descartar)
         bloqueio_mouse = lambda e: self._bloquear_recurso_pro(None)
@@ -811,6 +876,44 @@ p, li {{ white-space: pre-wrap; }}
             
         if hasattr(self.dlg, 'btn_cor_pagina'):
             self.dlg.btn_cor_pagina.mousePressEvent = bloqueio_mouse
+        
+        # ======================================================================
+        # --- BLOQUEIO DAS DECORAÇÕES E GRADE (TEASER PRO) ---
+        # ======================================================================[
+        
+        # Instanciamos o nosso bloqueador mestre
+        self.pro_blocker = ProBlocker(lambda: self._bloquear_recurso_pro(None))
+
+        itens_pro_decoracoes = [
+            'chk_legenda', 'chk_norte', 'chk_escala', 'chk_grid',
+            'lblLegenda', 'lblNorte', 'lblEscala', 'lblGrid',
+            'comboLegenda', 'comboNorte', 'comboEscala', 'comboGrid'
+        ]
+
+        for item_name in itens_pro_decoracoes:
+            if hasattr(self.dlg, item_name):
+                widget = getattr(self.dlg, item_name)
+                
+                # Se for ComboBox, aplicamos uma leve transparência para ficar igual às expressões DDO
+                if isinstance(widget, QComboBox):
+                    opacidade = QGraphicsOpacityEffect()
+                    opacidade.setOpacity(0.6)
+                    widget.setGraphicsEffect(opacidade)
+
+                # Instala o nosso bloqueador de eventos para matar cliques diretos
+                widget.installEventFilter(self.pro_blocker)
+                
+                # Garante que os "filhos" do widget (como a setinha do combobox) também sejam bloqueados
+                for child in widget.findChildren(QWidget):
+                    child.installEventFilter(self.pro_blocker)
+
+                # Adiciona o balãozinho de aviso (Tooltip)
+                widget.setToolTip(self.tr("Recurso exclusivo da Versão Pro 💎"))
+                
+                # Se for CheckBox, conecta o clique para desmarcar caso ele consiga burlar o filtro
+                if isinstance(widget, QCheckBox):
+                    # Usamos w=widget no lambda para fixar a referência da variável no loop
+                    widget.clicked.connect(lambda checked, w=widget: self._bloquear_recurso_pro(w))
         
         # ======================================================================
         # --- BOTÕES DE INFORMAÇÃO FLUTUANTES ---
@@ -829,9 +932,6 @@ p, li {{ white-space: pre-wrap; }}
         # --- LÓGICA DO TEASER (ESCALAS DINÂMICAS MEIO APAGADAS) ---
         # ======================================================================
         
-        # Instanciamos o nosso bloqueador mestre
-        self.pro_blocker = ProBlocker(lambda: self._bloquear_recurso_pro(None))
-
         if hasattr(self.dlg, 'exp_ddo_auto'):
             # 1. Aplica o filtro de 50% de opacidade para dar o visual "meio apagado"
             opacidade_auto = QGraphicsOpacityEffect()
@@ -1117,6 +1217,30 @@ p, li {{ white-space: pre-wrap; }}
                 self.dlg.lbl_aviso_feicoes.hide()
     
 
+    def atualizar_estado_filtro_feicoes(self):
+        """Bloqueia o filtro e a aba de atributos quando o modo 'Zoom na Camada' é ativado."""
+        if not hasattr(self.dlg, 'combo_atlas') or not hasattr(self.dlg, 'chk_filtrar_feicoes'):
+            return
+            
+        campo_atlas = self.dlg.combo_atlas.currentData()
+        
+        if campo_atlas == "__ALL_FEATURES__":
+            # Desativa o filtro de feições
+            self.dlg.chk_filtrar_feicoes.setChecked(False)
+            self.dlg.chk_filtrar_feicoes.setEnabled(False)
+            
+            # --- NOVO: Desativa a caixa inteira de atributos ---
+            if hasattr(self.dlg, 'groupAtributos'):
+                self.dlg.groupAtributos.setEnabled(False)
+        else:
+            # Reabilita o filtro
+            self.dlg.chk_filtrar_feicoes.setEnabled(True)
+            
+            # --- NOVO: Reabilita a caixa inteira de atributos ---
+            if hasattr(self.dlg, 'groupAtributos'):
+                self.dlg.groupAtributos.setEnabled(True)
+    
+
     def atualizar_estado_travar_estilos(self):
         """Habilita o 'Travar Estilos' apenas se o 'Travar Camadas' estiver marcado."""
         
@@ -1227,6 +1351,8 @@ p, li {{ white-space: pre-wrap; }}
         self.dlg.combo_atlas.clear()
         self.dlg.combo_atlas.addItem(self.tr("--- Sem Agrupamento (Cada Feição) ---"), None)
 
+        self.dlg.combo_atlas.addItem(self.tr("--- Sem Agrupamento (Todas as Feições - Zoom na Camada) ---"), "__ALL_FEATURES__")
+
         if not camada: 
             self.dlg.chk_modo_formulario.blockSignals(False)
             self.dlg.chk_modo_individual.blockSignals(False)
@@ -1236,6 +1362,8 @@ p, li {{ white-space: pre-wrap; }}
         self.dlg.chk_modo_formulario.blockSignals(False)
         self.dlg.chk_modo_individual.blockSignals(False)
         self.atualizar_estado_modos_exibicao()
+
+        self.atualizar_estado_filtro_feicoes()
 
 
     def atualizar_lista_colunas(self, camada):
@@ -1412,6 +1540,11 @@ p, li {{ white-space: pre-wrap; }}
             if sample_f:
                 if campo_atlas is None:
                     self.preview_data_cache = [sample_f]
+                
+                elif campo_atlas == "__ALL_FEATURES__":
+                    # ZERO RAM: Não puxa as feições reais. Apenas destrava a Preview.
+                    self.preview_data_cache = ["ALL"]
+                
                 else:
                     # Se houver atlas, buscamos todas as feições do mesmo grupo
                     val_amostra = sample_f.attribute(campo_atlas)
@@ -1462,7 +1595,10 @@ p, li {{ white-space: pre-wrap; }}
             # 3. Monta o design (Lógica estritamente visual)
             nome_sufixo_preview = "Preview"
             campo_atlas = self.dlg.combo_atlas.currentData()
-            if campo_atlas and feicoes:
+
+            if campo_atlas == "__ALL_FEATURES__":
+                nome_sufixo_preview = "Geral"
+            elif campo_atlas and feicoes and not isinstance(feicoes[0], str):
                 val_atr = feicoes[0].attribute(campo_atlas)
                 val_str = "Null" if val_atr is None else str(val_atr).strip()
                 nome_sufixo_preview = re.sub(r'[\\/*?:"<>|]', "", val_str).strip()[:8].strip()
@@ -1534,7 +1670,7 @@ p, li {{ white-space: pre-wrap; }}
             
             # 1. Pegamos os nomes das colunas que o usuário quer VER no mapa
             colunas_para_carregar = list(colunas_selecionadas)
-            if campo_atlas and campo_atlas not in colunas_para_carregar:
+            if campo_atlas and campo_atlas != "__ALL_FEATURES__" and campo_atlas not in colunas_para_carregar:
                 colunas_para_carregar.append(campo_atlas)
 
             if campo_atlas is None:
@@ -1542,6 +1678,11 @@ p, li {{ white-space: pre-wrap; }}
                 request = QgsFeatureRequest() 
                 for f in camada.getFeatures(request): 
                     paginas_dados.append({'feicoes': [f]})
+
+            elif campo_atlas == "__ALL_FEATURES__":
+                # ZERO RAM: Apenas passa uma lista "dummy" (falsa) para sinalizar que a página existe,
+                # sem copiar nenhuma feição do banco de dados para a memória!
+                paginas_dados.append({'feicoes': ["ALL"]})
             
             else:
                 idx_campo = camada.fields().indexOf(campo_atlas)
@@ -1748,11 +1889,19 @@ p, li {{ white-space: pre-wrap; }}
 
     def _gerar_nome_arquivo_pagina(self, dados, index):
         """Gera um sufixo limpo de até 8 caracteres baseado no Atlas ou sequencial."""
+
         campo_atlas = self.dlg.combo_atlas.currentData()
+
+        # --- ADICIONE ESTAS DUAS LINHAS ---
+        if campo_atlas == "__ALL_FEATURES__":
+            return self.tr("Zoom_Camada")
+        # ----------------------------------
+
         if campo_atlas and dados.get('feicoes'):
             val_atr = dados['feicoes'][0].attribute(campo_atlas)
             nome = "Null" if val_atr is None or val_atr == NULL else str(val_atr).strip()
             return re.sub(r'[\\/*?:"<>|]', "", nome).strip()[:8].strip()
+        
         return str(index + 1)
 
 
@@ -1863,7 +2012,7 @@ p, li {{ white-space: pre-wrap; }}
 
         # 5. Adiciona os textos e tabela de atributos (se houver espaço)
         self._renderizar_textos_e_atributos(
-            layout, feicoes_da_pagina, preset, orientacao, geometria, apenas_mapa
+            layout, camada, feicoes_da_pagina, preset, orientacao, geometria, apenas_mapa
         )
 
         # 6. Adiciona numeração da página no rodapé
@@ -2027,11 +2176,19 @@ p, li {{ white-space: pre-wrap; }}
 
     def _aplicar_extensao_e_escala(self, map_item, camada, feicoes_da_pagina, w_map, h_map):
         """Gerencia o BoundingBox, CRS e regras de zoom máximo do mapa."""
+
         if not feicoes_da_pagina: return
 
-        ext = QgsRectangle()
-        ext.setMinimal()
-        for f in feicoes_da_pagina: ext.combineExtentWith(f.geometry().boundingBox())
+        campo_atlas = self.dlg.combo_atlas.currentData()
+
+        if campo_atlas == "__ALL_FEATURES__":
+            # MATEMÁTICA O(1): Pega a extensão máxima direto dos metadados do arquivo
+            ext = camada.extent()
+        else:
+            # MATEMÁTICA O(N): Calcula a extensão somando a geometria das feições filtradas
+            ext = QgsRectangle()
+            ext.setMinimal()
+            for f in feicoes_da_pagina: ext.combineExtentWith(f.geometry().boundingBox())
         
         project_crs = QgsProject.instance().crs()
         trans = QgsCoordinateTransform(camada.crs(), project_crs, QgsProject.instance().transformContext())
@@ -2146,18 +2303,31 @@ p, li {{ white-space: pre-wrap; }}
             if no_da_camada: no_da_camada.setItemVisibilityChecked(False)
 
 
-    def _renderizar_textos_e_atributos(self, layout, feicoes_da_pagina, preset, orientacao, geo, apenas_mapa):
+    def _renderizar_textos_e_atributos(self, layout, camada, feicoes_da_pagina, preset, orientacao, geo, apenas_mapa):
         """Maestro: Organiza as dimensões e delega a renderização para os modos selecionados."""
-        colunas = [cb.text() for cb in self.dlg.scrollAreaWidgetContents.findChildren(QCheckBox) if cb.isChecked()]
-
-        # Regra de escape rápido: se não tem o que renderizar, saímos imediatamente
-        if not (colunas and feicoes_da_pagina and hasattr(self.dlg, 'chk_exibir_atributos') and self.dlg.chk_exibir_atributos.isChecked() and not apenas_mapa):
+        campo_atlas = self.dlg.combo_atlas.currentData()
+        
+        if apenas_mapa: return
+        
+        # Só desenha textos se a caixinha principal (Exibir Atributos) estiver marcada
+        if hasattr(self.dlg, 'chk_exibir_atributos') and not self.dlg.chk_exibir_atributos.isChecked():
             return
-
+            
         # 1. Isola a matemática: Descobre as coordenadas exatas das caixas de texto
         geom = self._calcular_geometria_textos(preset, orientacao, geo)
 
-        # 2. Roteia para o modo de exibição escolhido
+        # --- ROTA A: RESUMO DA CAMADA INTEIRA ---
+        if campo_atlas == "__ALL_FEATURES__": 
+            self._renderizar_resumo_camada(layout, camada, geom, geo)
+            return
+
+        # --- ROTA B: ATRIBUTOS INDIVIDUAIS DAS FEIÇÕES ---
+        colunas = [cb.text() for cb in self.dlg.scrollAreaWidgetContents.findChildren(QCheckBox) if cb.isChecked()]
+        
+        # Fuga rápida se o usuário não escolheu colunas
+        if not colunas or not feicoes_da_pagina:
+            return
+
         if self.dlg.chk_modo_formulario.isChecked():
             self._renderizar_modo_formulario(layout, feicoes_da_pagina, colunas, geom)
 
@@ -2312,6 +2482,50 @@ p, li {{ white-space: pre-wrap; }}
                 yi += altura_linha
 
 
+    def _renderizar_resumo_camada(self, layout, camada, geom, geo):
+        """Renderiza um bloco de metadados quando o mapa for da camada inteira, usando toda a largura."""
+        
+        nome = camada.name()
+        total = camada.featureCount()
+        geom_tipo = QgsWkbTypes.displayString(camada.wkbType())
+        
+        # --- LÓGICA DE SRC (Sistemas de Referência de Coordenadas) ---
+        crs_camada = camada.crs()
+        crs_camada_str = f"{crs_camada.authid()} - {crs_camada.description()}"
+        
+        crs_projeto = QgsProject.instance().crs()
+        crs_projeto_str = f"{crs_projeto.authid()} - {crs_projeto.description()}"
+        # -------------------------------------------------------------
+        
+        # Textos isolados para tradução
+        t_tit = self.tr("Resumo do Mapa Geral")
+        t_camada = self.tr("Camada Vetorial")
+        t_geometria = self.tr("Tipo de Geometria")
+        t_total = self.tr("Total de Feições")
+        t_crs_camada = self.tr("SRC da Camada")
+        t_crs_proj = self.tr("SRC do Projeto")
+        
+        # Bloco HTML padronizado e unificado
+        txt_html = f"""
+            <b style='font-size: 14px; color: #2c3e50;'>{t_tit}</b><br><br>
+            <b>{t_camada}:</b> {nome}<br>
+            <b>{t_geometria}:</b> {geom_tipo}<br>
+            <b>{t_total}:</b> {total}<br>
+            <b>{t_crs_camada}:</b> {crs_camada_str}<br>
+            <b>{t_crs_proj}:</b> {crs_projeto_str}
+        """
+        
+        # --- NOVO: Usa toda a largura da folha, respeitando apenas a margem direita ---
+        largura_maxima = geo['w_pg'] - geom['x_form'] - geo['margin']
+        
+        self._inserir_label_no_layout(
+            layout, txt_html, 
+            geom['x_form'], geom['y_form'], 
+            largura_maxima, geom['h_form'], 
+            is_html=True
+        )
+
+
     def adicionar_numeracao_pagina(self, layout, w_pg, h_pg, y_zero_folha):
         """Adiciona o número da página no canto inferior direito."""
         
@@ -2333,24 +2547,36 @@ p, li {{ white-space: pre-wrap; }}
 
         # Usamos HTML básico para deixar o texto bonito dentro da caixa
         if topico == "ddo_auto":
-            texto_ajuda = self.tr(
-                "<b style='color: #2980b9; font-size: 14px;'>Escala Automática Dinâmica</b><br><br>"
-                "Use o botão 'ε' para definir a margem de zoom dinamicamente com base "
-                "na sua tabela de atributos.<br><br>"
-                "<b>Exemplo:</b> Uma coluna com o número '15' aplicará 15% de margem no enquadramento.<br>"
-                "<b>Expressão SQL:</b> <i>if(\"Tipo\" = 'Urbano', 10, 25)</i><br><br>"
-                "<span style='color: #555;'>Se o cálculo falhar ou a célula estiver vazia, o plugin usará a margem padrão (25%).</span>"
-            )
+            t_tit = self.tr("Escala Automática Dinâmica")
+            t_desc1 = self.tr("Use o botão 'ε' para definir a margem de zoom dinamicamente com base na sua tabela de atributos.")
+            t_ex_tit = self.tr("Exemplo:")
+            t_ex_desc = self.tr("Uma coluna com o número '15' aplicará 15% de margem no enquadramento.")
+            t_sql_tit = self.tr("Expressão SQL:")
+            t_aviso = self.tr("Se o cálculo falhar ou a célula estiver vazia, o plugin usará a margem padrão (25%).")
+
+            texto_ajuda = f"""
+                <b style='color: #2980b9; font-size: 14px;'>{t_tit}</b><br><br>
+                {t_desc1}<br><br>
+                <b>{t_ex_tit}</b> {t_ex_desc}<br>
+                <b>{t_sql_tit}</b> <i>if("Tipo" = 'Urbano', 10, 25)</i><br><br>
+                <span style='color: #555;'>{t_aviso}</span>
+            """
             
         elif topico == "ddo_fixa":
-            texto_ajuda = self.tr(
-                "<b style='color: #2980b9; font-size: 14px;'>Escala Fixa Dinâmica</b><br><br>"
-                "Use o botão 'ε' para definir a escala absoluta dinamicamente com base "
-                "na sua tabela de atributos.<br><br>"
-                "<b>Exemplo:</b> Uma coluna com o número '5000' forçará o mapa para a escala 1:5000.<br>"
-                "<b>Expressão SQL:</b> <i>\"Minha_Coluna\" * 1000</i><br><br>"
-                "<span style='color: #555;'>Se o cálculo falhar ou a célula for nula, o plugin usará a escala padrão.</span>"
-            )
+            t_tit = self.tr("Escala Fixa Dinâmica")
+            t_desc1 = self.tr("Use o botão 'ε' para definir a escala absoluta dinamicamente com base na sua tabela de atributos.")
+            t_ex_tit = self.tr("Exemplo:")
+            t_ex_desc = self.tr("Uma coluna com o número '5000' forçará o mapa para a escala 1:5000.")
+            t_sql_tit = self.tr("Expressão SQL:")
+            t_aviso = self.tr("Se o cálculo falhar ou a célula for nula, o plugin usará a escala padrão.")
+
+            texto_ajuda = f"""
+                <b style='color: #2980b9; font-size: 14px;'>{t_tit}</b><br><br>
+                {t_desc1}<br><br>
+                <b>{t_ex_tit}</b> {t_ex_desc}<br>
+                <b>{t_sql_tit}</b> <i>"Minha_Coluna" * 1000</i><br><br>
+                <span style='color: #555;'>{t_aviso}</span>
+            """
 
         if not texto_ajuda: return
 
@@ -2408,38 +2634,27 @@ p, li {{ white-space: pre-wrap; }}
     def mostrar_tela_sobre(self):
         """Exibe a janela de ajuda com texto corrido, no estilo algoritmo e sem ícone grande no corpo."""
         
-        # Cria uma QMessageBox genérica com o diálogo principal como pai
         msg_box = QMessageBox(self.dlg)
         msg_box.setWindowTitle(self.tr("Ajuda do Algoritmo"))
-        
-        # Força a remoção do ícone grande dentro do corpo do texto
         msg_box.setIcon(QMessageBox.Icon.NoIcon)
 
-        # Texto corrido e estruturado, no estilo QGIS (sem o "Pro" no título)
-        texto_corrido = self.tr(
-            "VectorToMap<br><br>"
-            "O VectorToMap automatiza a geração de layouts de impressão para cartografia técnica. "
-            "Este algoritmo transforma os dados da camada vetorial em pranchas prontas, "
-            "com enquadramento e escala calculados dinamicamente.<br><br>"
-            
-            "O parâmetro de agrupamento funciona de forma semelhante a um Atlas, permitindo gerar um mapa individual para cada feição "
-            "ou agrupar várias feições que compartilham o mesmo valor em uma coluna específica da tabela.<br><br>"
-            
-            "O parâmetro de escala controla o nível de zoom do mapa. Pode ser definido para centralização "
-            "automática ou fixado em valores absolutos. O uso de expressões (ε) permite que a margem de respiro ou "
-            "a escala exata sejam lidas e aplicadas diretamente a partir dos atributos da feição atual.<br><br>"
-            
-            "A opção de filtrar geometrias controla a visibilidade dos elementos no layout final. "
-            "Quando ativada, ela isola e exibe apenas as feições que pertencem à página que está sendo gerada, "
-            "ocultando automaticamente o restante dos dados do mapa.<br><br>"
-            
-            "<ul><li><i>Utilize o botão de Preview para validar o enquadramento, os estilos e a renderização das "
-            "informações na tela antes de executar a exportação em lote para arquivos finais.</i></li></ul>"
-        )
+        # Traduz os parágrafos separadamente
+        p1 = self.tr("O VectorToMap automatiza a geração de layouts de impressão para cartografia técnica. Este algoritmo transforma os dados da camada vetorial em pranchas prontas, com enquadramento e escala calculados dinamicamente.")
+        p2 = self.tr("O parâmetro de agrupamento funciona de forma semelhante a um Atlas, permitindo gerar um mapa individual para cada feição ou agrupar várias feições que compartilham o mesmo valor em uma coluna específica da tabela.")
+        p3 = self.tr("O parâmetro de escala controla o nível de zoom do mapa. Pode ser definido para centralização automática ou fixado em valores absolutos. O uso de expressões (ε) permite que a margem de respiro ou a escala exata sejam lidas e aplicadas diretamente a partir dos atributos da feição atual.")
+        p4 = self.tr("A opção de filtrar geometrias controla a visibilidade dos elementos no layout final. Quando ativada, ela isola e exibe apenas as feições que pertencem à página que está sendo gerada, ocultando automaticamente o restante dos dados do mapa.")
+        p_aviso = self.tr("Utilize o botão de Preview para validar o enquadramento, os estilos e a renderização das informações na tela antes de executar a exportação em lote para arquivos finais.")
+
+        # Constrói o HTML unindo as variáveis
+        texto_corrido = f"""
+            VectorToMap<br><br>
+            {p1}<br><br>
+            {p2}<br><br>
+            {p3}<br><br>
+            {p4}<br><br>
+            <ul><li><i>{p_aviso}</i></li></ul>
+        """
         
-        # Padrão nativo para o texto
         msg_box.setText(texto_corrido)
         msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-        
-        # Exibe a janela de forma modal
         msg_box.exec()

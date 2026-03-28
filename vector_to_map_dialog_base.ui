@@ -82,9 +82,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-120</y>
-             <width>703</width>
-             <height>1023</height>
+             <y>-295</y>
+             <width>700</width>
+             <height>1235</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -126,7 +126,7 @@
                   <widget class="QLabel" name="label_3">
                    <property name="font">
                     <font>
-                     <pointsize>10</pointsize>
+                     <pointsize>9</pointsize>
                     </font>
                    </property>
                    <property name="text">
@@ -157,7 +157,7 @@
                   <widget class="QLabel" name="label_5">
                    <property name="font">
                     <font>
-                     <pointsize>10</pointsize>
+                     <pointsize>9</pointsize>
                     </font>
                    </property>
                    <property name="text">
@@ -472,7 +472,7 @@
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0,0,0,0,0">
+                <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="0,0,0,0">
                  <property name="spacing">
                   <number>7</number>
                  </property>
@@ -506,6 +506,13 @@
                   </widget>
                  </item>
                  <item>
+                  <widget class="QCheckBox" name="chk_map_fundo_transp">
+                   <property name="text">
+                    <string>Fundo Transparente⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <spacer name="horizontalSpacer">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
@@ -518,6 +525,13 @@
                    </property>
                   </spacer>
                  </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_21">
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
                  <item>
                   <widget class="QLabel" name="lbl_cor_pagina">
                    <property name="toolTip">
@@ -534,6 +548,26 @@
                     <string>Escolha a cor e transparência do fundo da página. Dica: Para criar imagem de fundo transparente, deixe o fundo do mapa e da página transparentes e salve como PNG.</string>
                    </property>
                   </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="chk_pag_fundo_transp">
+                   <property name="text">
+                    <string>Fundo Transparente⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
                  </item>
                 </layout>
                </item>
@@ -763,7 +797,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QGroupBox" name="groupBox_3">
+             <widget class="QGroupBox" name="groupAtributos">
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -776,7 +810,7 @@
                </font>
               </property>
               <property name="title">
-               <string>TABELA DE ATRIBUTOS</string>
+               <string>ATRIBUTOS</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_9">
                <property name="leftMargin">
@@ -805,7 +839,7 @@
                  <property name="frameShadow">
                   <enum>QFrame::Sunken</enum>
                  </property>
-                 <widget class="QWidget" name="">
+                 <widget class="QWidget" name="layoutWidget">
                   <property name="geometry">
                    <rect>
                     <x>20</x>
@@ -893,7 +927,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>661</width>
+                     <width>658</width>
                      <height>63</height>
                     </rect>
                    </property>
@@ -1049,6 +1083,111 @@
              </widget>
             </item>
             <item>
+             <widget class="QGroupBox" name="groupBox_5">
+              <property name="title">
+               <string>GroupBox</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_11">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_22" stretch="2,0,3">
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="chk_legenda">
+                   <property name="text">
+                    <string>Adicionar Legenda⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblLegenda">
+                   <property name="text">
+                    <string>Posição:⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="comboLegenda"/>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_25" stretch="2,0,3">
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="chk_norte">
+                   <property name="text">
+                    <string>Adicionar Seta de Norte⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblNorte">
+                   <property name="text">
+                    <string>Posição:⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="comboNorte"/>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_23" stretch="2,0,3">
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="chk_escala">
+                   <property name="text">
+                    <string>Adicionar Escala Gráfica⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblEscala">
+                   <property name="text">
+                    <string>Posição:⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="comboEscala"/>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_24" stretch="2,0,3">
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QCheckBox" name="chk_grid">
+                   <property name="text">
+                    <string>Adicionar Grade⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblGrid">
+                   <property name="text">
+                    <string>Tipo:⭐</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="comboGrid"/>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
              <widget class="QGroupBox" name="groupBox_4">
               <property name="font">
                <font>
@@ -1183,7 +1322,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>438</width>
+             <width>441</width>
              <height>788</height>
             </rect>
            </property>
