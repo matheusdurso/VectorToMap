@@ -387,7 +387,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@1.4.4",
+                release="vectortomap@1.5.0",
                 before_send=filtro_sentry  # <--- INSERIMOS O FILTRO AQUI
             )
             self.sentry_ativo = True
@@ -536,6 +536,22 @@ class VectorToMap:
             }
             QPushButton#pushButton_bugreport:hover {
                 background-color: #e0e0e0;
+            }
+
+            /* =================================================== */
+            /* NOVO: BOTÃO DO TUTORIAL (VERMELHO YOUTUBE)          */
+            /* =================================================== */
+            QPushButton#pushButton_tutorial {
+                background-color: #e74c3c;
+                color: white;
+                font-weight: bold;
+                font-size: 12px;
+                padding: 8px 15px;
+                border: 1px solid #e74c3c;
+                border-radius: 4px;
+            }
+            QPushButton#pushButton_tutorial:hover {
+                background-color: #c0392b;
             }
             
             /* --- ESTILO DOS RECURSOS PRO (Falso Inativo) --- */
@@ -841,6 +857,8 @@ p, li {{ white-space: pre-wrap; }}
         self.dlg.combo_atlas.currentIndexChanged.connect(self.atualizar_estado_filtro_feicoes)
 
         # --- Conexões da Aba Suporte ---
+        if hasattr(self.dlg, 'pushButton_tutorial'):
+            self.dlg.pushButton_tutorial.clicked.connect(self.abrir_tutorial_youtube)
         self.dlg.pushButton_apoiar.clicked.connect(self.abrir_gumroad)
         self.dlg.pushButton_bugreport.clicked.connect(self.abrir_github)
 
@@ -1285,16 +1303,31 @@ p, li {{ white-space: pre-wrap; }}
             self.dlg.reject()
     
 
+
+
+    def abrir_tutorial_youtube(self):
+        """Abre o vídeo tutorial do YouTube no navegador padrão do usuário."""
+        url = QUrl("https://www.youtube.com/watch?v=AIITugHD-_o")
+        QDesktopServices.openUrl(url)
+    
+
+
+
     def abrir_gumroad(self):
         """Abre a página do Gumroad para apoiar o projeto."""
         url_gumroad = "https://matheusdurso.gumroad.com/l/vectortomap"
         QDesktopServices.openUrl(QUrl(url_gumroad))
+
+
+
 
     def abrir_github(self):
         """Abre a página de Issues do GitHub para relatar bugs."""
         url_github = "https://github.com/matheusdurso/VectorToMap/issues"
         QDesktopServices.openUrl(QUrl(url_github))
     
+
+
 
     def ir_para_suporte(self):
         """Muda a aba ativa para a página de Desenvolvimento e Suporte."""
@@ -1303,6 +1336,8 @@ p, li {{ white-space: pre-wrap; }}
             # Se a aba de suporte for a terceira no seu layout, mude para 2.
             self.dlg.tabWidget.setCurrentIndex(1)
     
+
+
 
     def _bloquear_recurso_pro(self, widget_clicado=None, event=None):
         """Intercepta o clique em recursos Pro, reverte a ação e manda pra aba de compra."""
@@ -1324,6 +1359,9 @@ p, li {{ white-space: pre-wrap; }}
             level=3, 
             duration=5
         )
+
+
+
 
     #################################################################################
     # --- 3. GESTÃO DE ATRIBUTOS E WIDGETS ---
@@ -1364,6 +1402,8 @@ p, li {{ white-space: pre-wrap; }}
         self.atualizar_estado_modos_exibicao()
 
         self.atualizar_estado_filtro_feicoes()
+
+
 
 
     def atualizar_lista_colunas(self, camada):
@@ -1418,12 +1458,16 @@ p, li {{ white-space: pre-wrap; }}
                     idx_campo += 1
 
 
+
+
     def marcar_desmarcar_todos(self, state):
         """Bulk check/uncheck attributes using the control list."""
 
         check = (state == Qt.CheckState.Checked)
         for cb in self.colunas_atuais:
             cb.setChecked(check)
+
+
 
 
     def verificar_estado_selecionar_todos(self):
@@ -1438,6 +1482,8 @@ p, li {{ white-space: pre-wrap; }}
         self.dlg.chk_selecionar_todos.blockSignals(False)
 
 
+
+
     def atualizar_estado_modos_exibicao(self):
         """Manage accessibility for display modes using the control list."""
 
@@ -1450,6 +1496,8 @@ p, li {{ white-space: pre-wrap; }}
         else:
             self.dlg.chk_modo_formulario.setChecked(False)
             self.dlg.chk_modo_individual.setChecked(False)
+
+
 
 
     def atualizar_tabela_por_selecao(self):
@@ -1473,6 +1521,9 @@ p, li {{ white-space: pre-wrap; }}
                 tabela.setItem(i, j, QTableWidgetItem(str(feicao[col])))
         tabela.resizeColumnsToContents()
 
+
+
+
     #####################################################################################
     # --- 4. LÓGICA GEOGRÁFICA E ESCALA ---
     #####################################################################################
@@ -1487,6 +1538,8 @@ p, li {{ white-space: pre-wrap; }}
         
         self.atualizar_lista_atributos()
         self.validar_geometria_escala()
+
+
 
 
     def validar_geometria_escala(self):
@@ -1505,6 +1558,9 @@ p, li {{ white-space: pre-wrap; }}
 
         self.dlg.combo_escala_fixa.blockSignals(False)
         self.disparar_preview_se_autorizado()
+
+
+
 
     ####################################################################################
     # --- 5. RENDERIZAÇÃO E LAYOUT ---
@@ -1561,6 +1617,8 @@ p, li {{ white-space: pre-wrap; }}
         
         return self.preview_data_cache
     
+
+
     
     def atualizar_preview(self):
         """Renders a sample layout preview usando cache de feições."""
@@ -1646,11 +1704,15 @@ p, li {{ white-space: pre-wrap; }}
             QCoreApplication.processEvents()
 
 
+
+
     def disparar_preview_se_autorizado(self):
         """Start the preview timer only if auto-update is checked."""
 
         if hasattr(self.dlg, 'chk_preview_auto') and self.dlg.chk_preview_auto.isChecked():
             self.timer_preview.start(450)
+
+
 
 
     def processar_clique_ok(self):
@@ -1752,6 +1814,8 @@ p, li {{ white-space: pre-wrap; }}
         
         finally:
             self.export_info = None # Reseta a variável para o botão OK padrão
+
+
 
 
     # ====================================================================================
@@ -1857,6 +1921,8 @@ p, li {{ white-space: pre-wrap; }}
             gc.collect()
 
 
+
+
     # ------------------------------------------------------------------------------------
     # --- SUB-FUNÇÕES DE EXPORTAÇÃO E LAYOUT (ESPECIALISTAS) ---
     # ------------------------------------------------------------------------------------
@@ -1887,6 +1953,8 @@ p, li {{ white-space: pre-wrap; }}
         return True
 
 
+
+
     def _gerar_nome_arquivo_pagina(self, dados, index):
         """Gera um sufixo limpo de até 8 caracteres baseado no Atlas ou sequencial."""
 
@@ -1903,6 +1971,8 @@ p, li {{ white-space: pre-wrap; }}
             return re.sub(r'[\\/*?:"<>|]', "", nome).strip()[:8].strip()
         
         return str(index + 1)
+
+
 
 
     def _exportar_paginas_individuais(self, project, camada, paginas_dados, preset, orientacao, base_sem_ext, ext):
@@ -1942,6 +2012,8 @@ p, li {{ white-space: pre-wrap; }}
             QCoreApplication.processEvents()
 
 
+
+
     def _montar_layout_persistente(self, project, manager, camada, paginas_dados, preset, orientacao):
         """Modo Acumulador: Adiciona todas as páginas num único layout do QGIS."""
         nome_camada = re.sub(r'[^a-zA-Z0-9_]', '_', unicodedata.normalize('NFD', camada.name()).encode('ascii', 'ignore').decode('utf-8'))
@@ -1976,6 +2048,8 @@ p, li {{ white-space: pre-wrap; }}
             QCoreApplication.processEvents()
             
         return layout
+
+
 
 
     # ====================================================================================
@@ -2020,6 +2094,8 @@ p, li {{ white-space: pre-wrap; }}
             self.adicionar_numeracao_pagina(layout, geometria['w_pg'], geometria['h_pg'], geometria['y_zero'])
         
         self._adicionar_marca_dagua_free(layout, geometria['y_zero'], geometria['h_pg'])
+
+
 
 
     # ------------------------------------------------------------------------------------
@@ -2116,12 +2192,16 @@ p, li {{ white-space: pre-wrap; }}
         return geometria, apenas_mapa, cor_fundo
     
 
+
+
     def escolher_fonte_titulo(self):
         """Abre a janela nativa do Windows/Mac para escolher fonte, tamanho e estilo."""
         fonte, ok = QFontDialog.getFont(self.fonte_titulo, self.dlg, self.tr("Escolher Fonte do Título"))
         if ok:
             self.fonte_titulo = fonte
             self.disparar_preview_se_autorizado()
+
+
 
 
     def _adicionar_titulo(self, layout, geo):
@@ -2160,6 +2240,8 @@ p, li {{ white-space: pre-wrap; }}
         layout.addLayoutItem(lbl_titulo)
 
 
+
+
     def _adicionar_item_mapa(self, layout, geo, apenas_mapa, cor_fundo):
         """Cria e injeta o quadro do mapa no layout."""
         map_item = QgsLayoutItemMap(layout)
@@ -2172,6 +2254,8 @@ p, li {{ white-space: pre-wrap; }}
         map_item.attemptMove(QgsLayoutPoint(geo['x_map'], geo['y_map'], QgsUnitTypes.LayoutMillimeters))
         map_item.setZValue(0)
         return map_item
+
+
 
 
     def _aplicar_extensao_e_escala(self, map_item, camada, feicoes_da_pagina, w_map, h_map):
@@ -2222,6 +2306,8 @@ p, li {{ white-space: pre-wrap; }}
         map_item.attemptMove(QgsLayoutPoint(map_item.pos().x(), map_item.pos().y(), QgsUnitTypes.LayoutMillimeters))
 
 
+
+
     def atualizar_mapa_para_canvas(self, map_item):
         """Força o layout a refletir a tela principal do QGIS sem travar as camadas."""
         # 1. Desliga qualquer trava de camadas ou estilos
@@ -2233,6 +2319,8 @@ p, li {{ white-space: pre-wrap; }}
         
         # 3. Atualiza o item no layout
         map_item.refresh()
+
+
 
 
     def _gerenciar_visibilidade_camadas(self, map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index):
@@ -2303,6 +2391,8 @@ p, li {{ white-space: pre-wrap; }}
             if no_da_camada: no_da_camada.setItemVisibilityChecked(False)
 
 
+
+
     def _renderizar_textos_e_atributos(self, layout, camada, feicoes_da_pagina, preset, orientacao, geo, apenas_mapa):
         """Maestro: Organiza as dimensões e delega a renderização para os modos selecionados."""
         campo_atlas = self.dlg.combo_atlas.currentData()
@@ -2333,6 +2423,8 @@ p, li {{ white-space: pre-wrap; }}
 
         if self.dlg.chk_modo_individual.isChecked():
             self._renderizar_modo_individual(layout, feicoes_da_pagina, colunas, geom, preset, orientacao)
+
+
 
 
     # ------------------------------------------------------------------------------------
@@ -2388,6 +2480,8 @@ p, li {{ white-space: pre-wrap; }}
         return geom
 
 
+
+
     def _inserir_label_no_layout(self, layout, texto, x, y, w=None, h=None, is_html=False, auto_resize=False):
         """Fábrica de rótulos: Instancia, configura e posiciona um texto sem repetir código da API do QGIS."""
         lbl = QgsLayoutItemLabel(layout)
@@ -2416,6 +2510,8 @@ p, li {{ white-space: pre-wrap; }}
         return float(w) if w is not None else 0.0
 
 
+
+
     def _renderizar_modo_formulario(self, layout, feicoes_da_pagina, colunas, geom):
         """Constrói o bloco de texto único em HTML."""
         txt_html = ""
@@ -2431,6 +2527,8 @@ p, li {{ white-space: pre-wrap; }}
             geom['w_form'], geom['h_form'], 
             is_html=True
         )
+
+
 
 
     def _renderizar_modo_individual(self, layout, feicoes_da_pagina, colunas, geom, preset, orientacao):
@@ -2482,6 +2580,8 @@ p, li {{ white-space: pre-wrap; }}
                 yi += altura_linha
 
 
+
+
     def _renderizar_resumo_camada(self, layout, camada, geom, geo):
         """Renderiza um bloco de metadados quando o mapa for da camada inteira, usando toda a largura."""
         
@@ -2524,6 +2624,8 @@ p, li {{ white-space: pre-wrap; }}
             largura_maxima, geom['h_form'], 
             is_html=True
         )
+
+
 
 
     def adicionar_numeracao_pagina(self, layout, w_pg, h_pg, y_zero_folha):

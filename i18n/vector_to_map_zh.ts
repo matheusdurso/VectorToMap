@@ -524,6 +524,11 @@ p, li { white-space: pre-wrap; }
         <source>Tipo:⭐</source>
         <translation>类型：⭐</translation>
     </message>
+    <message>
+        <location filename="../vector_to_map_dialog_base.ui" line="1556"/>
+        <source>▶ Assistir Tutorial</source>
+        <translation>▶ 观看教程</translation>
+    </message>
 </context>
 <context>
     <name>VectorToMap</name>
@@ -533,7 +538,7 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;VectorToMap</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="758"/>
+        <location filename="../vector_to_map.py" line="774"/>
         <source>Preview</source>
         <translation>预览</translation>
     </message>
@@ -543,147 +548,147 @@ p, li { white-space: pre-wrap; }
         <translation>VectorToMap</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="700"/>
+        <location filename="../vector_to_map.py" line="716"/>
         <source>Mapa Quadrado</source>
         <translation>方形地图</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="702"/>
+        <location filename="../vector_to_map.py" line="718"/>
         <source>Mapa Horizontal</source>
         <translation>横向地图</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="704"/>
+        <location filename="../vector_to_map.py" line="720"/>
         <source>Mapa Vertical</source>
         <translation>纵向地图</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="736"/>
+        <location filename="../vector_to_map.py" line="752"/>
         <source>Escolha a cor de fundo do mapa. Reduza a Opacidade para 0% para exportar transparente.</source>
         <translation>选择地图背景颜色。将不透明度降低到 0% 即可导出透明背景。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="757"/>
+        <location filename="../vector_to_map.py" line="773"/>
         <source>Exportar</source>
         <translation>导出</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="759"/>
+        <location filename="../vector_to_map.py" line="775"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="760"/>
+        <location filename="../vector_to_map.py" line="776"/>
         <source>Cancelar</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="779"/>
+        <location filename="../vector_to_map.py" line="795"/>
         <source>Esquerda</source>
         <translation>左对齐</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="780"/>
+        <location filename="../vector_to_map.py" line="796"/>
         <source>Centro</source>
         <translation>居中</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="781"/>
+        <location filename="../vector_to_map.py" line="797"/>
         <source>Direita</source>
         <translation>右对齐</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1038"/>
+        <location filename="../vector_to_map.py" line="1056"/>
         <source>Exportar Mapas</source>
         <translation>导出地图</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1215"/>
+        <location filename="../vector_to_map.py" line="1233"/>
         <source>⚠️ Aviso: O filtro de feições cria camadas temporárias para cada feição ou grupo de feições.</source>
         <translation>⚠️ 警告：要素过滤器会为每个要素或要素组创建临时图层。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1260"/>
+        <location filename="../vector_to_map.py" line="1278"/>
         <source>Exibe todos os atributos em um bloco único de texto (HTML).</source>
         <translation>在单个文本块（HTML）中显示所有属性。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1261"/>
+        <location filename="../vector_to_map.py" line="1279"/>
         <source>Cria uma linha horizontal para cada feição (evita sobreposições).</source>
         <translation>为每个要素创建一条水平线（防止重叠）。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1262"/>
+        <location filename="../vector_to_map.py" line="1280"/>
         <source>Marca ou desmarca todos os campos da lista de uma vez.</source>
         <translation>一次性选中或取消选中列表中的所有字段。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1263"/>
+        <location filename="../vector_to_map.py" line="1281"/>
         <source>Campo da tabela usado para agrupar as feições em cada página.</source>
         <translation>用于对每个页面上的要素进行分组的表字段。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1264"/>
+        <location filename="../vector_to_map.py" line="1282"/>
         <source>Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado).</source>
         <translation>定义纸张上地图的大小（例如：页面的 75% 或方形）。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1265"/>
+        <location filename="../vector_to_map.py" line="1283"/>
         <source>Gera uma prévia do layout com as configurações atuais.</source>
         <translation>使用当前设置生成布局预览。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1266"/>
+        <location filename="../vector_to_map.py" line="1284"/>
         <source>Exporta os mapas diretamente como PDF, PNG ou JPG.</source>
         <translation>直接将地图导出为 PDF、PNG 或 JPG。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1277"/>
+        <location filename="../vector_to_map.py" line="1295"/>
         <source>Aviso</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1277"/>
+        <location filename="../vector_to_map.py" line="1295"/>
         <source>Cancelando processamento... A janela permanecerá aberta.</source>
         <translation>正在取消处理... 窗口将保持打开状态。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1352"/>
+        <location filename="../vector_to_map.py" line="1390"/>
         <source>--- Sem Agrupamento (Cada Feição) ---</source>
         <translation>--- 无分组（每个要素） ---</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1847"/>
+        <location filename="../vector_to_map.py" line="1911"/>
         <source>Erro</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1817"/>
+        <location filename="../vector_to_map.py" line="1881"/>
         <source>Layout exportado com sucesso para</source>
         <translation>布局成功导出至</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1823"/>
+        <location filename="../vector_to_map.py" line="1887"/>
         <source>Exportar layout</source>
         <translation>导出布局</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1832"/>
+        <location filename="../vector_to_map.py" line="1896"/>
         <source>Cancelado</source>
         <translation>已取消</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1832"/>
+        <location filename="../vector_to_map.py" line="1896"/>
         <source>O processamento foi interrompido.</source>
         <translation>处理已中断。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1879"/>
+        <location filename="../vector_to_map.py" line="1945"/>
         <source>Confirmar Sobrescrita</source>
         <translation>确认覆盖</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1879"/>
+        <location filename="../vector_to_map.py" line="1945"/>
         <source>Arquivos com os mesmos nomes já existem no diretório de destino.
 
 Deseja sobrescrevê-los?</source>
@@ -692,37 +697,37 @@ Deseja sobrescrevê-los?</source>
 您要覆盖它们吗？</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2121"/>
+        <location filename="../vector_to_map.py" line="2199"/>
         <source>Escolher Fonte do Título</source>
         <translation>选择标题字体</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1045"/>
+        <location filename="../vector_to_map.py" line="1063"/>
         <source>Recurso Exclusivo Pro 👑</source>
         <translation>独家 Pro 功能 👑</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1157"/>
+        <location filename="../vector_to_map.py" line="1175"/>
         <source>Gerado por VectorToMap (Versão Free) - Adquira a Pro</source>
         <translation>由 VectorToMap（免费版）生成 - 获取 Pro 版本</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1321"/>
+        <location filename="../vector_to_map.py" line="1356"/>
         <source>Recurso Pro 👑</source>
         <translation>Pro 功能 👑</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1321"/>
+        <location filename="../vector_to_map.py" line="1356"/>
         <source>Este recurso é exclusivo da versão Pro. Veja como fazer o upgrade abaixo!</source>
         <translation>此功能为 Pro 版本独有。请查看下方如何升级！</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1724"/>
+        <location filename="../vector_to_map.py" line="1786"/>
         <source>Limite da Versão Free 👑</source>
         <translation>免费版本限制 👑</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1724"/>
+        <location filename="../vector_to_map.py" line="1786"/>
         <source>A versão gratuita permite exportar até {LIMITE_FREE} mapas por vez.
 
 Apenas os {LIMITE_FREE} primeiros serão gerados nesta rodada.
@@ -735,22 +740,22 @@ Apenas os {LIMITE_FREE} primeiros serão gerados nesta rodada.
 🚀 升级到 Pro 版本以解除此限制并批量导出数百张地图！</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="655"/>
+        <location filename="../vector_to_map.py" line="671"/>
         <source>Sobre o Plugin</source>
         <translation>关于插件</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="751"/>
+        <location filename="../vector_to_map.py" line="767"/>
         <source>Ajuda do VectorToMap</source>
         <translation>VectorToMap 帮助</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="958"/>
+        <location filename="../vector_to_map.py" line="976"/>
         <source>Recurso exclusivo da Versão Pro 💎</source>
         <translation>Pro 版本独家功能 💎</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1045"/>
+        <location filename="../vector_to_map.py" line="1063"/>
         <source>A exportação de imagens PNG (fundo transparente) e vetores SVG é exclusiva da Versão Pro.
 
 Na versão gratuita, você pode exportar em formato PDF (Múltiplas páginas) ou imagem em JPG.
@@ -763,227 +768,227 @@ Acesse a aba &apos;Desenvolvimento e Suporte&apos; para conhecer a Versão Pro!<
 请访问“开发与支持”选项卡了解有关 Pro 版本的更多信息！</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2638"/>
+        <location filename="../vector_to_map.py" line="2740"/>
         <source>Ajuda do Algoritmo</source>
         <translation>算法帮助</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="588"/>
+        <location filename="../vector_to_map.py" line="604"/>
         <source>Motor de Renderização Cartográfica Automatizada</source>
         <translation>自动化制图渲染引擎</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="589"/>
+        <location filename="../vector_to_map.py" line="605"/>
         <source>Visão Geral do Sistema</source>
         <translation>系统概述</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="590"/>
+        <location filename="../vector_to_map.py" line="606"/>
         <source>O VectorToMap é uma solução avançada de automação para Sistemas de Informação Geográfica (SIG). Projetado para lidar com rotinas de alta demanda cartográfica, o complemento atua diretamente sobre a API de layouts nativa (QgsPrintLayout), permitindo a renderização em lote de feições espaciais com parâmetros de enquadramento escaláveis.</source>
         <translation>VectorToMap 是一种用于地理信息系统（GIS）的高级自动化解决方案。该插件专为处理高制图需求的日常工作而设计，直接作用于原生布局 API（QgsPrintLayout），允许使用可扩展的取景参数对空间要素进行批量渲染。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="592"/>
+        <location filename="../vector_to_map.py" line="608"/>
         <source>Aplicações Técnicas</source>
         <translation>技术应用</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="593"/>
+        <location filename="../vector_to_map.py" line="609"/>
         <source>&lt;b&gt;Engenharia e Licenciamento:&lt;/b&gt; Geração massiva de plantas de situação, croquis de acesso e anexos cartográficos padronizados para estudos ambientais.</source>
         <translation>&lt;b&gt;工程与许可：&lt;/b&gt; 批量生成用于环境研究的标准化位置图、访问草图和制图附件。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="594"/>
+        <location filename="../vector_to_map.py" line="610"/>
         <source>&lt;b&gt;Gestão Fundiária:&lt;/b&gt; Automatização de pranchas para o Cadastro Ambiental Rural (CAR), regularização fundiária e cadastros técnicos multifinalitários urbanos.</source>
         <translation>&lt;b&gt;土地管理：&lt;/b&gt; 自动化生成用于农村环境登记 (CAR)、土地正规化和城市多用途技术地籍的图纸。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="595"/>
+        <location filename="../vector_to_map.py" line="611"/>
         <source>&lt;b&gt;Inspeção e Laudos:&lt;/b&gt; Padronização visual e geração rápida de encartes de mapas para relatórios de vistoria em campo.</source>
         <translation>&lt;b&gt;检查与报告：&lt;/b&gt; 视觉标准化，快速生成用于现场检查报告的地图插图。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="597"/>
+        <location filename="../vector_to_map.py" line="613"/>
         <source>Arquitetura e Funcionalidades Core</source>
         <translation>架构与核心功能</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="598"/>
+        <location filename="../vector_to_map.py" line="614"/>
         <source>&lt;b&gt;Integração QGIS Expressions:&lt;/b&gt; Suporte nativo a Data-Defined Overrides (DDO). O motor lê funções SQL inseridas pelo usuário para calcular dinamicamente margens e escalas com base no contexto geométrico.</source>
         <translation>&lt;b&gt;QGIS 表达式集成：&lt;/b&gt; 原生支持数据定义覆盖 (DDO)。引擎读取用户插入的 SQL 函数，根据几何上下文动态计算边距和比例尺。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="599"/>
+        <location filename="../vector_to_map.py" line="615"/>
         <source>&lt;b&gt;Isolamento em Memória:&lt;/b&gt; Utiliza rotinas de instanciamento de camadas transitórias (Memory Layers) e filtros de visibilidade sem afetar a Layer Tree principal do projeto.</source>
         <translation>&lt;b&gt;内存隔离：&lt;/b&gt; 使用瞬态图层实例化例程 (Memory Layers) 和可见性过滤器，而不影响项目的主图层树。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="600"/>
+        <location filename="../vector_to_map.py" line="616"/>
         <source>&lt;b&gt;Engine de Exportação:&lt;/b&gt; Suporte multi-thread e multi-formato dinâmico perfeitamente ajustado para lotes de impressão.</source>
         <translation>&lt;b&gt;导出引擎：&lt;/b&gt; 支持多线程和动态多格式，完美适配批量打印。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="602"/>
+        <location filename="../vector_to_map.py" line="618"/>
         <source>Desenvolvido por:</source>
         <translation>开发人员：</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="603"/>
+        <location filename="../vector_to_map.py" line="619"/>
         <source>Registro INPI:</source>
         <translation>INPI 注册：</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="604"/>
+        <location filename="../vector_to_map.py" line="620"/>
         <source>Contato:</source>
         <translation>联系方式：</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="605"/>
+        <location filename="../vector_to_map.py" line="621"/>
         <source>Licença:</source>
         <translation>许可证：</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="708"/>
+        <location filename="../vector_to_map.py" line="724"/>
         <source>Superior Esquerdo</source>
         <translation>左上</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="709"/>
+        <location filename="../vector_to_map.py" line="725"/>
         <source>Superior Direito</source>
         <translation>右上</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="710"/>
+        <location filename="../vector_to_map.py" line="726"/>
         <source>Inferior Esquerdo</source>
         <translation>左下</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="711"/>
+        <location filename="../vector_to_map.py" line="727"/>
         <source>Inferior Direito</source>
         <translation>右下</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="729"/>
+        <location filename="../vector_to_map.py" line="745"/>
         <source>Linhas Sólidas + Zebra</source>
         <translation>实线 + 斑马线</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="730"/>
+        <location filename="../vector_to_map.py" line="746"/>
         <source>Apenas Cruzes</source>
         <translation>仅十字</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1354"/>
+        <location filename="../vector_to_map.py" line="1392"/>
         <source>--- Sem Agrupamento (Todas as Feições - Zoom na Camada) ---</source>
         <translation>--- 无分组（所有要素 - 缩放至图层） ---</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1897"/>
+        <location filename="../vector_to_map.py" line="1965"/>
         <source>Zoom_Camada</source>
         <translation>图层缩放</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2501"/>
+        <location filename="../vector_to_map.py" line="2601"/>
         <source>Resumo do Mapa Geral</source>
         <translation>总地图摘要</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2502"/>
+        <location filename="../vector_to_map.py" line="2602"/>
         <source>Camada Vetorial</source>
         <translation>矢量图层</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2503"/>
+        <location filename="../vector_to_map.py" line="2603"/>
         <source>Tipo de Geometria</source>
         <translation>几何类型</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2504"/>
+        <location filename="../vector_to_map.py" line="2604"/>
         <source>Total de Feições</source>
         <translation>要素总数</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2505"/>
+        <location filename="../vector_to_map.py" line="2605"/>
         <source>SRC da Camada</source>
         <translation>图层 CRS</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2506"/>
+        <location filename="../vector_to_map.py" line="2606"/>
         <source>SRC do Projeto</source>
         <translation>项目 CRS</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2550"/>
+        <location filename="../vector_to_map.py" line="2652"/>
         <source>Escala Automática Dinâmica</source>
         <translation>动态自动比例尺</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2551"/>
+        <location filename="../vector_to_map.py" line="2653"/>
         <source>Use o botão &apos;ε&apos; para definir a margem de zoom dinamicamente com base na sua tabela de atributos.</source>
         <translation>使用“ε”按钮根据您的属性表动态定义缩放边距。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2568"/>
+        <location filename="../vector_to_map.py" line="2670"/>
         <source>Exemplo:</source>
         <translation>示例：</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2553"/>
+        <location filename="../vector_to_map.py" line="2655"/>
         <source>Uma coluna com o número &apos;15&apos; aplicará 15% de margem no enquadramento.</source>
         <translation>包含数字“15”的列将应用 15% 的框架边距。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2570"/>
+        <location filename="../vector_to_map.py" line="2672"/>
         <source>Expressão SQL:</source>
         <translation>SQL 表达式：</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2555"/>
+        <location filename="../vector_to_map.py" line="2657"/>
         <source>Se o cálculo falhar ou a célula estiver vazia, o plugin usará a margem padrão (25%).</source>
         <translation>如果计算失败或单元格为空，插件将使用默认边距（25%）。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2566"/>
+        <location filename="../vector_to_map.py" line="2668"/>
         <source>Escala Fixa Dinâmica</source>
         <translation>动态固定比例尺</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2567"/>
+        <location filename="../vector_to_map.py" line="2669"/>
         <source>Use o botão &apos;ε&apos; para definir a escala absoluta dinamicamente com base na sua tabela de atributos.</source>
         <translation>使用“ε”按钮根据您的属性表动态定义绝对比例尺。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2569"/>
+        <location filename="../vector_to_map.py" line="2671"/>
         <source>Uma coluna com o número &apos;5000&apos; forçará o mapa para a escala 1:5000.</source>
         <translation>包含数字“5000”的列将强制地图使用 1:5000 的比例尺。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2571"/>
+        <location filename="../vector_to_map.py" line="2673"/>
         <source>Se o cálculo falhar ou a célula for nula, o plugin usará a escala padrão.</source>
         <translation>如果计算失败或单元格为空，插件将使用默认比例尺。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2642"/>
+        <location filename="../vector_to_map.py" line="2744"/>
         <source>O VectorToMap automatiza a geração de layouts de impressão para cartografia técnica. Este algoritmo transforma os dados da camada vetorial em pranchas prontas, com enquadramento e escala calculados dinamicamente.</source>
         <translation>VectorToMap 可自动生成用于技术制图的打印布局。该算法将矢量图层数据转换为现成的图纸，并动态计算框架和比例尺。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2643"/>
+        <location filename="../vector_to_map.py" line="2745"/>
         <source>O parâmetro de agrupamento funciona de forma semelhante a um Atlas, permitindo gerar um mapa individual para cada feição ou agrupar várias feições que compartilham o mesmo valor em uma coluna específica da tabela.</source>
         <translation>分组参数的工作方式类似于 Atlas，允许您为每个要素生成单独的地图，或将特定表格列中共享相同值的多个要素进行分组。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2644"/>
+        <location filename="../vector_to_map.py" line="2746"/>
         <source>O parâmetro de escala controla o nível de zoom do mapa. Pode ser definido para centralização automática ou fixado em valores absolutos. O uso de expressões (ε) permite que a margem de respiro ou a escala exata sejam lidas e aplicadas diretamente a partir dos atributos da feição atual.</source>
         <translation>比例尺参数控制地图的缩放级别。它可以设置为自动居中，也可以固定为绝对值。使用表达式 (ε) 允许直接从当前要素的属性中读取并应用呼吸边距或精确比例尺。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2645"/>
+        <location filename="../vector_to_map.py" line="2747"/>
         <source>A opção de filtrar geometrias controla a visibilidade dos elementos no layout final. Quando ativada, ela isola e exibe apenas as feições que pertencem à página que está sendo gerada, ocultando automaticamente o restante dos dados do mapa.</source>
         <translation>过滤几何体选项可控制最终布局中元素的可见性。激活后，它将隔离并仅显示属于正在生成的页面的要素，自动隐藏其余地图数据。</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2646"/>
+        <location filename="../vector_to_map.py" line="2748"/>
         <source>Utilize o botão de Preview para validar o enquadramento, os estilos e a renderização das informações na tela antes de executar a exportação em lote para arquivos finais.</source>
         <translation>在执行批量导出到最终文件之前，请使用“预览”按钮在屏幕上验证框架、样式和信息的渲染情况。</translation>
     </message>
