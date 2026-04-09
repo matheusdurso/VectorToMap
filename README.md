@@ -1,5 +1,7 @@
 # 🗺️ VectorToMap - QGIS Plugin
 
+🎉 **VERSION 3.0: ALL PRO FEATURES ARE NOW 100% FREE AND OPEN-SOURCE!** 🎉
+
 **VectorToMap** is a professional QGIS tool designed to automate the mass generation of Print Layouts. It transforms complex vector data into hundreds of standardized map pages in seconds, making it ideal for inventories, field inspections, and cartographic reports.
 
 ---
@@ -8,28 +10,26 @@
 
 ### ✨ Key Features
 
+* **🌟 Professional Templates (.qpt):** Load built-in native layout templates or import your custom corporate designs. The engine preserves your layout and injects the dynamic maps.
+* **🖨️ Multi-Format Export:** Bypass the QGIS layout manager and export hundreds of maps directly to **PDF (multi-page), PNG, JPG, and SVG** (with editable paths).
+* **🧮 Data-Defined Overrides (DDO):** Use QGIS SQL expressions (ε) to dynamically control map scales, margins, and complex Atlas grouping based on attribute values.
+* **📐 Smart Decorations:** Auto-generate Coordinate Grids, North Arrows, Scale Bars, Legends, and Overview (Locator) Maps tailored to each page.
+* **✨ Transparent Backgrounds:** Export maps and pages with alpha channel transparency (perfect for PNG/SVG overlays).
 * **🚀 High Performance & Smart Grouping:** Optimized database queries (`QgsFeatureRequest`) and ultra-fast unique value processing for Atlas-style map books.
 * **🛡️ Advanced Layer Management:** Cleanly isolates features using temporary memory layers without cluttering your main project. Full support for locking layer visibility and styles per page.
 * **👁️ Real-Time Preview:** Lightning-fast in-memory rendering engine to validate your design before final processing, complete with a dedicated progress bar.
-* **🛑 Safe Abort & Memory Management:** Functional **Cancel** button that safely stops the rendering engine without freezing the QGIS interface. Uses Python's Garbage Collector (`gc`) and `sip` object cleanup to guarantee stability even with thousands of features.
-* **📏 Cartographic Scaling:** * **Auto-scale:** Dynamic bounding-box adjustment with mathematical protection for single-point geometries.
-    * **Fixed Scale:** Selectable technical standards (from 1:1,000 up to 1:1,000,000).
-    * **CRS Protection:** Built-in safeguards for layers with missing or custom EPSG definitions.
-* **🎨 Attribute Display Modes:** * **Form Mode:** Clean, unified HTML block for all selected attributes.
-    * **Individual Mode:** Inline technical labels with automatic size adjustment to prevent overlapping.
-* **📐 Page Designs & Presets:** Optimized frame proportions (e.g., 75% height or Square) fully compatible with **A4 to A0** paper sizes and Portrait/Landscape orientations.
-* **🔮 Future-Proof:** Fully compatible with QGIS 3.x (Qt5) and the new QGIS 4.x (Qt6).
+* **🛑 Safe Abort & Memory Management:** Functional **Cancel** button that safely stops the rendering engine without freezing the QGIS interface. Uses Python's Garbage Collector (`gc`) and `sip` object cleanup.
+* **🎨 Attribute Display Modes:** Form Mode (HTML block) or Individual Mode (inline technical labels with automatic size adjustment).
 
 ### 🚀 How to Use
 
 1. **Vector Layer:** Select your source layer from the dropdown menu.
 2. **Attribute Selection:** Check the table fields you want to display on the layout.
-3. **Technical Setup:** Define the page size, orientation (Portrait/Landscape), and visual preset.
-4. **Layer Control:** Choose whether to filter features, isolate the current layer, and lock styles.
-5. **Grouping (Optional):** Select a "Group by" field to generate maps by neighborhoods, owners, or categories.
-6. **Render Preview:** Click to generate a technical snapshot of the first page.
-7. **Processing:** Click **OK** to generate all layouts. 
-    * *Tip:* If you notice something wrong during a massive batch generation, click **Cancel** to abort the process safely.
+3. **Technical Setup:** Define the page size, orientation, and choose a visual preset or a `.qpt` Template.
+4. **Decorations:** Enable Grids, Legends, North Arrows, or Locator Maps from the UI.
+5. **Grouping (Optional):** Select a "Group by" field or write an SQL expression to generate maps by neighborhoods, owners, etc.
+6. **Render Preview:** Click **Preview** to generate a technical snapshot of the first page.
+7. **Processing:** Click **Export** to save directly to disk (PDF/PNG/SVG) or **OK** to open the generated layouts in the QGIS Layout Designer.
 
 ---
 
@@ -37,29 +37,26 @@
 
 ### ✨ Funcionalidades
 
-* **🚀 Alta Performance e Agrupamento:** Consultas otimizadas via banco de dados (`QgsFeatureRequest`) e processamento inteligente de valores únicos para geração de cadernos de mapas (estilo Atlas) ultrarrápidos.
-* **🛡️ Gestão Avançada de Camadas:** Isola feições de forma limpa usando camadas em memória temporárias, sem poluir o projeto principal. Suporte total para travar a visibilidade e os estilos das camadas por página.
-* **👁️ Preview em Tempo Real:** Motor de renderização em memória para validar o design antes do processamento final, com barra de progresso dedicada para feedback visual instantâneo.
-* **🛑 Interrupção Segura e Gestão de Memória:** Botão **Cancelar** funcional que interrompe o motor de renderização com segurança, sem travar a interface. Implementação de *Garbage Collector* (`gc`) e limpeza de objetos `SIP` (C++) para garantir estabilidade com milhares de feições.
-* **📏 Escala Cartográfica:**
-    * **Auto-escala:** Ajuste dinâmico à geometria com proteção matemática para pontos únicos.
-    * **Escala Fixa:** Padrões técnicos selecionáveis (de 1:1.000 até 1:1.000.000).
-    * **Blindagem de CRS:** Proteção nativa para camadas com definições EPSG ausentes ou customizadas.
-* **🎨 Modos de Exibição:** * **Modo Formulário:** Atributos organizados em bloco HTML limpo.
-    * **Modo Individual:** Rótulos técnicos em linha com ajuste automático de tamanho para evitar sobreposições.
-* **📐 Presets de Design:** Formatos otimizados (ex: 75% da altura ou Quadrado) compatíveis com folhas de **A4 a A0**, nas orientações Retrato ou Paisagem.
-* **🔮 Preparado para o Futuro:** Totalmente compatível com QGIS 3.x (Qt5) e o novo QGIS 4.x (Qt6).
+* **🌟 Templates Profissionais (.qpt):** Carregue templates nativos já inclusos ou importe seus layouts corporativos personalizados. O motor preserva seu design original e injeta os mapas dinamicamente.
+* **🖨️ Exportação Multi-Formato:** Pule o gerenciador de layouts do QGIS e exporte centenas de mapas diretamente para **PDF (múltiplas páginas), PNG, JPG e SVG** (com vetores editáveis).
+* **🧮 Expressões Dinâmicas (DDO):** Use SQL do QGIS (ε) para controlar dinamicamente escalas, margens de respiro e agrupamentos complexos no Atlas com base na tabela de atributos.
+* **📐 Decorações Inteligentes:** Geração automática e adaptativa de Grades de Coordenadas, Rosas dos Ventos, Escalas, Legendas e Mapas de Localização (Overview).
+* **✨ Fundos Transparentes:** Exporte mapas e pranchas com canal alfa (transparência), ideal para sobreposições em PNG e SVG.
+* **🚀 Alta Performance e Agrupamento:** Consultas otimizadas via banco de dados (`QgsFeatureRequest`) para geração de cadernos de mapas (estilo Atlas) ultrarrápidos.
+* **🛡️ Gestão Avançada de Camadas:** Isola feições de forma limpa usando camadas em memória, sem poluir o projeto. Suporte total para travar a visibilidade e os estilos das camadas por página.
+* **👁️ Preview em Tempo Real:** Motor de renderização para validar o design antes do processamento final, com barra de progresso dedicada.
+* **🛑 Interrupção Segura:** Botão **Cancelar** funcional que interrompe o motor com segurança. Implementação de *Garbage Collector* (`gc`) para garantir estabilidade com milhares de feições.
+* **🎨 Modos de Exibição de Atributos:** Modo Formulário (bloco HTML) ou Modo Individual (rótulos independentes com ajuste contra sobreposição).
 
 ### 🚀 Como Usar
 
 1. **Camada Vetorial:** Selecione a camada de origem no menu suspenso.
 2. **Seleção de Atributos:** Marque os campos da tabela que aparecerão no layout impresso.
-3. **Configuração Técnica:** Defina o tamanho da página, orientação e o preset visual.
-4. **Controle de Camadas:** Escolha se deseja filtrar as feições, isolar a camada atual e travar os estilos.
-5. **Agrupamento (Opcional):** Selecione um campo em "Group by" para gerar mapas por bairros, proprietários, etc.
-6. **Render Preview:** Clique para gerar uma prévia técnica da primeira página.
-7. **Processamento:** Clique em **OK** para gerar todos os layouts. 
-    * *Dica:* Se notar algo errado durante a geração de muitas páginas, clique em **Cancelar** para interromper o processo imediatamente.
+3. **Configuração Técnica:** Defina o tamanho da página, orientação e escolha um Preset visual ou um Template `.qpt`.
+4. **Decorações:** Ative Grades, Legendas, Rosas dos Ventos ou Mapas de Localização diretamente na interface.
+5. **Agrupamento (Opcional):** Selecione um campo ou crie uma expressão SQL em "Agrupar" para gerar mapas por bairros, proprietários, etc.
+6. **Preview:** Clique em **Preview** para validar o design da primeira página na tela.
+7. **Processamento:** Clique em **Exportar** para salvar direto no disco (PDF/PNG/SVG) ou em **OK** para abrir os layouts no Gerenciador do QGIS.
 
 ---
 
