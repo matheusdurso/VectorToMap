@@ -19,7 +19,7 @@ from qgis.core import (
     QgsLayoutItemPicture, QgsLayoutItemLegend, Qgis, QgsLegendStyle,
     QgsLayoutRenderContext, QgsFeature, QgsLayoutItemMapGrid,
     QgsReadWriteContext, QgsLayoutItemMapOverview, QgsFillSymbol,
-    QgsMessageLog
+    QgsMessageLog, QgsMapLayerType
 )
 
 class LayoutEngine:
@@ -476,6 +476,9 @@ class LayoutEngine:
                 layers_to_show = []
                 root = QgsProject.instance().layerTreeRoot()
                 
+                # Recupera a configuração do usuário
+                incluir_rasters_loc = config.get('add_raster_loc', False)
+                
                 # ====================================================================
                 # A CURA DA ORDEM: root.layerOrder() puxa as camadas exatamente na 
                 # ordem Z (de cima para baixo) que está no painel do seu QGIS!
@@ -485,6 +488,13 @@ class LayoutEngine:
                         continue
                     node = root.findLayer(layer.id())
                     if node and node.isVisible():
+                        
+                        # --- NOVO: Lógica de filtro do Raster ---
+                        is_raster = (layer.type() == QgsMapLayerType.RasterLayer)
+                        if is_raster and not incluir_rasters_loc:
+                            continue # Pula a camada raster se a checkbox estiver desmarcada
+                        # ----------------------------------------
+                        
                         layers_to_show.append(layer)
 
                 if camada_loc and camada_loc not in layers_to_show:
@@ -577,11 +587,27 @@ class LayoutEngine:
             legenda.setAutoUpdateModel(False)
             root_projeto = QgsProject.instance().layerTreeRoot()
             root_legenda = legenda.model().rootGroup()
-            for no_camada in root_projeto.findLayers():
-                if not no_camada.isVisible():
-                    no_legenda = root_legenda.findLayer(no_camada.layerId())
-                    if no_legenda: no_legenda.parent().removeChildNode(no_legenda)
+            
+            # Recupera a configuração do usuário
+            incluir_rasters = config.get('add_raster_legend', False)
 
+            for no_camada in root_projeto.findLayers():
+                layer = no_camada.layer()
+                if not layer: continue
+                
+                is_raster = (layer.type() == QgsMapLayerType.RasterLayer)
+                
+                # Regra: Removemos a camada da legenda SE:
+                # 1. Ela estiver com o olhinho fechado (invisível) OU
+                # 2. Ela for um raster E o usuário não marcou a checkbox
+                deve_remover = (not no_camada.isVisible()) or (is_raster and not incluir_rasters)
+                
+                if deve_remover:
+                    no_legenda = root_legenda.findLayer(no_camada.layerId())
+                    if no_legenda: 
+                        no_legenda.parent().removeChildNode(no_legenda)
+
+            # Limpa grupos vazios e as camadas temporárias do plugin
             for no_grupo in root_legenda.findGroups():
                 if "VectorToMap" in no_grupo.name() or not no_grupo.children():
                     no_grupo.parent().removeChildNode(no_grupo)
@@ -596,7 +622,13 @@ class LayoutEngine:
             escala.setLinkedMap(map_item)
             escala.setStyle('Line Ticks Up') 
             
+            # --- NOVO: Fundo branco com 80% de opacidade ---
+            escala.setBackgroundEnabled(True)
+            escala.setBackgroundColor(QColor(255, 255, 255, 204))
+            # -----------------------------------------------
+            
             escala_mapa = map_item.scale()
+
             if escala_mapa <= 0:
                 escala_mapa = config.get('escala_val', 10000.0)
             
@@ -728,8 +760,14 @@ class LayoutEngine:
             ext = camada.extent()
         else:
             ext = QgsRectangle()
-            # --- A CURA DO WARNING: O QGIS 3 exige setNull() em vez de setMinimal() ---
-            ext.setNull() 
+            
+            # --- Compatibilidade Universal entre versões do QGIS 3 ---
+            if hasattr(ext, 'setNull'):
+                ext.setNull()    # QGIS Novo: Usa o método atual e evita o DeprecationWarning
+            else:
+                ext.setMinimal() # QGIS Antigo: Fallback seguro onde o setNull não existe
+            # ---------------------------------------------------------
+            
             for f in feicoes_da_pagina: ext.combineExtentWith(f.geometry().boundingBox())
         
         project_crs = QgsProject.instance().crs()
@@ -1180,12 +1218,12 @@ class LayoutEngine:
         is_geo = map_item.crs().isGeographic()
         grid.setAnnotationPrecision(3 if is_geo else 0) 
         
-        # a) Desliga as coordenadas da Direita e de Baixo
+        # a) Desliga as coordenadas da Direita e do Topo
         grid.setAnnotationDisplay(QgsLayoutItemMapGrid.HideAll, QgsLayoutItemMapGrid.Right)
-        grid.setAnnotationDisplay(QgsLayoutItemMapGrid.HideAll, QgsLayoutItemMapGrid.Bottom)
+        grid.setAnnotationDisplay(QgsLayoutItemMapGrid.HideAll, QgsLayoutItemMapGrid.Top)
         
-        # b) Garante que Topo e Esquerda estejam ligados
-        grid.setAnnotationDisplay(QgsLayoutItemMapGrid.ShowAll, QgsLayoutItemMapGrid.Top)
+        # b) Garante que Baixo e Esquerda estejam ligados
+        grid.setAnnotationDisplay(QgsLayoutItemMapGrid.ShowAll, QgsLayoutItemMapGrid.Bottom)
         grid.setAnnotationDisplay(QgsLayoutItemMapGrid.ShowAll, QgsLayoutItemMapGrid.Left)
         
         # c) Rotaciona as coordenadas da Esquerda para Vertical Ascendente

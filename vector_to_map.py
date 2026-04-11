@@ -384,7 +384,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@3.0.0",
+                release="vectortomap@3.1.0",
                 before_send=filtro_sentry  # <--- INSERIMOS O FILTRO AQUI
             )
             self.sentry_ativo = True
@@ -955,30 +955,31 @@ class VectorToMap:
             )
         # ====================================================================
         
-        # --- NOVO: Conecta as decorações do mapa à Preview ---
-        if hasattr(self.dlg, 'chk_legenda'):
-            self.dlg.chk_legenda.stateChanged.connect(self.disparar_preview_se_autorizado)
-            
-        if hasattr(self.dlg, 'chk_escala'):
-            self.dlg.chk_escala.stateChanged.connect(self.disparar_preview_se_autorizado)
-            
-        if hasattr(self.dlg, 'chk_norte'):
-            self.dlg.chk_norte.stateChanged.connect(self.disparar_preview_se_autorizado)
-        # -----------------------------------------------------
+        # --- GATILHOS DE DECORAÇÕES (Preview e UI Inteligente) ---
+        
+        # Função auxiliar para disparar as duas ações juntas
+        def _ao_mudar_decoracao_principal():
+            self.atualizar_estado_decoracoes()
+            self.disparar_preview_se_autorizado()
 
-        # --- Gatilhos de Posição das Decorações ---
-        for combo_name in ['comboLegenda', 'comboEscala', 'comboNorte']:
+        # Conecta as checkboxes principais
+        checkboxes_principais = ['chk_legenda', 'chk_escala', 'chk_norte', 'chk_mapa_loc', 'chk_grid']
+        for chk_name in checkboxes_principais:
+            if hasattr(self.dlg, chk_name):
+                getattr(self.dlg, chk_name).stateChanged.connect(_ao_mudar_decoracao_principal)
+
+        # Conecta os sub-controles (só disparam a preview)
+        sub_controles_chk = ['chk_add_raster', 'chk_incluir_raster']
+        for chk_name in sub_controles_chk:
+            if hasattr(self.dlg, chk_name):
+                getattr(self.dlg, chk_name).stateChanged.connect(self.disparar_preview_se_autorizado)
+
+        for combo_name in ['comboLegenda', 'comboEscala', 'comboNorte', 'comboPosLoc', 'comboGrid']:
             if hasattr(self.dlg, combo_name):
                 getattr(self.dlg, combo_name).currentIndexChanged.connect(self.disparar_preview_se_autorizado)
-        
-        if hasattr(self.dlg, 'chk_mapa_loc'):
-            self.dlg.chk_mapa_loc.stateChanged.connect(self.disparar_preview_se_autorizado)
-            
+                
         if hasattr(self.dlg, 'combo_camada_loc'):
             self.dlg.combo_camada_loc.layerChanged.connect(self.disparar_preview_se_autorizado)
-            
-        if hasattr(self.dlg, 'comboPosLoc'):
-            self.dlg.comboPosLoc.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
 
         # --- GATILHOS DE ATRIBUTOS E LAYOUT ---
         self.dlg.combo_presets.currentIndexChanged.connect(self._verificar_selecao_template)
@@ -1005,9 +1006,6 @@ class VectorToMap:
             
         if hasattr(self.dlg, 'exp_ddo_fixa'):
             self.dlg.exp_ddo_fixa.fieldChanged.connect(self.disparar_preview_se_autorizado)
-
-        if hasattr(self.dlg, 'chk_grid'): widgets_preview.append(self.dlg.chk_grid)
-        if hasattr(self.dlg, 'comboGrid'): widgets_preview.append(self.dlg.comboGrid)
         
         for w in widgets_preview:
             if hasattr(w, 'currentIndexChanged'): w.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
@@ -1024,6 +1022,7 @@ class VectorToMap:
         # --- 9. ESTADO INICIAL ---
         self.configurar_escala_ao_mudar_camada()
         self.atualizar_hierarquia_camadas()
+        self.atualizar_estado_decoracoes()
 
 
     
@@ -1526,6 +1525,51 @@ class VectorToMap:
             self.dlg.chk_modo_formulario.blockSignals(False)
             self.dlg.chk_modo_individual.blockSignals(False)
 
+    
+
+
+    def atualizar_estado_decoracoes(self):
+        """Habilita ou desabilita os controles das decorações com base nas checkboxes principais."""
+        if not self.dlg: return
+        
+        # 1. Controles do Mapa de Localização
+        if hasattr(self.dlg, 'chk_mapa_loc'):
+            is_loc_ativo = self.dlg.chk_mapa_loc.isChecked()
+            if hasattr(self.dlg, 'chk_incluir_raster'):
+                self.dlg.chk_incluir_raster.setEnabled(is_loc_ativo)
+            if hasattr(self.dlg, 'combo_camada_loc'):
+                self.dlg.combo_camada_loc.setEnabled(is_loc_ativo)
+            if hasattr(self.dlg, 'comboPosLoc'):
+                self.dlg.comboPosLoc.setEnabled(is_loc_ativo)
+
+        # 2. Controles da Legenda
+        if hasattr(self.dlg, 'chk_legenda'):
+            is_legenda_ativa = self.dlg.chk_legenda.isChecked()
+            if hasattr(self.dlg, 'chk_add_raster'):
+                self.dlg.chk_add_raster.setEnabled(is_legenda_ativa)
+            if hasattr(self.dlg, 'comboLegenda'):
+                self.dlg.comboLegenda.setEnabled(is_legenda_ativa)
+
+        # 3. Controles do Norte
+        if hasattr(self.dlg, 'chk_norte'):
+            is_norte_ativo = self.dlg.chk_norte.isChecked()
+            if hasattr(self.dlg, 'comboNorte'):
+                self.dlg.comboNorte.setEnabled(is_norte_ativo)
+
+        # 4. Controles da Escala
+        if hasattr(self.dlg, 'chk_escala'):
+            is_escala_ativa = self.dlg.chk_escala.isChecked()
+            if hasattr(self.dlg, 'comboEscala'):
+                self.dlg.comboEscala.setEnabled(is_escala_ativa)
+
+        # 5. Controles da Grade (Grid)
+        if hasattr(self.dlg, 'chk_grid'):
+            is_grid_ativo = self.dlg.chk_grid.isChecked()
+            if hasattr(self.dlg, 'comboGrid'):
+                self.dlg.comboGrid.setEnabled(is_grid_ativo)
+
+
+
 
     def atualizar_tabela_por_selecao(self):
         """Sincroniza a tabela de amostra com os checkboxes reais da memória."""
@@ -1728,12 +1772,14 @@ class VectorToMap:
             'inserir_escala': self.dlg.chk_escala.isChecked() if hasattr(self.dlg, 'chk_escala') else False,
             'inserir_norte': self.dlg.chk_norte.isChecked() if hasattr(self.dlg, 'chk_norte') else False,
             'inserir_legenda': self.dlg.chk_legenda.isChecked() if hasattr(self.dlg, 'chk_legenda') else False,
+            'add_raster_legend': self.dlg.chk_add_raster.isChecked() if hasattr(self.dlg, 'chk_add_raster') else False,
             'pos_legenda': self.dlg.comboLegenda.currentData() if hasattr(self.dlg, 'comboLegenda') else "IE",
             'pos_escala': self.dlg.comboEscala.currentData() if hasattr(self.dlg, 'comboEscala') else "SE",
             'pos_norte': self.dlg.comboNorte.currentData() if hasattr(self.dlg, 'comboNorte') else "SD",
             'inserir_grade': self.dlg.chk_grid.isChecked() if hasattr(self.dlg, 'chk_grid') else False,
             'estilo_grade': self.dlg.comboGrid.currentData() if hasattr(self.dlg, 'comboGrid') else "solido",
             'inserir_mapa_loc': self.dlg.chk_mapa_loc.isChecked() if hasattr(self.dlg, 'chk_mapa_loc') else False,
+            'add_raster_loc': self.dlg.chk_incluir_raster.isChecked() if hasattr(self.dlg, 'chk_incluir_raster') else False,
             'camada_loc': self.dlg.combo_camada_loc.currentLayer() if hasattr(self.dlg, 'combo_camada_loc') else None,
             'pos_mapa_loc': self.dlg.comboPosLoc.currentData() if hasattr(self.dlg, 'comboPosLoc') else "ID"
         }

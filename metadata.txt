@@ -3,32 +3,32 @@ name=VectorToMap
 module=vector_to_map
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.99
-description=VectorToMap: Advanced Cartographic Automation for QGIS. > The Pro version is now 100% free! Elevate your mapping workflow with high-performance multi-page layout generation. Features advanced Atlas grouping, Data-Defined Overrides (DDO), SVG/PNG exports, dynamic scale management, and exclusive layout templates. Built for GIS professionals who need speed, precision, and production-ready technical maps.
+description=VectorToMap: Advanced Cartographic Automation for QGIS. > The Pro version is now 100%% free! Elevate your mapping workflow with high-performance multi-page layout generation. Features advanced Atlas grouping, Data-Defined Overrides (DDO), SVG/PNG exports, dynamic scale management, and exclusive layout templates. Built for GIS professionals who need speed, precision, and production-ready technical maps.
 about=[English]
- VectorToMap automates the creation of multi-page layouts and map books in QGIS, saving hours of manual work. Easily export hundreds of individual or attribute-grouped maps with dynamic scaling, smart layer isolation, and real-time previews. Version 3.0: All Pro features are now 100% free! Enjoy unlimited exports, SVG/PNG formats, professional templates, and Data-Defined Overrides (DDO).
+ VectorToMap automates the creation of multi-page layouts and map books in QGIS, saving hours of manual work. Easily export hundreds of individual or attribute-grouped maps with dynamic scaling, smart layer isolation, and real-time previews. Version 3.0: All Pro features are now 100%% free! Enjoy unlimited exports, SVG/PNG formats, professional templates, and Data-Defined Overrides (DDO).
  
  [Português]
- O VectorToMap automatiza a criação de layouts de múltiplas páginas e cadernos de mapas no QGIS, economizando horas de trabalho manual. Exporte facilmente centenas de mapas individuais ou agrupados por atributos com escala dinâmica, isolamento inteligente de camadas e pré-visualização em tempo real. Versão 3.0: Todos os recursos Pro agora são 100% gratuitos! Aproveite exportações ilimitadas, formatos SVG/PNG, templates profissionais e Data-Defined Overrides (DDO).
+ O VectorToMap automatiza a criação de layouts de múltiplas páginas e cadernos de mapas no QGIS, economizando horas de trabalho manual. Exporte facilmente centenas de mapas individuais ou agrupados por atributos com escala dinâmica, isolamento inteligente de camadas e pré-visualização em tempo real. Versão 3.0: Todos os recursos Pro agora são 100%% gratuitos! Aproveite exportações ilimitadas, formatos SVG/PNG, templates profissionais e Data-Defined Overrides (DDO).
 
  [中文]
  VectorToMap 在 QGIS 中自动创建多页布局和地图册，为您节省数小时的手动工作时间。凭借动态比例尺、智能图层隔离和实时预览功能，您可以轻松导出数百张单独的或按属性分组的地图。版本 3.0：所有专业版功能现已完全免费！享受无限制导出、SVG/PNG 格式、专业模板和数据定义覆盖 (DDO)。
 
  [Italiano]
- VectorToMap automatizza la creazione di layout multipagina e atlanti cartografici in QGIS, risparmiando ore di lavoro manuale. Esporta facilmente centinaia di mappe singole o raggruppate per attributi con ridimensionamento dinamico, isolamento intelligente dei layer e anteprime in tempo reale. Versione 3.0: Tutte le funzionalità Pro sono ora gratuite al 100%! Goditi esportazioni illimitate, formati SVG/PNG, modelli professionali e Data-Defined Overrides (DDO).
+ VectorToMap automatizza la creazione di layout multipagina e atlanti cartografici in QGIS, risparmiando ore di lavoro manuale. Esporta facilmente centinaia di mappe singole o raggruppate per attributi con ridimensionamento dinamico, isolamento intelligente dei layer e anteprime in tempo reale. Versione 3.0: Tutte le funzionalità Pro sono ora gratuite al 100%%! Goditi esportazioni illimitate, formati SVG/PNG, modelli professionali e Data-Defined Overrides (DDO).
 
  [Deutsch]
- VectorToMap automatisiert die Erstellung von mehrseitigen Layouts und Kartensammlungen in QGIS und spart Stunden an manueller Arbeit. Exportieren Sie mühelos Hunderte von individuellen oder nach Attributen gruppierten Karten mit dynamischer Skalierung, intelligenter Layer-Isolierung und Echtzeit-Vorschau. Version 3.0: Alle Pro-Funktionen sind jetzt 100 % kostenlos! Profitieren Sie von unbegrenzten Exporten, SVG/PNG-Formaten, professionellen Vorlagen und Data-Defined Overrides (DDO).
+ VectorToMap automatisiert die Erstellung von mehrseitigen Layouts und Kartensammlungen in QGIS und spart Stunden an manueller Arbeit. Exportieren Sie mühelos Hunderte von individuellen oder nach Attributen gruppierten Karten mit dynamischer Skalierung, intelligenter Layer-Isolierung und Echtzeit-Vorschau. Version 3.0: Alle Pro-Funktionen sind jetzt 100 %% kostenlos! Profitieren Sie von unbegrenzten Exporten, SVG/PNG-Formaten, professionellen Vorlagen und Data-Defined Overrides (DDO).
 
  [Español]
- VectorToMap automatiza la creación de diseños de múltiples páginas y libros de mapas en QGIS, ahorrando horas de trabajo manual. Exporte fácilmente cientos de mapas individuales o agrupados por atributos con escala dinámica, aislamiento inteligente de capas y vistas previas en tiempo real. Versión 3.0: ¡Todas las funciones Pro ahora son 100% gratuitas! Disfrute de exportaciones ilimitadas, formatos SVG/PNG, plantillas profesionales y Data-Defined Overrides (DDO).
+ VectorToMap automatiza la creación de diseños de múltiples páginas y libros de mapas en QGIS, ahorrando horas de trabajo manual. Exporte fácilmente cientos de mapas individuales o agrupados por atributos con escala dinámica, aislamiento inteligente de capas y vistas previas en tiempo real. Versión 3.0: ¡Todas las funciones Pro ahora son 100%% gratuitas! Disfrute de exportaciones ilimitadas, formatos SVG/PNG, plantillas profesionales y Data-Defined Overrides (DDO).
 
  [Русский]
- VectorToMap автоматизирует создание многостраничных макетов и атласов в QGIS, экономя часы ручной работы. Легко экспортируйте сотни отдельных или сгруппированных по атрибутам карт с динамическим масштабированием, умной изоляцией слоев и предварительным просмотром в реальном времени. Версия 3.0: Все Pro-функции теперь на 100% бесплатны! Наслаждайтесь неограниченным экспортом, форматами SVG/PNG, профессиональными шаблонами и Data-Defined Overrides (DDO).
+ VectorToMap автоматизирует создание многостраничных макетов и атласов в QGIS, экономя часы ручной работы. Легко экспортируйте сотни отдельных или сгруппированных по атрибутам карт с динамическим масштабированием, умной изоляцией слоев и предварительным просмотром в реальном времени. Версия 3.0: Все Pro-функции теперь на 100%% бесплатны! Наслаждайтесь неограниченным экспортом, форматами SVG/PNG, профессиональными шаблонами и Data-Defined Overrides (DDO).
 
  [Français]
- VectorToMap automatise la création de mises en page multipages et d'atlas dans QGIS, économisant des heures de travail manuel. Exportez facilement des centaines de cartes individuelles ou regroupées par attributs avec une échelle dynamique, une isolation intelligente des couches et des aperçus en temps réel. Version 3.0 : Toutes les fonctionnalités Pro sont désormais 100 % gratuites ! Profitez d'exportations illimitées, des formats SVG/PNG, de modèles professionnels et des Data-Defined Overrides (DDO).
-version=3.0.0
-changelog=Version 3.0.0: The advanced engine of VectorToMap Pro is now 100% free and open-source! Page limits removed, PNG/SVG export unlocked, professional native templates added, and full integration with QGIS expressions (Data-Defined Overrides).
+ VectorToMap automatise la création de mises en page multipages et d'atlas dans QGIS, économisant des heures de travail manuel. Exportez facilement des centaines de cartes individuelles ou regroupées par attributs avec une échelle dynamique, une isolation intelligente des couches et des aperçus en temps réel. Version 3.0 : Toutes les fonctionnalités Pro sont désormais 100 %% gratuites ! Profitez d'exportations illimitées, des formats SVG/PNG, de modèles professionnels et des Data-Defined Overrides (DDO).
+version=3.1.0
+changelog=Version 3.1.0: Update: Implemented raster filters (legend and overview map), dynamic locking of inactive UI settings, visual refinements to the scale bar and grid, alongside a critical compatibility fix for the geometry engine in older QGIS versions.
 author=Matheus Durso Neves Caetano
 email=matheusdursonc@gmail.com
 license=GNU GPLv2
