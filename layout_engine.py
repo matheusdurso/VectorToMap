@@ -97,9 +97,17 @@ class LayoutEngine:
                 pdf_settings.dpi = 300
                 exporter.exportToPdf(caminho_final, pdf_settings)
                 
-            # Limpa memória instantaneamente
+            # --- CORREÇÃO: LIMPEZA DE MEMÓRIA SEGURA ---
+            # Desconecta as camadas do quadro para o C++ não apagá-las junto com o layout
+            for item in layout_temp.items():
+                if isinstance(item, QgsLayoutItemMap):
+                    item.setKeepLayerSet(False)
+                    item.setLayers([])
+                    
             layout_temp.pageCollection().clear()
-            sip.delete(layout_temp)
+            layout_temp.deleteLater() # Exclusão segura escalonada do Qt
+            layout_temp = None
+            # -------------------------------------------
 
             if progress_callback: progress_callback(i + 1)
             QCoreApplication.processEvents()
