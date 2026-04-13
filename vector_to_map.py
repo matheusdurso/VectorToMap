@@ -387,7 +387,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@3.2.0",
+                release="vectortomap@3.3.0",
                 before_send=filtro_sentry  # <--- INSERIMOS O FILTRO AQUI
             )
             self.sentry_ativo = True
@@ -500,6 +500,7 @@ class VectorToMap:
 
         self.dlg = VectorToMapDialog()
         self.colunas_atuais = [] # Mata os fantasmas das checkboxes da janela anterior
+        self.ultimo_id_camada_ativa = None
 
         # ====================================================================
         # LÓGICA ANTIGA DO TEXTBROWSER REMOVIDA DAQUI!
@@ -652,14 +653,14 @@ class VectorToMap:
 
             QPushButton#pushButton_bugreport {
                 background-color: transparent;
-                color: #333333;
+                color: palette(text); /* NOVO: Usa a cor de texto padrão do tema */
                 font-size: 12px;
                 padding: 8px 15px;
                 border: 1px solid #cccccc;
                 border-radius: 4px;
             }
             QPushButton#pushButton_bugreport:hover {
-                background-color: #e0e0e0;
+                background-color: palette(midlight); /* NOVO: Usa o hover padrão do tema */
             }
 
             /* =================================================== */
@@ -676,6 +677,36 @@ class VectorToMap:
             }
             QPushButton#pushButton_tutorial:hover {
                 background-color: #c0392b;
+            }
+
+            /* =================================================== */
+            /* 6. BOTÕES DE INTERFACE (EPSILON E INFO)             */
+            /* =================================================== */
+            
+            /* Foca EXCLUSIVAMENTE nos botões Epsilon (evitando quebrar os botões de cor) */
+            QgsFieldExpressionWidget QToolButton {
+                background-color: #f8f9fa; /* Fundo claro fixo */
+            }
+            QgsFieldExpressionWidget QToolButton:hover {
+                background-color: #e0e0e0;
+            }
+            QgsFieldExpressionWidget QToolButton:pressed {
+                background-color: #dcdcdc;
+            }
+
+            /* Foca no botão de Info (Ajuda) no rodapé */
+            QPushButton#btn_info_python {
+                background-color: #3498db; /* Cria o círculo azul */
+                color: #ffffff; /* Letra "i" branca e brilhante */
+                border-radius: 11px; /* Transforma o botão 22x22 em um círculo perfeito */
+                border: none;
+                font-family: "Times New Roman", serif; /* Fonte clássica de Informação */
+                font-weight: bold;
+                font-size: 14px;
+                padding-bottom: 2px; /* Ajuste fino para centralizar o 'i' */
+            }
+            QPushButton#btn_info_python:hover {
+                background-color: #2980b9; /* Azul levemente mais escuro ao passar o mouse */
             }
         """
         self.dlg.setStyleSheet(estilo_consolidado)
@@ -751,14 +782,40 @@ class VectorToMap:
         self.dlg.combo_escala_fixa.clear()
         escalas = [
             ("1:1.000", 1000), ("1:5.000", 5000), ("1:10.000", 10000),
-            ("1:50.000", 50000), ("1:100.000", 100000), 
+            ("1:25.000", 25000), ("1:50.000", 50000), ("1:100.000", 100000), 
             ("1:250.000", 250000), ("1:500.000", 500000), ("1:1.000.000", 1000000),
             ("1:2.500.000", 2500000), ("1:5.000.000", 5000000), ("1:7.500.000", 7500000),
-            ("1:10.000.000", 10000000)
+            ("1:10.000.000", 10000000), ("1:50.000.000", 50000000), ("1:100.000.000", 100000000)
         ]
         for texto, valor in escalas:
             self.dlg.combo_escala_fixa.addItem(texto, valor)
-        self.dlg.combo_escala_fixa.setCurrentIndex(2)
+
+        # --- NOVO: Adiciona opção de expressão na escala fixa ---
+        self.dlg.combo_escala_fixa.insertSeparator(self.dlg.combo_escala_fixa.count())
+        self.dlg.combo_escala_fixa.addItem(self.tr("Usar Coluna ou Expressão (ε)"), "expressao")
+        # --------------------------------------------------------
+
+        self.dlg.combo_escala_fixa.setCurrentIndex(3)
+
+        # ====================================================================
+        # NOVO: SETUP DA COMBOBOX DE ZOOM OUT (Margem do Mapa)
+        # ====================================================================
+        if hasattr(self.dlg, 'comboZoomOut'):
+            self.dlg.comboZoomOut.clear()
+            self.dlg.comboZoomOut.addItem(self.tr("0% (Justo)"), 0.0)
+            self.dlg.comboZoomOut.addItem(self.tr("15%"), 15.0)
+            self.dlg.comboZoomOut.addItem(self.tr("25% (Padrão)"), 25.0)
+            self.dlg.comboZoomOut.addItem(self.tr("35%"), 35.0)
+            self.dlg.comboZoomOut.addItem(self.tr("50%"), 50.0)
+            self.dlg.comboZoomOut.addItem(self.tr("65%"), 65.0)
+            self.dlg.comboZoomOut.addItem(self.tr("75%"), 75.0)
+            self.dlg.comboZoomOut.addItem(self.tr("100% (Dobro)"), 100.0)
+            
+            # Adiciona uma linha divisória visual
+            self.dlg.comboZoomOut.insertSeparator(self.dlg.comboZoomOut.count())
+            self.dlg.comboZoomOut.addItem(self.tr("Usar Coluna ou Expressão (ε)"), "expressao")
+            
+            self.dlg.comboZoomOut.setCurrentIndex(2) # Define o 25% como padrão inicial
 
         # Filtro de Camadas Vectoriais
         self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
@@ -793,6 +850,18 @@ class VectorToMap:
         # Define o canto padrão (Ex: Inferior Direito)
         if hasattr(self.dlg, 'comboPosLoc'): self.dlg.comboPosLoc.setCurrentIndex(3)
 
+        # Setup do ESTILO da Seta de Norte
+        if hasattr(self.dlg, 'combo_estilo_norte'):
+            self.dlg.combo_estilo_norte.clear()
+            # Salvamos o NOME do arquivo SVG nativo do QGIS no "Data" da combo
+            self.dlg.combo_estilo_norte.addItem(self.tr("Minimalista"), "NorthArrow_02.svg")
+            self.dlg.combo_estilo_norte.addItem(self.tr("Clássica (Seta N)"), "NorthArrow_01.svg")
+            self.dlg.combo_estilo_norte.addItem(self.tr("Rosa dos Ventos"), "NorthArrow_04.svg")
+            self.dlg.combo_estilo_norte.setCurrentIndex(0)
+            
+            # Gatilho: Se o usuário mudar a seta, a preview atualiza na hora!
+            self.dlg.combo_estilo_norte.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
+
         # Setup da Grade (Grid)
         if hasattr(self.dlg, 'comboGrid'):
             self.dlg.comboGrid.clear()
@@ -813,16 +882,12 @@ class VectorToMap:
 
         self.dlg.button_box.clear()
 
-        # --- NOVO: Criação do botão de suporte/ajuda (Apenas Ícone 25x25) ---
-        self.btn_suporte_ajuda = QPushButton() # Instancia sem texto
-        
-        # Pega o ícone de informação padrão
-        icon = self.dlg.style().standardIcon(self.dlg.style().StandardPixmap.SP_MessageBoxInformation)
-        self.btn_suporte_ajuda.setIcon(icon)
-        
-        self.btn_suporte_ajuda.setFixedSize(22, 22) # Trava o tamanho
-        self.btn_suporte_ajuda.setToolTip(self.tr("Ajuda do VectorToMap")) # Legenda ao passar o mouse
-        
+        # --- NOVO: Criação do botão de suporte/ajuda (Botão Circular Customizado) ---
+        self.btn_suporte_ajuda = QPushButton("i") # Colocamos a letra 'i' de verdade!
+        self.btn_suporte_ajuda.setObjectName("btn_info_python")
+        self.btn_suporte_ajuda.setFixedSize(22, 22) # Mantemos os 22x22
+        self.btn_suporte_ajuda.setToolTip(self.tr("Ajuda do VectorToMap"))
+                
         self.dlg.button_box.clear()
         
         # Adiciona o botão de suporte no início como ActionRole para ficar do lado esquerdo
@@ -906,6 +971,14 @@ class VectorToMap:
         self.dlg.mMapLayerComboBox.layerChanged.connect(self.configurar_escala_ao_mudar_camada)
         self.dlg.rb_escala_auto.toggled.connect(self.validar_geometria_escala)
         self.dlg.rb_escala_fixa.toggled.connect(self.validar_geometria_escala)
+
+        if hasattr(self.dlg, 'combo_escala_fixa'):
+            self.dlg.combo_escala_fixa.currentIndexChanged.connect(self.validar_geometria_escala)
+
+        if hasattr(self.dlg, 'comboZoomOut'):
+            self.dlg.comboZoomOut.currentIndexChanged.connect(self.validar_geometria_escala)
+            # APAGUE A LINHA ABAIXO! A função acima já dispara a preview no final dela.
+            # self.dlg.comboZoomOut.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
         
         # --- 5. GATILHOS DE FILTROS E HIERARQUIA (Aviso do Filtro mora aqui) ---
         self.dlg.chk_filtrar_feicoes.stateChanged.connect(self.atualizar_hierarquia_camadas)
@@ -990,8 +1063,8 @@ class VectorToMap:
 
         # --- 7. MONITORAMENTO EM MASSA PARA DISPARO DE PREVIEW ---
         widgets_preview = [
-            self.dlg.combo_tamanho_pagina, self.dlg.combo_presets,
-            self.dlg.rb_retrato, self.dlg.rb_paisagem, self.dlg.combo_escala_fixa,
+            self.dlg.combo_tamanho_pagina,
+            self.dlg.rb_retrato, self.dlg.rb_paisagem,
             self.dlg.chk_modo_formulario, self.dlg.chk_modo_individual, self.dlg.chk_exibir_atributos
         ]
         
@@ -1002,7 +1075,6 @@ class VectorToMap:
             self.dlg.rb_atlas_agrupar.toggled.connect(self.atualizar_estado_filtro_feicoes)
             
         if hasattr(self.dlg, 'exp_atlas_agrupar'):
-            widgets_preview.append(self.dlg.exp_atlas_agrupar)
             self.dlg.exp_atlas_agrupar.fieldChanged.connect(self.disparar_preview_se_autorizado)
 
         if hasattr(self.dlg, 'exp_ddo_auto'):
@@ -1073,6 +1145,8 @@ class VectorToMap:
         self.dlg.move(geometria_janela.topLeft())
     
 
+
+
     def preparar_exportacao(self):
         """Abre o diálogo, sugere o último diretório e configura a exportação."""
         camada = self.dlg.mMapLayerComboBox.currentLayer()
@@ -1119,6 +1193,8 @@ class VectorToMap:
             self.processar_clique_ok()
 
 
+
+
     def limpar_clones_preview(self):
         """Remove da memória os clones gerados invisivelmente para a preview."""
         # Limpa clones antigos da classe principal (se houver)
@@ -1130,6 +1206,8 @@ class VectorToMap:
         if hasattr(self, 'engine') and self.engine.clones_preview:
             QgsProject.instance().removeMapLayers(self.engine.clones_preview)
             self.engine.clones_preview.clear()
+
+
 
 
     def atualizar_hierarquia_camadas(self):
@@ -1218,6 +1296,8 @@ class VectorToMap:
             self.dlg.chk_travar_estilos.blockSignals(False)
 
 
+
+
     def setup_ui_strings(self):
         """Centraliza todos os Tooltips e textos da interface para tradução."""
 
@@ -1227,6 +1307,8 @@ class VectorToMap:
         self.dlg.combo_presets.setToolTip(self.tr("Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado)."))
         self.btn_render.setToolTip(self.tr("Gera uma prévia do layout com as configurações atuais."))
         self.btn_export.setToolTip(self.tr("Exporta os mapas diretamente como PDF, PNG ou JPG."))
+
+
 
 
     def cancelar_e_fechar(self):
@@ -1248,10 +1330,14 @@ class VectorToMap:
             self.dlg.reject()
     
 
+
+
     def abrir_gumroad(self):
         """Abre a página de doação para apoiar o projeto."""
         url_doacao = "https://buymeacoffee.com/matheusdurso" 
         QDesktopServices.openUrl(QUrl(url_doacao))
+
+
 
 
     def abrir_github(self):
@@ -1260,6 +1346,8 @@ class VectorToMap:
         QDesktopServices.openUrl(QUrl(url_github))
     
 
+
+
     def ir_para_suporte(self):
         """Muda a aba ativa para a página de Desenvolvimento e Suporte."""
         if hasattr(self.dlg, 'tabWidget'):
@@ -1267,6 +1355,8 @@ class VectorToMap:
             # Se a aba de suporte for a terceira no seu layout, mude para 2.
             self.dlg.tabWidget.setCurrentIndex(1)
     
+
+
 
     def _verificar_selecao_template(self):
         """Abre o seletor de arquivos se o usuário escolher carregar um template externo e tranca a interface."""
@@ -1659,17 +1749,27 @@ class VectorToMap:
         is_fixa = self.dlg.rb_escala_fixa.isChecked()
 
         self.dlg.rb_escala_auto.setEnabled(True)
-        self.dlg.combo_escala_fixa.setEnabled(is_fixa)
+        
+        # --- 1. LÓGICA DO ZOOM AUTOMÁTICO (comboZoomOut e exp_ddo_auto) ---
+        if hasattr(self.dlg, 'comboZoomOut'):
+            self.dlg.comboZoomOut.setEnabled(is_auto)
+            usar_exp_auto = (self.dlg.comboZoomOut.currentData() == "expressao")
+        else:
+            usar_exp_auto = True # Fallback de segurança
 
-        # --- NOVO: Lógica de Habilitar/Desabilitar os Widgets Epsilon ---
         if hasattr(self.dlg, 'exp_ddo_auto'):
-            self.dlg.exp_ddo_auto.setEnabled(is_auto)
-        if hasattr(self.dlg, 'exp_ddo_fixa'):
-            self.dlg.exp_ddo_fixa.setEnabled(is_fixa)
-        # ----------------------------------------------------------------
+            self.dlg.exp_ddo_auto.setEnabled(is_auto and usar_exp_auto)
 
-        if is_fixa:
-            self.dlg.combo_escala_fixa.setCurrentIndex(2) # 1:10.000 como default visual
+
+        # --- 2. LÓGICA DA ESCALA FIXA (combo_escala_fixa e exp_ddo_fixa) ---
+        usar_exp_fixa = False
+        if hasattr(self.dlg, 'combo_escala_fixa'):
+            self.dlg.combo_escala_fixa.setEnabled(is_fixa)
+            usar_exp_fixa = (self.dlg.combo_escala_fixa.currentData() == "expressao")
+            
+        if hasattr(self.dlg, 'exp_ddo_fixa'):
+            # Só acende o Epsilon (ε) se o modo Fixo estiver ativo E a combo estiver em "expressao"
+            self.dlg.exp_ddo_fixa.setEnabled(is_fixa and usar_exp_fixa)
 
         self.dlg.combo_escala_fixa.blockSignals(False)
         self.disparar_preview_se_autorizado()
@@ -1785,7 +1885,9 @@ class VectorToMap:
             'inserir_mapa_loc': self.dlg.chk_mapa_loc.isChecked() if hasattr(self.dlg, 'chk_mapa_loc') else False,
             'add_raster_loc': self.dlg.chk_incluir_raster.isChecked() if hasattr(self.dlg, 'chk_incluir_raster') else False,
             'camada_loc': self.dlg.combo_camada_loc.currentLayer() if hasattr(self.dlg, 'combo_camada_loc') else None,
-            'pos_mapa_loc': self.dlg.comboPosLoc.currentData() if hasattr(self.dlg, 'comboPosLoc') else "ID"
+            'pos_mapa_loc': self.dlg.comboPosLoc.currentData() if hasattr(self.dlg, 'comboPosLoc') else "ID",
+            'zoom_out_auto': self.dlg.comboZoomOut.currentData() if hasattr(self.dlg, 'comboZoomOut') else 25.0,
+            'estilo_norte': self.dlg.combo_estilo_norte.currentData() if hasattr(self.dlg, 'combo_estilo_norte') else "NorthArrow_02.svg"
         }
 
 
@@ -1888,7 +1990,7 @@ class VectorToMap:
         # Regra clara: Só inicia se o usuário marcou a atualização automática
         if hasattr(self.dlg, 'chk_preview_auto') and self.dlg.chk_preview_auto.isChecked():
             if hasattr(self, 'timer_preview'):
-                self.timer_preview.start(350)
+                self.timer_preview.start(300)
 
 
 
@@ -2394,8 +2496,11 @@ class VectorToMap:
         msg_box.setText(texto_corrido)
         msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
         
-        # Exibe a janela de forma modal
-        msg_box.exec()
+        # Exibe a janela de forma modal compatível com QGIS 3 e QGIS 4
+        if hasattr(msg_box, 'exec'):
+            msg_box.exec()
+        else:
+            msg_box.exec_()
     
 
 

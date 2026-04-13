@@ -82,7 +82,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-634</y>
+             <y>-673</y>
              <width>650</width>
              <height>1461</height>
             </rect>
@@ -241,6 +241,9 @@
                  </property>
                  <item>
                   <widget class="QRadioButton" name="rb_atlas_geral">
+                   <property name="toolTip">
+                    <string>Cria apenas um mapa de overview da camada inteira.</string>
+                   </property>
                    <property name="text">
                     <string>Mapa Geral da Camada</string>
                    </property>
@@ -255,6 +258,9 @@
                  </property>
                  <item>
                   <widget class="QRadioButton" name="rb_atlas_agrupar">
+                   <property name="toolTip">
+                    <string>Agrupa as feições por uma coluna da tabela de atributos ou por expressão personalizada.</string>
+                   </property>
                    <property name="text">
                     <string>Agrupar Feições Por:</string>
                    </property>
@@ -262,6 +268,9 @@
                  </item>
                  <item>
                   <widget class="QgsFieldExpressionWidget" name="exp_atlas_agrupar">
+                   <property name="toolTip">
+                    <string>Agrupa feições na mesma prancha de impressão usando o valor desta coluna (Ex: 'Bairro' gera um mapa por bairro).</string>
+                   </property>
                    <property name="title" stdset="0">
                     <string>GroupBox</string>
                    </property>
@@ -327,27 +336,37 @@
                   </font>
                  </property>
                  <property name="text">
-                  <string>Escalas:</string>
+                  <string>Escala:</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
+                <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
                  <property name="topMargin">
                   <number>0</number>
                  </property>
                  <item>
                   <widget class="QRadioButton" name="rb_escala_auto">
                    <property name="toolTip">
-                    <string>Centralização e zoom automáticos. Para pontos individuais a escala automática e fixada em 1:10.000</string>
+                    <string>Enquadra a feição nos limites do item de mapa e dá um zoom out padrão de 25%.</string>
                    </property>
                    <property name="text">
-                    <string>Automática</string>
+                    <string>Automática | Zoom Out:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="comboZoomOut">
+                   <property name="toolTip">
+                    <string>Selecione o nível de zoom out da escala automática ou a opção de expressões personalizadas.</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QgsFieldExpressionWidget" name="exp_ddo_auto">
+                   <property name="toolTip">
+                    <string>Define a margem de zoom dinamicamente usando o valor desta coluna (Ex: 15 = 15% de respiro nas bordas).</string>
+                   </property>
                    <property name="title" stdset="0">
                     <string>GroupBox</string>
                    </property>
@@ -408,7 +427,7 @@
                  <item>
                   <widget class="QRadioButton" name="rb_escala_fixa">
                    <property name="toolTip">
-                    <string>Escolha dentre as opções de escala fixa</string>
+                    <string>Escolha dentre as opções de escala fixa. Padrão de 1:25000</string>
                    </property>
                    <property name="text">
                     <string>Fixa:</string>
@@ -418,12 +437,15 @@
                  <item>
                   <widget class="QComboBox" name="combo_escala_fixa">
                    <property name="toolTip">
-                    <string>Selecione a escala desejada</string>
+                    <string>Selecione a escala desejada ou expressões personalizadas</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QgsFieldExpressionWidget" name="exp_ddo_fixa">
+                   <property name="toolTip">
+                    <string>Define a escala fixa dinamicamente usando o valor desta coluna (Ex: 5000 = 1:5.000).</string>
+                   </property>
                    <property name="title" stdset="0">
                     <string>GroupBox</string>
                    </property>
@@ -1296,6 +1318,9 @@
                     </property>
                     <item>
                      <widget class="QCheckBox" name="chk_legenda">
+                      <property name="toolTip">
+                       <string>A legenda exibe todas as camadas selecionadas na tela principal do QGIS.</string>
+                      </property>
                       <property name="text">
                        <string>Legenda</string>
                       </property>
@@ -1345,7 +1370,7 @@
                    <number>8</number>
                   </property>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_22" stretch="2,0,4">
+                   <layout class="QHBoxLayout" name="horizontalLayout_22" stretch="1,0,1,0,1">
                     <property name="topMargin">
                      <number>0</number>
                     </property>
@@ -1355,6 +1380,16 @@
                        <string>Seta de Norte</string>
                       </property>
                      </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_20">
+                      <property name="text">
+                       <string>Estilo:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="combo_estilo_norte"/>
                     </item>
                     <item>
                      <widget class="QLabel" name="label_16">
@@ -1455,7 +1490,7 @@
                     <item>
                      <widget class="QLabel" name="label_18">
                       <property name="text">
-                       <string>Tipo:</string>
+                       <string>Estilo:</string>
                       </property>
                      </widget>
                     </item>

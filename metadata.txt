@@ -27,8 +27,8 @@ about=[English]
 
  [Français]
  VectorToMap automatise la création de mises en page multipages et d'atlas dans QGIS, économisant des heures de travail manuel. Exportez facilement des centaines de cartes individuelles ou regroupées par attributs avec une échelle dynamique, une isolation intelligente des couches et des aperçus en temps réel. Version 3.0 : Toutes les fonctionnalités Pro sont désormais 100 %% gratuites ! Profitez d'exportations illimitées, des formats SVG/PNG, de modèles professionnels et des Data-Defined Overrides (DDO).
-version=3.2.0
-changelog=Version 3.2.0: Update: Implemented raster filters (legend and overview map), dynamic locking of inactive UI settings, visual refinements to the scale bar and grid, alongside a critical compatibility fix for the geometry engine in older QGIS versions.
+version=3.3.0
+changelog=Version 3.3.0: Fixed fatal memory crashes during batch exports, optimized Preview rendering performance, improved QGIS 4 Dark Mode compatibility, and added smart UI controls for Zoom Out, Fixed Scales, and North Arrow styles.
 author=Matheus Durso Neves Caetano
 email=matheusdursonc@gmail.com
 license=GNU GPLv2

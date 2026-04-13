@@ -4,7 +4,6 @@ import re
 import gc
 import unicodedata
 import math
-import traceback
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt import sip
@@ -19,7 +18,7 @@ from qgis.core import (
     QgsLayoutItemPicture, QgsLayoutItemLegend, Qgis, QgsLegendStyle,
     QgsLayoutRenderContext, QgsFeature, QgsLayoutItemMapGrid,
     QgsReadWriteContext, QgsLayoutItemMapOverview, QgsFillSymbol,
-    QgsMessageLog, QgsMapLayerType
+    QgsMessageLog, QgsMapLayerType, QgsApplication
 )
 
 class LayoutEngine:
@@ -69,6 +68,12 @@ class LayoutEngine:
 
         for i, dados in enumerate(paginas_dados):
             if self.abort_processing: break
+
+            # --- PROTEÇÃO: ABORTA SE O USUÁRIO DELETAR A CAMADA/PROJETO NO MEIO ---
+            if sip.isdeleted(camada):
+                self.abort_processing = True
+                raise RuntimeError(self.tr("A camada original foi removida do QGIS durante a exportação. Processo abortado."))
+            # ----------------------------------------------------------------------
 
             nome_arquivo = self._gerar_nome_arquivo_pagina(dados, i, campo_atlas)
             
@@ -142,6 +147,12 @@ class LayoutEngine:
 
         for i, dados in enumerate(paginas_dados):
             if self.abort_processing: break
+
+            # --- PROTEÇÃO: ABORTA SE O USUÁRIO DELETAR A CAMADA/PROJETO NO MEIO ---
+            if sip.isdeleted(camada):
+                self.abort_processing = True
+                raise RuntimeError(self.tr("A camada original foi removida do QGIS durante a exportação. Processo abortado."))
+            # ----------------------------------------------------------------------
             
             nome_sufixo = self._gerar_nome_arquivo_pagina(dados, i, campo_atlas)
 
@@ -660,7 +671,18 @@ class LayoutEngine:
         # --- 4. NORTE ---
         if config.get('inserir_norte', False):
             norte = QgsLayoutItemPicture(layout)
-            norte.setPicturePath(':/images/north_arrows/layout_default_north_arrow.svg')
+            
+            # --- NOVA LÓGICA DO ESTILO DA SETA ---
+            try:
+                pasta_svg = QgsApplication.svgPaths()[0]
+                estilo = config.get('estilo_norte', 'NorthArrow_02.svg')
+                caminho_seta = os.path.join(pasta_svg, "arrows", estilo)
+                norte.setPicturePath(caminho_seta)
+            except Exception:
+                # Fallback de segurança se o QGIS do usuário estiver com as pastas bagunçadas
+                norte.setPicturePath(':/images/north_arrows/layout_default_north_arrow.svg')
+            # -------------------------------------
+            
             norte.setLinkedMap(map_item)
             layout.addLayoutItem(norte)
             elementos.append({'tipo': 'norte', 'item': norte, 'pos': config.get('pos_norte', 'SD')})
@@ -760,7 +782,7 @@ class LayoutEngine:
     
     def _aplicar_extensao_e_escala(self, map_item, camada, feicoes_da_pagina, w_map, h_map, config):
         """Gerencia o BoundingBox, CRS e regras de zoom com suporte a Expressões (DDO)."""
-        if not feicoes_da_pagina: return
+        if not feicoes_da_pagina or sip.isdeleted(camada): return
         
         campo_atlas = config.get('campo_atlas')
 
@@ -798,19 +820,29 @@ class LayoutEngine:
         contexto = QgsExpressionContextUtils.createFeatureBasedContext(feicao_atual, camada.fields())
         
         if config.get('escala_fixa', False):
-            escala_final = config.get('escala_val', 10000.0)
-            exp_str = config.get('escala_fixa_exp', "")
-            if exp_str:
+            escala_config = config.get('escala_val', 10000.0)
+            escala_final = 10000.0 # Valor de segurança
+            
+            # Se a combo estiver em "expressao", rodamos a matemática do ε
+            if escala_config == "expressao":
+                exp_str = config.get('escala_fixa_exp', "")
+                if exp_str:
+                    try:
+                        exp = QgsExpression(exp_str)
+                        exp.prepare(contexto)
+                        val = exp.evaluate(contexto)
+                        if val is not None and not exp.hasEvalError():
+                            escala_final = float(val)
+                    except:
+                        pass
+            else:
+                # Se for um valor normal da combo (ex: 5000), usa ele direto
                 try:
-                    exp = QgsExpression(exp_str)
-                    exp.prepare(contexto)
-                    val = exp.evaluate(contexto)
-                    if val is not None and not exp.hasEvalError():
-                        escala_final = float(val)
+                    escala_final = float(escala_config)
                 except:
-                    pass 
+                    escala_final = 10000.0
                     
-            map_item.setScale(float(escala_final) if escala_final else 10000.0)
+            map_item.setScale(escala_final)
             
         else:
             if is_coordenada_unica:
@@ -820,17 +852,28 @@ class LayoutEngine:
                 scale_w = (ext_proj.width() * unit_to_mm) / w_map
                 scale_h = (ext_proj.height() * unit_to_mm) / h_map
                 
-                fator_zoom = 1.25 
-                exp_str = config.get('escala_auto_exp', "")
-                if exp_str:
+                # --- NOVA LÓGICA DE ZOOM OUT DINÂMICO ---
+                zoom_out_config = config.get('zoom_out_auto', 25.0)
+                fator_zoom = 1.25 # Padrão de segurança
+                
+                if zoom_out_config == "expressao":
+                    exp_str = config.get('escala_auto_exp', "")
+                    if exp_str:
+                        try:
+                            exp = QgsExpression(exp_str)
+                            exp.prepare(contexto)
+                            val = exp.evaluate(contexto)
+                            if val is not None and not exp.hasEvalError():
+                                fator_zoom = 1.0 + (float(val) / 100.0)
+                        except:
+                            pass 
+                else:
+                    # Pega o valor fixo escolhido na combo (ex: 0.0, 15.0, 50.0)
                     try:
-                        exp = QgsExpression(exp_str)
-                        exp.prepare(contexto)
-                        val = exp.evaluate(contexto)
-                        if val is not None and not exp.hasEvalError():
-                            fator_zoom = 1.0 + (float(val) / 100.0)
+                        fator_zoom = 1.0 + (float(zoom_out_config) / 100.0)
                     except:
-                        pass 
+                        pass
+                # ---------------------------------------- 
                 
                 escala_calculada = max(scale_w, scale_h) * fator_zoom
                 escala_final = 10000.0 if escala_calculada < 500.0 else escala_calculada
