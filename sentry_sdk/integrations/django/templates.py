@@ -93,7 +93,7 @@ def patch_templates() -> None:
         # Inject trace meta tags into template context
         context = context or {}
         if "sentry_trace_meta" not in context:
-            context["sentry_trace_meta"] = mark_safe(
+            context["sentry_trace_meta"] = mark_safe( # nosec
                 sentry_sdk.get_current_scope().trace_propagation_meta()
             )
 

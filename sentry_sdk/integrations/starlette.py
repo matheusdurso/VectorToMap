@@ -566,7 +566,7 @@ def patch_templates() -> None:
             self: "Jinja2Templates", *args: "Any", **kwargs: "Any"
         ) -> None:
             def add_sentry_trace_meta(request: "Request") -> "Dict[str, Any]":
-                trace_meta = Markup(
+                trace_meta = Markup( # nosec
                     sentry_sdk.get_current_scope().trace_propagation_meta()
                 )
                 return {

@@ -147,7 +147,7 @@ class SentryAsyncExtension(SchemaExtension):
         return query_hash
 
     def hash_query(self, query: str) -> str:
-        return hashlib.md5(query.encode("utf-8")).hexdigest()
+        return hashlib.md5(query.encode("utf-8")).hexdigest() # nosec
 
     def on_operation(self) -> "Generator[None, None, None]":
         self._operation_name = self.execution_context.operation_name

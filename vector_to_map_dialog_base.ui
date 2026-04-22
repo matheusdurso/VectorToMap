@@ -1273,7 +1273,11 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QgsMapLayerComboBox" name="combo_camada_loc"/>
+                     <widget class="QgsMapLayerComboBox" name="combo_camada_loc">
+                      <property name="toolTip">
+                       <string>Seleciona a camada utilizada para enquadrar o mapa de localização.</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QLabel" name="label_19">

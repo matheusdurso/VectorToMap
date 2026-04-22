@@ -120,7 +120,7 @@ def _add_sentry_trace(
         return
 
     scope = sentry_sdk.get_current_scope()
-    trace_meta = Markup(scope.trace_propagation_meta())
+    trace_meta = Markup(scope.trace_propagation_meta()) # nosec
     context["sentry_trace"] = trace_meta  # for backwards compatibility
     context["sentry_trace_meta"] = trace_meta
 

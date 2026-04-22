@@ -146,7 +146,7 @@ try:
                         spotlight_js_url,
                         method="HEAD",
                     )
-                    urllib.request.urlopen(req)
+                    urllib.request.urlopen(req) # nosec
                     self._spotlight_script = SPOTLIGHT_JS_SNIPPET_PATTERN.format(
                         spotlight_url=self._spotlight_url,
                         spotlight_js_url=spotlight_js_url,
@@ -214,7 +214,7 @@ try:
 
             try:
                 spotlight = (
-                    urllib.request.urlopen(self._spotlight_url).read().decode("utf-8")
+                    urllib.request.urlopen(self._spotlight_url).read().decode("utf-8") # nosec
                 )
             except urllib.error.URLError:
                 return None

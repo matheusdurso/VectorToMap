@@ -1103,12 +1103,12 @@ class LayoutEngine:
             terco_x = geo['margin'] + (largura_util * 0.33) 
             
             geom['x_form'] = geo['margin']
-            geom['y_form'] = geo['y_map'] + geo['h_map'] + 7.0
+            geom['y_form'] = geo['y_map'] + geo['h_map'] + 12.0
             geom['w_form'] = (largura_util * 0.33) - 2.0
             geom['h_form'] = limite_fundo - geom['y_form']
             
             geom['x_ind_start'] = terco_x + 2.0
-            geom['y_ind_min'] = geo['y_map'] + geo['h_map'] + 7.0
+            geom['y_ind_min'] = geo['y_map'] + geo['h_map'] + 12.0
             
         elif preset == "vertical":
             geom['x_form'] = geo['margin']

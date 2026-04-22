@@ -387,7 +387,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@3.3.0",
+                release="vectortomap@3.4.0",
                 before_send=filtro_sentry  # <--- INSERIMOS O FILTRO AQUI
             )
             self.sentry_ativo = True
@@ -2056,16 +2056,32 @@ class VectorToMap:
                     export_info=getattr(self, 'export_info', None)
                 )
                 
-        # --- NOVO: Proteção contra quebras de banco de dados/camada corrompida ---
+        except RuntimeError as e:
+            # Captura APENAS o erro de "Camada Removida" (ou outros RuntimeErrors que você lançar)
+            # Mostramos o alerta para o usuário, MAS NÃO enviamos para o Sentry, pois foi o usuário quem causou.
+            self.iface.messageBar().pushMessage(
+                self.tr("Aviso"), 
+                str(e), 
+                level=Qgis.MessageLevel.Warning
+            )
+
         except Exception as e:
+            # Captura todos os outros erros inesperados (bugs reais)
+            erro_detalhado = traceback.format_exc()
+            
             if getattr(self, 'sentry_ativo', False):
                 try:
                     sentry_sdk.capture_exception(e)
                     sentry_sdk.flush(timeout=2.0)
                 except Exception:
                     pass
-            self.iface.messageBar().pushMessage(self.tr("Erro"), f"{self.tr('Falha ao ler atributos da camada:')} {str(e)}", level=Qgis.MessageLevel.Critical)
-        # -------------------------------------------------------------------------
+            
+            self.iface.messageBar().pushMessage(
+                self.tr("Erro"), 
+                f"{str(e)}. {self.tr('Veja o console para detalhes.')}", 
+                level=Qgis.MessageLevel.Critical
+            )
+            QgsMessageLog.logMessage(erro_detalhado, "VectorToMap", Qgis.MessageLevel.Critical)
         
         finally:
             self.export_info = None # Reseta a variável para o botão OK padrão
