@@ -5,10 +5,9 @@ import gc
 import unicodedata
 import math
 from qgis.PyQt.QtXml import QDomDocument
-from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt import sip
 from qgis.PyQt.QtCore import QCoreApplication, Qt, QSize
-from qgis.PyQt.QtGui import QColor, QFont
+from qgis.PyQt.QtGui import QColor
 from qgis.core import (
     QgsPrintLayout, QgsLayoutExporter, QgsProject, QgsRectangle,
     QgsCoordinateTransform, QgsLayoutItemPage, QgsLayoutItemLabel,
@@ -309,17 +308,49 @@ class LayoutEngine:
             overview_map.blockSignals(False)
 
         # ====================================================================
-        # --- DESLOCAMENTO MULTI-PÁGINA E TRADUÇÃO (O QUE FALTAVA) ---
+        # --- DESLOCAMENTO MULTI-PÁGINA, TRADUÇÃO E TEXTOS DINÂMICOS ---
         # ====================================================================
         h_pg = layout.pageCollection().page(0).rect().height() if pagina_index > 0 else 0
         y_offset = pagina_index * (h_pg + 10.0) if pagina_index > 0 else 0
 
+        # Pega a feição base da página atual para extrair os atributos
+        # (Se for um grupo do Atlas, ele pega a primeira feição do grupo como referência)
+        feicao_atual = None
+        if feicoes_da_pagina and feicoes_da_pagina[0] != "ALL":
+            feicao_atual = feicoes_da_pagina[0]
+
         for item in novos_itens:
             if isinstance(item, QgsLayoutItemLabel):
                 texto_original = item.text()
-                texto_traduzido = self.tr(texto_original)
-                if texto_traduzido != texto_original:
-                    item.setText(texto_traduzido)
+                texto_final = self.tr(texto_original)
+
+                # --- A MÁGICA DA SUBSTITUIÇÃO DINÂMICA (Sintaxe: ["Coluna"]) ---
+                if feicao_atual:
+                    # 1. Suporte à sua sintaxe personalizada: ["Nome_da_coluna"]
+                    def replace_chave(match):
+                        coluna = match.group(1) # Pega apenas o texto dentro das aspas
+                        try:
+                            # Verifica se o que está dentro das aspas realmente é uma coluna válida
+                            idx = feicao_atual.fields().lookupField(coluna)
+                            if idx != -1:
+                                val = feicao_atual.attribute(coluna)
+                                return str(val).strip() if val is not None and val != NULL else ""
+                        except:
+                            pass
+                        return match.group(0) # Se não for coluna, deixa o ["Texto"] intacto
+                        
+                    # NOVO REGEX: Exige colchetes e aspas duplas, ex: ["AI_2"]
+                    texto_final = re.sub(r'\["(.*?)"\]', replace_chave, texto_final)
+
+                    # 2. Suporte Avançado (Bônus): Processa expressões matemáticas nativas do QGIS [% ... %]
+                    if '[%' in texto_final:
+                        contexto = QgsExpressionContextUtils.createFeatureBasedContext(feicao_atual, camada.fields())
+                        texto_final = QgsExpression.replaceExpressionText(texto_final, contexto)
+                # ------------------------------------------
+
+                if texto_final != texto_original:
+                    item.setText(texto_final)
+                    # O auto-ajuste garante que se a palavra for muito grande, a caixa aumenta
                     item.adjustSizeToText() 
             
             elif isinstance(item, QgsLayoutItemLegend):
@@ -503,7 +534,8 @@ class LayoutEngine:
                 # ordem Z (de cima para baixo) que está no painel do seu QGIS!
                 # ====================================================================
                 for layer in root.layerOrder():
-                    if layer.name().startswith("Mapa_") or "Preview" in layer.name():
+                    # Ignora as camadas temporárias do plugin baseando-se EXCLUSIVAMENTE no carimbo!
+                    if layer.customProperty("vtm_is_preview_temp"):
                         continue
                     node = root.findLayer(layer.id())
                     if node and node.isVisible():
@@ -983,6 +1015,11 @@ class LayoutEngine:
             # Avisa o QGIS que ele é o dono da camada agora (salva a vida dela)
             QgsProject.instance().addMapLayer(camada_temp, False) 
             grupo.addLayer(camada_temp)
+
+        # =========================================================================
+        # A MARCA DA SEGURANÇA 200%: Carimba a camada como temporária do plugin
+        # =========================================================================
+        camada_temp.setCustomProperty("vtm_is_preview_temp", True)
             
         return camada_temp
 

@@ -18,7 +18,6 @@
 #  GNU General Public License for more details.
 #  ***************************************************************************/
 
-import re
 import os
 import gc
 import traceback
@@ -387,7 +386,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@3.4.0",
+                release="vectortomap@3.5.0",
                 before_send=filtro_sentry  # <--- INSERIMOS O FILTRO AQUI
             )
             self.sentry_ativo = True
@@ -498,35 +497,41 @@ class VectorToMap:
             if aceitou_sentry:
                 self.inicializar_sentry()
 
-        self.dlg = VectorToMapDialog()
-        self.colunas_atuais = [] # Mata os fantasmas das checkboxes da janela anterior
-        self.ultimo_id_camada_ativa = None
-
         # ====================================================================
-        # LÓGICA ANTIGA DO TEXTBROWSER REMOVIDA DAQUI!
-        # Agora a aba 'Sobre' gerencia seu próprio texto.
+        # A CURA DA JANELA DUPLICADA: Verifica se ela já existe e está viva
         # ====================================================================
+        ja_estava_aberta = hasattr(self, 'dlg') and self.dlg and not sip.isdeleted(self.dlg)
 
-        self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
-        self._filtrar_camadas_da_combo()
+        if not ja_estava_aberta:
+            # Se não existe, criamos a interface do zero
+            self.dlg = VectorToMapDialog()
+            self.colunas_atuais = [] # Mata os fantasmas das checkboxes da janela anterior
+            self.ultimo_id_camada_ativa = None
 
-        QgsProject.instance().layersAdded.connect(self._filtrar_camadas_da_combo)
-        QgsProject.instance().layersRemoved.connect(self._filtrar_camadas_da_combo)
-        self._atualizar_camadas_excluidas_da_combo()
+            self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
+            self._filtrar_camadas_da_combo()
 
-        self.dlg.setWindowFlags(self.dlg.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint | Qt.WindowType.WindowMinimizeButtonHint)
+            QgsProject.instance().layersAdded.connect(self._filtrar_camadas_da_combo)
+            QgsProject.instance().layersRemoved.connect(self._filtrar_camadas_da_combo)
 
-        self._aplicar_estilos()
-        self._configurar_widgets_iniciais() # <- Aqui nasce o btn_export
-        self._conectar_sinais()
-        self._configurar_janela()
-        self.setup_ui_strings()
+            self.dlg.setWindowFlags(self.dlg.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint | Qt.WindowType.WindowMinimizeButtonHint)
 
-        # Força tradução de botões e combos
-        self.atualizar_textos_interface()
-        
+            self._aplicar_estilos()
+            self._configurar_widgets_iniciais() # <- Aqui nasce o btn_export
+            self._conectar_sinais()
+            self._configurar_janela()
+            self.setup_ui_strings()
+
+            # Força tradução de botões e combos
+            self.atualizar_textos_interface()
+            
+            # Força a janela a abrir sempre na primeira aba (Configurações)
+            if hasattr(self.dlg, 'tabWidget'):
+                self.dlg.tabWidget.setCurrentIndex(0)
+
         # ====================================================================
         # SINCRONIZA CAMADA ATIVA (INTERFACE)
+        # (Roda sempre que você clica no ícone, atualizando a janela se já estiver aberta)
         # ====================================================================
         camada_ativa = self.iface.activeLayer()
         if camada_ativa and isinstance(camada_ativa, QgsVectorLayer):
@@ -553,7 +558,10 @@ class VectorToMap:
         # ====================================================================
         # O GATILHO DA PRIMEIRA PREVIEW
         # ====================================================================
-        QTimer.singleShot(200, self.atualizar_preview)
+        # Se a janela for nova, dispara a preview. 
+        # Se já estava aberta, a mudança de camada acima já vai acionar a preview automaticamente pelos sinais.
+        if not ja_estava_aberta:
+            QTimer.singleShot(200, self.atualizar_preview)
 
 
 
@@ -561,20 +569,6 @@ class VectorToMap:
     # ------------------------------------------------------------------------------------
     # --- SUB-FUNÇÕES DE INTERFACE ---
     # ------------------------------------------------------------------------------------
-
-    def _atualizar_camadas_excluidas_da_combo(self):
-        """Esconde da combo as camadas que são apenas para uso interno/preview."""
-        camadas_para_esconder = []
-        for layer in QgsProject.instance().mapLayers().values():
-            # Critério: Se o nome contém 'Preview' ou 'Mapa_Temp', a gente esconde
-            if "Preview" in layer.name() or "Mapa_" in layer.name():
-                camadas_para_esconder.append(layer)
-        
-        # Injeta a lista negra na combo
-        self.dlg.mMapLayerComboBox.setExceptedLayerList(camadas_para_esconder)
-
-
-    
     
     def _aplicar_estilos(self):
         """Injeta o CSS consolidado (Azul Profissional & Clean) e esconde barras padrão."""
@@ -819,6 +813,9 @@ class VectorToMap:
 
         # Filtro de Camadas Vectoriais
         self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
+
+        if hasattr(self.dlg, 'combo_camada_loc'):
+            self.dlg.combo_camada_loc.setFilters(QgsMapLayerProxyModel.VectorLayer)
 
         # Setup de Presets
         self.dlg.combo_presets.setItemText(0, self.tr("Mapa Quadrado"))
@@ -1196,16 +1193,29 @@ class VectorToMap:
 
 
     def limpar_clones_preview(self):
-        """Remove da memória os clones gerados invisivelmente para a preview."""
-        # Limpa clones antigos da classe principal (se houver)
+        """Remove da memória os clones gerados invisivelmente para a preview (Baseado 100% em Custom Properties)."""
+        
+        # 1. Limpeza pelo rastreio em memória (O método original rápido)
         if hasattr(self, 'clones_preview') and self.clones_preview:
             QgsProject.instance().removeMapLayers(self.clones_preview)
             self.clones_preview.clear()
             
-        # Limpa os clones gerados agora pelo LayoutEngine
         if hasattr(self, 'engine') and self.engine.clones_preview:
             QgsProject.instance().removeMapLayers(self.engine.clones_preview)
             self.engine.clones_preview.clear()
+
+        # ====================================================================
+        # 2. A CURA DEFINITIVA 200% SEGURA (Varredura Ativa EXCLUSIVA pelo Carimbo)
+        # ====================================================================
+        camadas_para_deletar = []
+        for layer_id, layer in QgsProject.instance().mapLayers().items():
+            
+            # Checa EXCLUSIVAMENTE se a camada tem o nosso carimbo secreto no metadado
+            if layer.customProperty("vtm_is_preview_temp"):
+                camadas_para_deletar.append(layer_id)
+                
+        if camadas_para_deletar:
+            QgsProject.instance().removeMapLayers(camadas_para_deletar)
 
 
 
@@ -2294,17 +2304,19 @@ class VectorToMap:
 
     def _filtrar_camadas_da_combo(self):
         """Varre o projeto e remove da combo qualquer camada que não seja a principal."""
-        # CORREÇÃO: Primeiro verifica se 'dlg' existe no plugin. Depois se a combo existe na 'dlg'.
         if not hasattr(self, 'dlg') or not self.dlg or sip.isdeleted(self.dlg) or not hasattr(self.dlg, 'mMapLayerComboBox'): 
             return
         
         excluidas = []
         for layer in QgsProject.instance().mapLayers().values():
-            # Critério: Se o nome começar com "Mapa_" (nossas temps) ou conter "Preview"
-            if layer.name().startswith("Mapa_") or "Preview" in layer.name():
+            # Critério EXCLUSIVO: Se tem o carimbo do plugin, é escondida
+            if layer.customProperty("vtm_is_preview_temp"):
                 excluidas.append(layer)
         
         self.dlg.mMapLayerComboBox.setExceptedLayerList(excluidas)
+        
+        if hasattr(self.dlg, 'combo_camada_loc'):
+            self.dlg.combo_camada_loc.setExceptedLayerList(excluidas)
     
 
 
