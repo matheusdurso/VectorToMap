@@ -25,13 +25,13 @@
     </message>
     <message>
         <location filename="../vector_to_map.py" line="101"/>
-        <source>&lt;div style='background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;'&gt;&lt;h3 style='margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;'&gt;🎉 Agora 100% Gratuito e Open-Source!&lt;/h3&gt;&lt;p style='margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;'&gt;Todos os recursos avançados da versão Pro, exportação sem limites e templates profissionais foram liberados para a comunidade.&lt;/p&gt;&lt;p style='margin: 0; font-size: 11pt; color: #34495e;'&gt;☕ &lt;b&gt;Apoie para manter o projeto vivo:&lt;/b&gt; &lt;a href='https://buymeacoffee.com/matheusdurso' style='color: #e67e22; text-decoration: none; font-weight: bold;'&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</source>
-        <translation>&lt;div style='background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;'&gt;&lt;h3 style='margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;'&gt;🎉 Jetzt 100% kostenlos und Open-Source!&lt;/h3&gt;&lt;p style='margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;'&gt;Alle erweiterten Funktionen der Pro-Version, unbegrenzter Export und professionelle Vorlagen wurden für die Community freigegeben.&lt;/p&gt;&lt;p style='margin: 0; font-size: 11pt; color: #34495e;'&gt;☕ &lt;b&gt;Unterstützen Sie das Projekt, um es am Leben zu erhalten:&lt;/b&gt; &lt;a href='https://buymeacoffee.com/matheusdurso' style='color: #e67e22; text-decoration: none; font-weight: bold;'&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</translation>
+        <source>&lt;div style=&apos;background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;&apos;&gt;&lt;h3 style=&apos;margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;&apos;&gt;🎉 Agora 100% Gratuito e Open-Source!&lt;/h3&gt;&lt;p style=&apos;margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;&apos;&gt;Todos os recursos avançados da versão Pro, exportação sem limites e templates profissionais foram liberados para a comunidade.&lt;/p&gt;&lt;p style=&apos;margin: 0; font-size: 11pt; color: #34495e;&apos;&gt;☕ &lt;b&gt;Apoie para manter o projeto vivo:&lt;/b&gt; &lt;a href=&apos;https://buymeacoffee.com/matheusdurso&apos; style=&apos;color: #e67e22; text-decoration: none; font-weight: bold;&apos;&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</source>
+        <translation>&lt;div style=&apos;background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;&apos;&gt;&lt;h3 style=&apos;margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;&apos;&gt;🎉 Jetzt 100% kostenlos und Open-Source!&lt;/h3&gt;&lt;p style=&apos;margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;&apos;&gt;Alle erweiterten Funktionen der Pro-Version, unbegrenzter Export und professionelle Vorlagen wurden für die Community freigegeben.&lt;/p&gt;&lt;p style=&apos;margin: 0; font-size: 11pt; color: #34495e;&apos;&gt;☕ &lt;b&gt;Unterstützen Sie das Projekt, um es am Leben zu erhalten:&lt;/b&gt; &lt;a href=&apos;https://buymeacoffee.com/matheusdurso&apos; style=&apos;color: #e67e22; text-decoration: none; font-weight: bold;&apos;&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="126"/>
-        <source>&lt;b style='font-size: 11pt; color: #444;'&gt;Relatórios de Erro:&lt;/b&gt;&lt;br&gt;&lt;span style='font-size: 10pt; color: #666;'&gt;Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? Nenhuma informação pessoal ou dado geográfico será enviado.&lt;/span&gt;</source>
-        <translation>&lt;b style='font-size: 11pt; color: #444;'&gt;Fehlerberichte:&lt;/b&gt;&lt;br&gt;&lt;span style='font-size: 10pt; color: #666;'&gt;Stimmen Sie dem Senden automatischer und völlig anonymer Fehlerberichte zu, falls ein Fehler auftritt? Es werden keine persönlichen oder geografischen Daten gesendet.&lt;/span&gt;</translation>
+        <source>&lt;b style=&apos;font-size: 11pt; color: #444;&apos;&gt;Relatórios de Erro:&lt;/b&gt;&lt;br&gt;&lt;span style=&apos;font-size: 10pt; color: #666;&apos;&gt;Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? Nenhuma informação pessoal ou dado geográfico será enviado.&lt;/span&gt;</source>
+        <translation>&lt;b style=&apos;font-size: 11pt; color: #444;&apos;&gt;Fehlerberichte:&lt;/b&gt;&lt;br&gt;&lt;span style=&apos;font-size: 10pt; color: #666;&apos;&gt;Stimmen Sie dem Senden automatischer und völlig anonymer Fehlerberichte zu, falls ein Fehler auftritt? Es werden keine persönlichen oder geografischen Daten gesendet.&lt;/span&gt;</translation>
     </message>
 </context>
 <context>
@@ -49,17 +49,17 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="99"/>
         <source>CAMADAS E GEOMETRIA</source>
-        <translation>EBENEN UND GEOMETRIE</translation>
+        <translation>LAYER UND GEOMETRIE</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="133"/>
         <source>Camada Vetorial:</source>
-        <translation>Vektorebene:</translation>
+        <translation>Vektorlayer:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="145"/>
         <source>Selecione a camada vetorial de interesse</source>
-        <translation>Wählen Sie die gewünschte Vektorebene aus</translation>
+        <translation>Wählen Sie den gewünschten Vektorlayer aus</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="162"/>
@@ -69,22 +69,22 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="169"/>
         <source>Exibe apenas a camada atual</source>
-        <translation>Zeigt nur die aktuelle Ebene an</translation>
+        <translation>Zeigt nur den aktuellen Layer an</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="172"/>
         <source>Camada Atual</source>
-        <translation>Aktuelle Ebene</translation>
+        <translation>Aktueller Layer</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="179"/>
         <source>Exibe apenas as feições vinculadas à página</source>
-        <translation>Zeigt nur Merkmale an, die mit der Seite verknüpft sind</translation>
+        <translation>Zeigt nur Objekte an, die mit der Seite verknüpft sind</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="182"/>
         <source>Feições da Página</source>
-        <translation>Seitenmerkmale</translation>
+        <translation>Seitenobjekte</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="433"/>
@@ -99,17 +99,17 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="544"/>
         <source>Exibição de Camadas:</source>
-        <translation>Ebenenanzeige:</translation>
+        <translation>Layeranzeige:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="551"/>
         <source>Cria mapas com a opção &quot;Travar Camadas&quot; ativada</source>
-        <translation>Erstellt Karten mit aktivierter Option &quot;Ebenen sperren&quot;</translation>
+        <translation>Erstellt Karten mit aktivierter Option &quot;Layer sperren&quot;</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="554"/>
         <source>Travar Camadas</source>
-        <translation>Ebenen sperren</translation>
+        <translation>Layer sperren</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="561"/>
@@ -297,42 +297,42 @@
         <translation>Einzelner Text</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1520"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1528"/>
         <source>LAYOUT DE IMPRESSÃO E EXPORTAÇÃO</source>
         <translation>DRUCK- UND EXPORT-LAYOUT</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1572"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1580"/>
         <source>Exportar PDFs Individuais</source>
         <translation>Einzelne PDFs exportieren</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1579"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1587"/>
         <source>Cria layouts apenas com a área do item de mapa.</source>
         <translation>Erstellt Layouts nur mit dem Kartenelementbereich.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1582"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1590"/>
         <source>Gerar Mapas Avulsos</source>
         <translation>Einzelkarten generieren</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1648"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1656"/>
         <source>Atualiza a pré-visualização automaticamente sempre que um campo é alterado.</source>
         <translation>Aktualisiert die Vorschau automatisch, sobald ein Feld geändert wird.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1654"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1662"/>
         <source>Pré-Visualização Automática</source>
         <translation>Automatische Vorschau</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1685"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1693"/>
         <source>Aguardando configuração de pré-visualização...</source>
         <translation>Warten auf Vorschau-Konfiguration...</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1714"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1722"/>
         <source>Desenvolvimento e Suporte</source>
         <translation>Entwicklung und Support</translation>
     </message>
@@ -352,19 +352,9 @@
         <translation>Wählen Sie die Farbe und Transparenz des Seitenhintergrunds. Tipp: Um ein Bild mit transparentem Hintergrund zu erstellen, setzen Sie den Karten- und Seitenhintergrund auf transparent und speichern Sie es als PNG.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1556"/>
-        <source>Recurso Pro. Abre automaticamente o leitor de PDF ou a pasta com as imagens assim que a exportação terminar.</source>
-        <translation>Öffnet automatisch den PDF-Reader oder den Ordner mit den Bildern, sobald der Export abgeschlossen ist.</translation>
-    </message>
-    <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1559"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1567"/>
         <source>Abrir arquivo/pasta</source>
         <translation>Datei/Ordner öffnen</translation>
-    </message>
-    <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1566"/>
-        <source>Recurso Pro. Exporta cada página como um arquivo PDF individual.</source>
-        <translation>Exportiert jede Seite als einzelne PDF-Datei.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="634"/>
@@ -387,17 +377,17 @@
         <translation>Transparenter Hintergrund</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1213"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1290"/>
         <source>DECORAÇÕES</source>
         <translation>DEKORATIONEN</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1449"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1457"/>
         <source>Posição:</source>
         <translation>Position:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1490"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1498"/>
         <source>Adicionar Grade</source>
         <translation>Gitter hinzufügen</translation>
     </message>
@@ -409,82 +399,77 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="214"/>
         <source>Agrupamento de Feições:</source>
-        <translation>Gruppierung von Merkmalen:</translation>
+        <translation>Gruppierung von Objekten:</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="228"/>
         <source>Mapa Individual por Feição</source>
-        <translation>Einzelkarte pro Merkmal</translation>
+        <translation>Einzelkarte pro Objekt</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="248"/>
         <source>Mapa Geral da Camada</source>
-        <translation>Allgemeine Ebenenkarte</translation>
+        <translation>Allgemeine Layerkarte</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="265"/>
         <source>Agrupar Feições Por:</source>
-        <translation>Merkmale gruppieren nach:</translation>
+        <translation>Objekte gruppieren nach:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1252"/>
-        <source>Mapa de Localização</source>
-        <translation>Übersichtskarte</translation>
-    </message>
-    <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1329"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1337"/>
         <source>Legenda</source>
         <translation>Legende</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1384"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1392"/>
         <source>Seta de Norte</source>
         <translation>Nordpfeil</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1442"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1450"/>
         <source>Escala Gráfica</source>
         <translation>Maßstabsleiste</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1599"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1607"/>
         <source>Apoiar Desenvolvimento</source>
         <translation>Entwicklung unterstützen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1676"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1684"/>
         <source>Visualização da primeira página do layout.</source>
         <translation>Vorschau der ersten Layout-Seite.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1264"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1263"/>
         <source>Incluir Camada Raster</source>
-        <translation>Raster-Layer einschließen</translation>
+        <translation>Rasterlayer einschließen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1271"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1242"/>
         <source>Camada:</source>
         <translation>Layer:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1336"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1344"/>
         <source>Adicionar Camada Raster</source>
-        <translation>Raster-Layer hinzufügen</translation>
+        <translation>Rasterlayer hinzufügen</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="245"/>
         <source>Cria apenas um mapa de overview da camada inteira.</source>
-        <translation>Erstellt nur eine Übersichtskarte der gesamten Ebene.</translation>
+        <translation>Erstellt nur eine Übersichtskarte des gesamten Layers.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="262"/>
         <source>Agrupa as feições por uma coluna da tabela de atributos ou por expressão personalizada.</source>
-        <translation>Gruppiert Merkmale nach einer Attributtabellenspalte oder einem benutzerdefinierten Ausdruck.</translation>
+        <translation>Gruppiert Objekte nach einer Attributtabellenspalte oder einem benutzerdefinierten Ausdruck.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="272"/>
-        <source>Agrupa feições na mesma prancha de impressão usando o valor desta coluna (Ex: 'Bairro' gera um mapa por bairro).</source>
-        <translation>Gruppiert Merkmale auf demselben Druckplan anhand des Werts dieser Spalte (Bsp.: 'Bairro' generiert eine Karte pro Viertel).</translation>
+        <source>Agrupa feições na mesma prancha de impressão usando o valor desta coluna (Ex: &apos;Bairro&apos; gera um mapa por bairro).</source>
+        <translation>Gruppiert Objekte im selben Drucklayout anhand des Werts dieser Spalte (Bsp.: &apos;Bairro&apos; generiert eine Karte pro Viertel).</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="339"/>
@@ -494,7 +479,7 @@
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="351"/>
         <source>Enquadra a feição nos limites do item de mapa e dá um zoom out padrão de 25%.</source>
-        <translation>Passt das Merkmal an die Grenzen des Kartenelements an und zoomt standardmäßig um 25% heraus.</translation>
+        <translation>Passt das Objekt an die Grenzen des Kartenelements an und zoomt standardmäßig um 25% heraus.</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="354"/>
@@ -522,12 +507,12 @@
         <translation>Definiert den festen Maßstab dynamisch anhand des Werts dieser Spalte (Bsp.: 5000 = 1:5.000).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1326"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1334"/>
         <source>A legenda exibe todas as camadas selecionadas na tela principal do QGIS.</source>
-        <translation>Die Legende zeigt alle ausgewählten Ebenen im Hauptbildschirm von QGIS an.</translation>
+        <translation>Die Legende zeigt alle ausgewählten Layer im Hauptfenster von QGIS an.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1497"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1505"/>
         <source>Estilo:</source>
         <translation>Stil:</translation>
     </message>
@@ -537,62 +522,87 @@
         <translation>Wählen Sie die Zoom-Out-Stufe für den automatischen Maßstab oder die Option für benutzerdefinierte Ausdrücke.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map_dialog_base.ui" line="1278"/>
+        <location filename="../vector_to_map_dialog_base.ui" line="1249"/>
         <source>Seleciona a camada utilizada para enquadrar o mapa de localização.</source>
         <translation>Wählt den Layer aus, der zum Einrahmen der Übersichtskarte verwendet wird.</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map_dialog_base.ui" line="1208"/>
+        <source>GERAR MAPA DE LOCALIZAÇÃO</source>
+        <translation>ÜBERSICHTSKARTE ERSTELLEN</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map_dialog_base.ui" line="1225"/>
+        <source>Enquadramento:</source>
+        <translation>Kartenausschnitt:</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map_dialog_base.ui" line="1232"/>
+        <source>Zoom Out:</source>
+        <translation>Herauszoomen:</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map_dialog_base.ui" line="1564"/>
+        <source>Abre automaticamente o leitor de PDF ou a pasta com as imagens assim que a exportação terminar.</source>
+        <translation>Öffnet automatisch den PDF-Reader oder den Ordner mit den Bildern, sobald der Export abgeschlossen ist.</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map_dialog_base.ui" line="1574"/>
+        <source>Exporta cada página como um arquivo PDF individual.</source>
+        <translation>Exportiert jede Seite als einzelne PDF-Datei.</translation>
     </message>
 </context>
 <context>
     <name>LayoutEngine</name>
     <message>
-        <location filename="../layout_engine.py" line="631"/>
+        <location filename="../layout_engine.py" line="646"/>
         <source>Legenda</source>
         <translation>Legende</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1281"/>
+        <location filename="../layout_engine.py" line="1296"/>
         <source>Grade Automática</source>
         <translation>Automatisches Gitter</translation>
     </message>
     <message>
         <location filename="../layout_engine.py" line="44"/>
         <source>Zoom_Camada</source>
-        <translation>Ebenen_Zoom</translation>
+        <translation>Layer_Zoom</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1108"/>
+        <location filename="../layout_engine.py" line="1123"/>
         <source>Resumo do Mapa Geral</source>
         <translation>Zusammenfassung der Gesamtkarte</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1109"/>
+        <location filename="../layout_engine.py" line="1124"/>
         <source>Camada Vetorial</source>
-        <translation>Vektorebene</translation>
+        <translation>Vektorlayer</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1110"/>
+        <location filename="../layout_engine.py" line="1125"/>
         <source>Tipo de Geometria</source>
         <translation>Geometrietyp</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1111"/>
+        <location filename="../layout_engine.py" line="1126"/>
         <source>Total de Feições</source>
-        <translation>Gesamtzahl der Merkmale</translation>
+        <translation>Gesamtzahl der Objekte</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1112"/>
+        <location filename="../layout_engine.py" line="1127"/>
         <source>SRC da Camada</source>
-        <translation>KBS der Ebene</translation>
+        <translation>KBS des Layers</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1113"/>
+        <location filename="../layout_engine.py" line="1128"/>
         <source>SRC do Projeto</source>
         <translation>Projekt-KBS</translation>
     </message>
     <message>
         <location filename="../layout_engine.py" line="153"/>
         <source>A camada original foi removida do QGIS durante a exportação. Processo abortado.</source>
-        <translation>Die ursprüngliche Ebene wurde während des Exports aus QGIS entfernt. Vorgang abgebrochen.</translation>
+        <translation>Der ursprüngliche Layer wurde während des Exports aus QGIS entfernt. Vorgang abgebrochen.</translation>
     </message>
 </context>
 <context>
@@ -603,42 +613,42 @@
         <translation>&amp;VectorToMap</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2554"/>
+        <location filename="../vector_to_map.py" line="2621"/>
         <source>VectorToMap</source>
         <translation>VectorToMap</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="893"/>
+        <location filename="../vector_to_map.py" line="912"/>
         <source>Exportar</source>
         <translation>Exportieren</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="894"/>
+        <location filename="../vector_to_map.py" line="913"/>
         <source>Preview</source>
         <translation>Vorschau</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="895"/>
+        <location filename="../vector_to_map.py" line="914"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2296"/>
+        <location filename="../vector_to_map.py" line="2363"/>
         <source>Cancelar</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2571"/>
+        <location filename="../vector_to_map.py" line="2638"/>
         <source>☕ Apoiar Desenvolvimento</source>
         <translation>☕ Entwicklung unterstützen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2572"/>
+        <location filename="../vector_to_map.py" line="2639"/>
         <source>🐞 Relatar Bug (GitHub)</source>
         <translation>🐞 Bug melden (GitHub)</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2573"/>
+        <location filename="../vector_to_map.py" line="2640"/>
         <source>▶ Assistir Tutorial</source>
         <translation>▶ Tutorial ansehen</translation>
     </message>
@@ -663,167 +673,167 @@
         <translation>📂 Benutzerdefinierte Vorlage laden...</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1471"/>
+        <location filename="../vector_to_map.py" line="1502"/>
         <source>🔍 Filtrar colunas...</source>
         <translation>🔍 Spalten filtern...</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="821"/>
+        <location filename="../vector_to_map.py" line="840"/>
         <source>Mapa Quadrado</source>
         <translation>Quadratische Karte</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="823"/>
+        <location filename="../vector_to_map.py" line="842"/>
         <source>Mapa Horizontal</source>
         <translation>Horizontale Karte</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="825"/>
+        <location filename="../vector_to_map.py" line="844"/>
         <source>Mapa Vertical</source>
         <translation>Vertikale Karte</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="829"/>
+        <location filename="../vector_to_map.py" line="848"/>
         <source>Superior Esquerdo</source>
         <translation>Oben Links</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="830"/>
+        <location filename="../vector_to_map.py" line="849"/>
         <source>Superior Direito</source>
         <translation>Oben Rechts</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="831"/>
+        <location filename="../vector_to_map.py" line="850"/>
         <source>Inferior Esquerdo</source>
         <translation>Unten Links</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="832"/>
+        <location filename="../vector_to_map.py" line="851"/>
         <source>Inferior Direito</source>
         <translation>Unten Rechts</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="865"/>
+        <location filename="../vector_to_map.py" line="884"/>
         <source>Linhas Sólidas + Zebra</source>
         <translation>Durchgezogene Linien + Zebra</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="866"/>
+        <location filename="../vector_to_map.py" line="885"/>
         <source>Apenas Cruzes</source>
         <translation>Nur Kreuze</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="872"/>
+        <location filename="../vector_to_map.py" line="891"/>
         <source>Escolha a cor de fundo do mapa. Reduza a Opacidade para 0% para exportar transparente.</source>
         <translation>Wählen Sie die Hintergrundfarbe der Karte. Reduzieren Sie die Deckkraft auf 0%, um transparent zu exportieren.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="886"/>
+        <location filename="../vector_to_map.py" line="905"/>
         <source>Ajuda do VectorToMap</source>
         <translation>VectorToMap Hilfe</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="917"/>
+        <location filename="../vector_to_map.py" line="936"/>
         <source>Esquerda</source>
         <translation>Links</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="918"/>
+        <location filename="../vector_to_map.py" line="937"/>
         <source>Centro</source>
         <translation>Mitte</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="919"/>
+        <location filename="../vector_to_map.py" line="938"/>
         <source>Direita</source>
         <translation>Rechts</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1162"/>
+        <location filename="../vector_to_map.py" line="1194"/>
         <source>Exportar Mapas</source>
         <translation>Karten exportieren</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1263"/>
+        <location filename="../vector_to_map.py" line="1295"/>
         <source>⚠️ O filtro de feições gera camadas temporárias internas para o layout.</source>
-        <translation>⚠️ Der Merkmalsfilter generiert interne temporäre Ebenen für das Layout.</translation>
+        <translation>⚠️ Der Objektfilter generiert interne temporäre Layer für das Layout.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1314"/>
+        <location filename="../vector_to_map.py" line="1346"/>
         <source>Exibe todos os atributos em um bloco único de texto (HTML).</source>
         <translation>Zeigt alle Attribute in einem einzigen Textblock (HTML) an.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1315"/>
+        <location filename="../vector_to_map.py" line="1347"/>
         <source>Cria uma linha horizontal para cada feição (evita sobreposições).</source>
-        <translation>Erstellt für jedes Merkmal eine horizontale Linie (vermeidet Überschneidungen).</translation>
+        <translation>Erstellt für jedes Objekt eine horizontale Linie (vermeidet Überschneidungen).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1316"/>
+        <location filename="../vector_to_map.py" line="1348"/>
         <source>Marca ou desmarca todos os campos da lista de uma vez.</source>
         <translation>Markiert oder demarkiert alle Felder in der Liste auf einmal.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1317"/>
+        <location filename="../vector_to_map.py" line="1349"/>
         <source>Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado).</source>
         <translation>Legt die Kartengröße auf dem Blatt fest (z.B. 75% der Seite oder Quadrat).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1318"/>
+        <location filename="../vector_to_map.py" line="1350"/>
         <source>Gera uma prévia do layout com as configurações atuais.</source>
         <translation>Generiert eine Layout-Vorschau mit den aktuellen Einstellungen.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1319"/>
+        <location filename="../vector_to_map.py" line="1351"/>
         <source>Exporta os mapas diretamente como PDF, PNG ou JPG.</source>
         <translation>Exportiert die Karten direkt als PDF, PNG oder JPG.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2072"/>
+        <location filename="../vector_to_map.py" line="2139"/>
         <source>Aviso</source>
         <translation>Warnung</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1332"/>
+        <location filename="../vector_to_map.py" line="1366"/>
         <source>Cancelando processamento... A janela permanecerá aberta.</source>
         <translation>Verarbeitung wird abgebrochen... Das Fenster bleibt geöffnet.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="1382"/>
+        <location filename="../vector_to_map.py" line="1416"/>
         <source>Selecionar Layout do QGIS</source>
         <translation>QGIS-Layout auswählen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2219"/>
+        <location filename="../vector_to_map.py" line="2286"/>
         <source>Erro</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2186"/>
+        <location filename="../vector_to_map.py" line="2253"/>
         <source>Layout exportado com sucesso para</source>
         <translation>Layout erfolgreich exportiert nach</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2189"/>
+        <location filename="../vector_to_map.py" line="2256"/>
         <source>Exportar layout</source>
         <translation>Layout exportieren</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2207"/>
+        <location filename="../vector_to_map.py" line="2274"/>
         <source>Cancelado</source>
         <translation>Abgebrochen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2207"/>
+        <location filename="../vector_to_map.py" line="2274"/>
         <source>O processamento foi interrompido.</source>
         <translation>Die Verarbeitung wurde unterbrochen.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2260"/>
+        <location filename="../vector_to_map.py" line="2327"/>
         <source>Confirmar Sobrescrita</source>
         <translation>Überschreiben bestätigen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2260"/>
+        <location filename="../vector_to_map.py" line="2327"/>
         <source>Arquivos com os mesmos nomes já existem no diretório de destino.
 
 Deseja sobrescrevê-los?</source>
@@ -832,227 +842,227 @@ Deseja sobrescrevê-los?</source>
 Möchten Sie sie überschreiben?</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2275"/>
+        <location filename="../vector_to_map.py" line="2342"/>
         <source>Escolher Fonte do Título</source>
         <translation>Titelschriftart auswählen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2293"/>
+        <location filename="../vector_to_map.py" line="2360"/>
         <source>Parar Processo</source>
         <translation>Prozess stoppen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2331"/>
+        <location filename="../vector_to_map.py" line="2398"/>
         <source>Escala Automática Dinâmica</source>
         <translation>Dynamischer automatischer Maßstab</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2332"/>
-        <source>Use o botão 'ε' para definir a margem de zoom dinamicamente com base na sua tabela de atributos.</source>
-        <translation>Verwenden Sie die Schaltfläche 'ε', um den Zoomrand dynamisch basierend auf Ihrer Attributtabelle festzulegen.</translation>
+        <location filename="../vector_to_map.py" line="2399"/>
+        <source>Use o botão &apos;ε&apos; para definir a margem de zoom dinamicamente com base na sua tabela de atributos.</source>
+        <translation>Verwenden Sie die Schaltfläche &apos;ε&apos;, um den Zoomrand dynamisch basierend auf Ihrer Attributtabelle festzulegen.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2350"/>
+        <location filename="../vector_to_map.py" line="2417"/>
         <source>Exemplo:</source>
         <translation>Beispiel:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2334"/>
-        <source>Uma coluna com o número '15' aplicará 15% de margem no enquadramento.</source>
-        <translation>Eine Spalte mit der Zahl '15' wendet einen Rand von 15 % auf den Rahmen an.</translation>
+        <location filename="../vector_to_map.py" line="2401"/>
+        <source>Uma coluna com o número &apos;15&apos; aplicará 15% de margem no enquadramento.</source>
+        <translation>Eine Spalte mit der Zahl &apos;15&apos; wendet einen Rand von 15 % auf den Rahmen an.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2387"/>
+        <location filename="../vector_to_map.py" line="2454"/>
         <source>Expressão SQL:</source>
         <translation>SQL-Ausdruck:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2337"/>
+        <location filename="../vector_to_map.py" line="2404"/>
         <source>Se o cálculo falhar ou a célula estiver vazia, o plugin usará a margem padrão (25%).</source>
         <translation>Wenn die Berechnung fehlschlägt oder die Zelle leer ist, verwendet das Plugin den Standardrand (25 %).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2348"/>
+        <location filename="../vector_to_map.py" line="2415"/>
         <source>Escala Fixa Dinâmica</source>
         <translation>Dynamischer fester Maßstab</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2349"/>
-        <source>Use o botão 'ε' para definir a escala absoluta dinamicamente com base na sua tabela de atributos.</source>
-        <translation>Verwenden Sie die Schaltfläche 'ε', um den absoluten Maßstab dynamisch basierend auf Ihrer Attributtabelle festzulegen.</translation>
+        <location filename="../vector_to_map.py" line="2416"/>
+        <source>Use o botão &apos;ε&apos; para definir a escala absoluta dinamicamente com base na sua tabela de atributos.</source>
+        <translation>Verwenden Sie die Schaltfläche &apos;ε&apos;, um den absoluten Maßstab dynamisch basierend auf Ihrer Attributtabelle festzulegen.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2351"/>
-        <source>Uma coluna com o número '5000' forçará o mapa para a escala 1:5000.</source>
-        <translation>Eine Spalte mit der Zahl '5000' erzwingt die Karte auf den Maßstab 1:5000.</translation>
+        <location filename="../vector_to_map.py" line="2418"/>
+        <source>Uma coluna com o número &apos;5000&apos; forçará o mapa para a escala 1:5000.</source>
+        <translation>Eine Spalte mit der Zahl &apos;5000&apos; erzwingt die Karte auf den Maßstab 1:5000.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2354"/>
+        <location filename="../vector_to_map.py" line="2421"/>
         <source>Se o cálculo falhar ou a célula for nula, o plugin usará a escala padrão.</source>
         <translation>Wenn die Berechnung fehlschlägt oder die Zelle null ist, verwendet das Plugin den Standardmaßstab.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2365"/>
+        <location filename="../vector_to_map.py" line="2432"/>
         <source>Formatos e Templates</source>
         <translation>Formate und Vorlagen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2366"/>
+        <location filename="../vector_to_map.py" line="2433"/>
         <source>Define a estrutura visual da prancha de impressão.</source>
-        <translation>Definiert die visuelle Struktur des Druckplans.</translation>
+        <translation>Definiert die visuelle Struktur des Drucklayouts.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2367"/>
+        <location filename="../vector_to_map.py" line="2434"/>
         <source>Modelos Básicos (Matemáticos):</source>
         <translation>Grundmodelle (Mathematisch):</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2368"/>
+        <location filename="../vector_to_map.py" line="2435"/>
         <source>O plugin constrói o layout do zero, dividindo a folha geometricamente entre o mapa, tabela de atributos e decorações nativas.</source>
         <translation>Das Plugin erstellt das Layout von Grund auf neu und unterteilt das Blatt geometrisch in Karte, Attributtabelle und native Dekorationen.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2369"/>
+        <location filename="../vector_to_map.py" line="2436"/>
         <source>📄 Templates:</source>
         <translation>📄 Vorlagen:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2370"/>
+        <location filename="../vector_to_map.py" line="2437"/>
         <source>Modelos profissionais e otimizados que acompanham a versão. Eles mantêm o design, as margens e as decorações originais, ajustando apenas o mapa dinamicamente.</source>
         <translation>Professionelle und optimierte Modelle, die in der Version enthalten sind. Sie behalten das Design, die Ränder und die Originaldekorationen bei und passen nur die Karte dynamisch an.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2371"/>
+        <location filename="../vector_to_map.py" line="2438"/>
         <source>📂 Template Personalizado (.qpt):</source>
         <translation>📂 Benutzerdefinierte Vorlage (.qpt):</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2372"/>
+        <location filename="../vector_to_map.py" line="2439"/>
         <source>Permite importar um layout desenhado por você no QGIS com a identidade visual da sua empresa (logos, selos e carimbos). O motor preserva o seu design e injeta o mapa atualizado direto no seu quadro principal.</source>
         <translation>Ermöglicht den Import eines von Ihnen in QGIS entworfenen Layouts mit der Corporate Identity Ihres Unternehmens (Logos, Stempel und Siegel). Die Engine bewahrt Ihr Design und fügt die aktualisierte Karte direkt in Ihren Hauptrahmen ein.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2383"/>
+        <location filename="../vector_to_map.py" line="2450"/>
         <source>Agrupamento Avançado (Atlas)</source>
         <translation>Erweiterte Gruppierung (Atlas)</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2384"/>
+        <location filename="../vector_to_map.py" line="2451"/>
         <source>Agrupe feições no mesmo mapa usando uma coluna da tabela ou uma expressão matemática (ε).</source>
-        <translation>Gruppieren Sie Merkmale auf derselben Karte mithilfe einer Tabellenspalte oder eines mathematischen Ausdrucks (ε).</translation>
+        <translation>Gruppieren Sie Objekte auf derselben Karte mithilfe einer Tabellenspalte oder eines mathematischen Ausdrucks (ε).</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2385"/>
+        <location filename="../vector_to_map.py" line="2452"/>
         <source>Exemplo Simples:</source>
         <translation>Einfaches Beispiel:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2386"/>
-        <source>Escolher a coluna 'Bairro' gerará um mapa para cada bairro, unindo todos os lotes que pertencem a ele na mesma prancha.</source>
-        <translation>Wenn Sie die Spalte 'Bairro' (Viertel) auswählen, wird für jedes Viertel eine Karte erstellt, die alle dazugehörigen Grundstücke auf demselben Plan vereint.</translation>
+        <location filename="../vector_to_map.py" line="2453"/>
+        <source>Escolher a coluna &apos;Bairro&apos; gerará um mapa para cada bairro, unindo todos os lotes que pertencem a ele na mesma prancha.</source>
+        <translation>Wenn Sie die Spalte &apos;Bairro&apos; (Viertel) auswählen, wird für jedes Viertel eine Karte erstellt, die alle dazugehörigen Grundstücke auf demselben Layout vereint.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2389"/>
+        <location filename="../vector_to_map.py" line="2456"/>
         <source>O motor calculará a fórmula para todas as geometrias. Feições com o mesmo resultado exato serão desenhadas juntas.</source>
-        <translation>Die Engine berechnet die Formel für alle Geometrien. Merkmale mit dem exakt gleichen Ergebnis werden zusammen gezeichnet.</translation>
+        <translation>Die Engine berechnet die Formel für alle Geometrien. Objekte mit dem exakt gleichen Ergebnis werden zusammen gezeichnet.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2496"/>
+        <location filename="../vector_to_map.py" line="2563"/>
         <source>Ajuda do Algoritmo</source>
         <translation>Algorithmus-Hilfe</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2502"/>
+        <location filename="../vector_to_map.py" line="2569"/>
         <source>VectorToMap&lt;br&gt;&lt;br&gt;O VectorToMap automatiza a geração de layouts de impressão para cartografia técnica. Este algoritmo transforma os dados da camada vetorial em pranchas prontas, com enquadramento e escala calculados dinamicamente.&lt;br&gt;&lt;br&gt;O parâmetro de agrupamento funciona de forma semelhante a um Atlas, permitindo gerar um mapa individual para cada feição ou agrupar várias feições que compartilham o mesmo valor em uma coluna específica da tabela.&lt;br&gt;&lt;br&gt;O parâmetro de escala controla o nível de zoom do mapa. Pode ser definido para centralização automática ou fixado em valores absolutos. O uso de expressões (ε) permite que a margem de respiro ou a escala exata sejam lidas e aplicadas diretamente a partir dos atributos da feição atual.&lt;br&gt;&lt;br&gt;A opção de filtrar geometrias controla a visibilidade dos elementos no layout final. Quando ativada, ela isola e exibe apenas as feições que pertencem à página que está sendo gerada, ocultando automaticamente o restante dos dados do mapa.&lt;br&gt;&lt;br&gt;&lt;ul&gt;&lt;li&gt;&lt;i&gt;Utilize o botão de Preview para validar o enquadramento, os estilos e a renderização das informações na tela antes de executar a exportação em lote para arquivos finais.&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;</source>
-        <translation>VectorToMap&lt;br&gt;&lt;br&gt;VectorToMap automatisiert die Erstellung von Drucklayouts für die technische Kartografie. Dieser Algorithmus wandelt die Daten des Vektorlayers in fertige Pläne um, wobei Rahmung und Maßstab dynamisch berechnet werden.&lt;br&gt;&lt;br&gt;Der Gruppierungsparameter funktioniert ähnlich wie ein Atlas und ermöglicht es, für jedes Objekt eine einzelne Karte zu generieren oder mehrere Objekte zu gruppieren, die denselben Wert in einer bestimmten Tabellenspalte teilen.&lt;br&gt;&lt;br&gt;Der Maßstabsparameter steuert die Zoomstufe der Karte. Er kann auf automatische Zentrierung eingestellt oder auf absolute Werte festgelegt werden. Die Verwendung von Ausdrücken (ε) ermöglicht es, den genauen Rand oder Maßstab direkt aus den Attributen des aktuellen Objekts zu lesen und anzuwenden.&lt;br&gt;&lt;br&gt;Die Option zum Filtern von Geometrien steuert die Sichtbarkeit von Elementen im endgültigen Layout. Wenn sie aktiviert ist, isoliert und zeigt sie nur die Objekte an, die zur aktuell generierten Seite gehören, und blendet den Rest der Kartendaten automatisch aus.&lt;br&gt;&lt;br&gt;&lt;ul&gt;&lt;li&gt;&lt;i&gt;Verwenden Sie die Vorschau-Schaltfläche, um die Rahmung, die Stile und das Rendering der Informationen auf dem Bildschirm zu überprüfen, bevor Sie den Stapelexport in die endgültigen Dateien ausführen.&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;</translation>
+        <translation>VectorToMap&lt;br&gt;&lt;br&gt;VectorToMap automatisiert die Erstellung von Drucklayouts für die technische Kartografie. Dieser Algorithmus wandelt die Daten des Vektorlayers in fertige Drucklayouts um, wobei Rahmung und Maßstab dynamisch berechnet werden.&lt;br&gt;&lt;br&gt;Der Gruppierungsparameter funktioniert ähnlich wie ein Atlas und ermöglicht es, für jedes Objekt eine einzelne Karte zu generieren oder mehrere Objekte zu gruppieren, die denselben Wert in einer bestimmten Tabellenspalte teilen.&lt;br&gt;&lt;br&gt;Der Maßstabsparameter steuert die Zoomstufe der Karte. Er kann auf automatische Zentrierung eingestellt oder auf absolute Werte festgelegt werden. Die Verwendung von Ausdrücken (ε) ermöglicht es, den genauen Rand oder Maßstab direkt aus den Attributen des aktuellen Objekts zu lesen und anzuwenden.&lt;br&gt;&lt;br&gt;Die Option zum Filtern von Geometrien steuert die Sichtbarkeit von Elementen im endgültigen Layout. Wenn sie aktiviert ist, isoliert und zeigt sie nur die Objekte an, die zur aktuell generierten Seite gehören, und blendet den Rest der Kartendaten automatisch aus.&lt;br&gt;&lt;br&gt;&lt;ul&gt;&lt;li&gt;&lt;i&gt;Verwenden Sie die Vorschau-Schaltfläche, um die Rahmung, die Stile und das Rendering der Informationen auf dem Bildschirm zu überprüfen, bevor Sie den Stapelexport in die endgültigen Dateien ausführen.&lt;/i&gt;&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2555"/>
+        <location filename="../vector_to_map.py" line="2622"/>
         <source>Motor de Renderização Cartográfica Automatizada</source>
         <translation>Automatisierte kartografische Rendering-Engine</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2609"/>
+        <location filename="../vector_to_map.py" line="2676"/>
         <source>Visão Geral do Sistema</source>
         <translation>Systemübersicht</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2611"/>
+        <location filename="../vector_to_map.py" line="2678"/>
         <source>O VectorToMap é uma solução avançada de automação em software livre para Sistemas de Informação Geográfica (SIG), criada para otimizar a sua cartografia técnica. Projetado para lidar com rotinas de alta demanda cartográfica, o complemento atua diretamente sobre a API de layouts nativa do QGIS (QgsPrintLayout), permitindo a renderização em lote de feições espaciais com parâmetros de enquadramento escaláveis.</source>
         <translation>VectorToMap ist eine fortschrittliche Open-Source-Automatisierungslösung für Geoinformationssysteme (GIS), die entwickelt wurde, um Ihre technische Kartografie zu optimieren. Entwickelt für anspruchsvolle kartografische Routinen, arbeitet das Plugin direkt mit der nativen Layout-API von QGIS (QgsPrintLayout) und ermöglicht das stapelweise Rendern von räumlichen Objekten mit skalierbaren Rahmungsparametern.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2613"/>
+        <location filename="../vector_to_map.py" line="2680"/>
         <source>Todo esse projeto se mantém vivo e em constante evolução graças ao apoio da comunidade. Ao apoiar o nosso desenvolvimento contínuo, você garante que a ferramenta continue recebendo melhorias e se mantenha sempre funcional.</source>
         <translation>Dieses gesamte Projekt bleibt dank der Unterstützung der Community am Leben und in ständiger Entwicklung. Indem Sie unsere kontinuierliche Entwicklung unterstützen, stellen Sie sicher, dass das Tool weiterhin Verbesserungen erhält und immer funktionsfähig bleibt.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2615"/>
+        <location filename="../vector_to_map.py" line="2682"/>
         <source>Aplicações Técnicas</source>
         <translation>Technische Anwendungen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2616"/>
+        <location filename="../vector_to_map.py" line="2683"/>
         <source>&lt;b&gt;Engenharia e Licenciamento:&lt;/b&gt; Geração massiva de plantas de situação, croquis de acesso e anexos cartográficos padronizados para estudos ambientais.</source>
         <translation>&lt;b&gt;Ingenieurwesen und Genehmigungsverfahren:&lt;/b&gt; Massengenerierung von Lageplänen, Zugangsskizzen und standardisierten kartografischen Anlagen für Umweltstudien.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2617"/>
+        <location filename="../vector_to_map.py" line="2684"/>
         <source>&lt;b&gt;Gestão Fundiária:&lt;/b&gt; Automatização de pranchas para o Cadastro Ambiental Rural (CAR), regularização fundiária e cadastros técnicos multifinalitários urbanos.</source>
         <translation>&lt;b&gt;Landmanagement:&lt;/b&gt; Automatisierung von Plänen für das ländliche Umweltkataster (CAR), Landregulierung und städtische multifunktionale technische Kataster.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2618"/>
+        <location filename="../vector_to_map.py" line="2685"/>
         <source>&lt;b&gt;Inspeção e Laudos:&lt;/b&gt; Padronização visual e geração rápida de encartes de mapas para relatórios de vistoria em campo.</source>
         <translation>&lt;b&gt;Inspektion und Gutachten:&lt;/b&gt; Visuelle Standardisierung und schnelle Generierung von Karteneinlagen für Feldinspektionsberichte.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2620"/>
+        <location filename="../vector_to_map.py" line="2687"/>
         <source>Arquitetura e Funcionalidades Core</source>
         <translation>Architektur und Kernfunktionen</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2621"/>
+        <location filename="../vector_to_map.py" line="2688"/>
         <source>&lt;b&gt;Integração QGIS Expressions:&lt;/b&gt; Suporte nativo a Data-Defined Overrides (DDO). O motor lê funções SQL inseridas pelo usuário para calcular dinamicamente margens e escalas com base no contexto geométrico.</source>
         <translation>&lt;b&gt;Integration von QGIS-Ausdrücken:&lt;/b&gt; Native Unterstützung für Data-Defined Overrides (DDO). Die Engine liest vom Benutzer eingegebene SQL-Funktionen, um Ränder und Maßstäbe basierend auf dem geometrischen Kontext dynamisch zu berechnen.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2622"/>
+        <location filename="../vector_to_map.py" line="2689"/>
         <source>&lt;b&gt;Isolamento em Memória:&lt;/b&gt; Utiliza rotinas de instanciamento de camadas transitórias (Memory Layers) e filtros de visibilidade sem afetar a Layer Tree principal do projeto.</source>
         <translation>&lt;b&gt;Isolierung im Speicher:&lt;/b&gt; Verwendet Routinen zur Instanziierung temporärer Layer (Memory Layers) und Sichtbarkeitsfilter, ohne den primären Layer Tree des Projekts zu beeinträchtigen.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2623"/>
+        <location filename="../vector_to_map.py" line="2690"/>
         <source>&lt;b&gt;Engine de Exportação:&lt;/b&gt; Suporte multi-thread e multi-formato dinâmico perfeitamente ajustado para lotes de impressão.</source>
         <translation>&lt;b&gt;Export-Engine:&lt;/b&gt; Multi-Thread-Unterstützung und dynamisches Multiformat, perfekt abgestimmt auf den Stapeldruck.</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2625"/>
+        <location filename="../vector_to_map.py" line="2692"/>
         <source>Desenvolvido por:</source>
         <translation>Entwickelt von:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2626"/>
+        <location filename="../vector_to_map.py" line="2693"/>
         <source>Registro INPI:</source>
         <translation>INPI-Registrierung:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2627"/>
+        <location filename="../vector_to_map.py" line="2694"/>
         <source>Contato:</source>
         <translation>Kontakt:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2628"/>
+        <location filename="../vector_to_map.py" line="2695"/>
         <source>LinkedIn:</source>
         <translation>LinkedIn:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2629"/>
+        <location filename="../vector_to_map.py" line="2696"/>
         <source>Licença:</source>
         <translation>Lizenz:</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="2674"/>
+        <location filename="../vector_to_map.py" line="2741"/>
         <source>Sobre o Plugin</source>
         <translation>Über das Plugin</translation>
     </message>
@@ -1102,19 +1112,54 @@ Möchten Sie sie überschreiben?</translation>
         <translation>100% (Doppelt)</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="854"/>
+        <location filename="../vector_to_map.py" line="873"/>
         <source>Minimalista</source>
         <translation>Minimalistisch</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="855"/>
+        <location filename="../vector_to_map.py" line="874"/>
         <source>Clássica (Seta N)</source>
         <translation>Klassisch (N-Pfeil)</translation>
     </message>
     <message>
-        <location filename="../vector_to_map.py" line="856"/>
+        <location filename="../vector_to_map.py" line="875"/>
         <source>Rosa dos Ventos</source>
         <translation>Windrose</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map.py" line="831"/>
+        <source>2 x</source>
+        <translation>2 x</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map.py" line="832"/>
+        <source>5 x</source>
+        <translation>5 x</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map.py" line="833"/>
+        <source>10 x</source>
+        <translation>10 x</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map.py" line="834"/>
+        <source>15 x</source>
+        <translation>15 x</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map.py" line="835"/>
+        <source>20 x</source>
+        <translation>20 x</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map.py" line="836"/>
+        <source>25 x</source>
+        <translation>25 x</translation>
+    </message>
+    <message>
+        <location filename="../vector_to_map.py" line="1353"/>
+        <source>Adiciona um mapa de enquadramento geral no canto da folha.</source>
+        <translation>Fügt eine allgemeine Übersichtskarte in der Ecke des Blattes hinzu.</translation>
     </message>
 </context>
 </TS>

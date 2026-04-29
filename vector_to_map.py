@@ -386,7 +386,7 @@ class VectorToMap:
             sentry_sdk.init(
                 dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
                 send_default_pii=False, 
-                release="vectortomap@3.5.0",
+                release="vectortomap@3.6.0",
                 before_send=filtro_sentry  # <--- INSERIMOS O FILTRO AQUI
             )
             self.sentry_ativo = True
@@ -816,6 +816,25 @@ class VectorToMap:
 
         if hasattr(self.dlg, 'combo_camada_loc'):
             self.dlg.combo_camada_loc.setFilters(QgsMapLayerProxyModel.VectorLayer)
+        
+        # ====================================================================
+        # NOVO: SETUP DAS OPÇÕES DO MAPA DE LOCALIZAÇÃO (Zoom vs Camada)
+        # ====================================================================
+        if hasattr(self.dlg, 'rb_local_zoomout') and hasattr(self.dlg, 'rb_local_camada'):
+            self.grupo_localizacao = QButtonGroup(self.dlg)
+            self.grupo_localizacao.addButton(self.dlg.rb_local_zoomout)
+            self.grupo_localizacao.addButton(self.dlg.rb_local_camada)
+            self.dlg.rb_local_camada.setChecked(True) # Padrão: usar a camada
+            
+        if hasattr(self.dlg, 'combo_local_zoomout'):
+            self.dlg.combo_local_zoomout.clear()
+            self.dlg.combo_local_zoomout.addItem(self.tr("2 x"), 2.0)
+            self.dlg.combo_local_zoomout.addItem(self.tr("5 x"), 5.0)
+            self.dlg.combo_local_zoomout.addItem(self.tr("10 x"), 10.0)
+            self.dlg.combo_local_zoomout.addItem(self.tr("15 x"), 15.0)
+            self.dlg.combo_local_zoomout.addItem(self.tr("20 x"), 20.0)
+            self.dlg.combo_local_zoomout.addItem(self.tr("25 x"), 25.0)
+            self.dlg.combo_local_zoomout.setCurrentIndex(1) # Define "5 x" como padrão inicial
 
         # Setup de Presets
         self.dlg.combo_presets.setItemText(0, self.tr("Mapa Quadrado"))
@@ -1037,16 +1056,29 @@ class VectorToMap:
             self.disparar_preview_se_autorizado()
 
         # Conecta as checkboxes principais
-        checkboxes_principais = ['chk_legenda', 'chk_escala', 'chk_norte', 'chk_mapa_loc', 'chk_grid']
+        checkboxes_principais = ['chk_legenda', 'chk_escala', 'chk_norte', 'chk_grid']
         for chk_name in checkboxes_principais:
             if hasattr(self.dlg, chk_name):
                 getattr(self.dlg, chk_name).stateChanged.connect(_ao_mudar_decoracao_principal)
+        
+        # --- NOVO: Gatilho do GroupBox de Localização ---
+        if hasattr(self.dlg, 'group_mapa_loc'):
+            self.dlg.group_mapa_loc.toggled.connect(_ao_mudar_decoracao_principal)
 
         # Conecta os sub-controles (só disparam a preview)
         sub_controles_chk = ['chk_add_raster', 'chk_incluir_raster']
         for chk_name in sub_controles_chk:
             if hasattr(self.dlg, chk_name):
                 getattr(self.dlg, chk_name).stateChanged.connect(self.disparar_preview_se_autorizado)
+        
+        # --- NOVO: Gatilhos dos RadioButtons de Localização ---
+        if hasattr(self.dlg, 'rb_local_zoomout'):
+            self.dlg.rb_local_zoomout.toggled.connect(self.atualizar_estado_decoracoes)
+            self.dlg.rb_local_zoomout.toggled.connect(self.disparar_preview_se_autorizado)
+            
+        if hasattr(self.dlg, 'combo_local_zoomout'):
+            self.dlg.combo_local_zoomout.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
+        # ------------------------------------------------------
 
         for combo_name in ['comboLegenda', 'comboEscala', 'comboNorte', 'comboPosLoc', 'comboGrid']:
             if hasattr(self.dlg, combo_name):
@@ -1317,6 +1349,8 @@ class VectorToMap:
         self.dlg.combo_presets.setToolTip(self.tr("Define o tamanho do mapa na folha (ex: 75% da página ou Quadrado)."))
         self.btn_render.setToolTip(self.tr("Gera uma prévia do layout com as configurações atuais."))
         self.btn_export.setToolTip(self.tr("Exporta os mapas diretamente como PDF, PNG ou JPG."))
+        if hasattr(self.dlg, 'group_mapa_loc'):
+            self.dlg.group_mapa_loc.setToolTip(self.tr("Adiciona um mapa de enquadramento geral no canto da folha."))
 
 
 
@@ -1434,10 +1468,7 @@ class VectorToMap:
         # 3. Desativar itens no groupBox_5 (Decorações)
         if hasattr(self.dlg, 'groupBox_5'):
             for child in self.dlg.groupBox_5.findChildren(widgets_visiveis):
-                # Mantém os itens relacionados ao mapa de localização intocáveis
-                nome = child.objectName()
-                if nome in ['chk_mapa_loc', 'combo_camada_loc'] or 'camada_loc' in nome or 'mapa_loc' in nome:
-                    continue
+                # Como o mapa de localização não mora mais aqui, bloqueamos tudo sem dó!
                 child.setEnabled(not is_template)
 
         # Dispara a preview visual para atualizar a tela
@@ -1633,20 +1664,37 @@ class VectorToMap:
 
 
     def atualizar_estado_decoracoes(self):
-        """Habilita ou desabilita os controles das decorações com base nas checkboxes principais."""
+        """Habilita ou desabilita os controles das decorações com base nas checkboxes principais e trava de template."""
         if not self.dlg: return
         
-        # 1. Controles do Mapa de Localização
-        if hasattr(self.dlg, 'chk_mapa_loc'):
-            is_loc_ativo = self.dlg.chk_mapa_loc.isChecked()
-            if hasattr(self.dlg, 'chk_incluir_raster'):
-                self.dlg.chk_incluir_raster.setEnabled(is_loc_ativo)
-            if hasattr(self.dlg, 'combo_camada_loc'):
-                self.dlg.combo_camada_loc.setEnabled(is_loc_ativo)
-            if hasattr(self.dlg, 'comboPosLoc'):
-                self.dlg.comboPosLoc.setEnabled(is_loc_ativo)
+        # ====================================================================
+        # 1. CONTROLES DO MAPA DE LOCALIZAÇÃO (Respeitando o group_mapa_loc)
+        # ====================================================================
+        if hasattr(self.dlg, 'group_mapa_loc'):
+            # Lemos se a "chave geral" do grupo está ligada
+            is_loc_ativo = self.dlg.group_mapa_loc.isChecked()
+            
+            if hasattr(self.dlg, 'rb_local_zoomout'):
+                is_modo_zoom = self.dlg.rb_local_zoomout.isChecked()
+                
+                # A MÁGICA 1: Só ativa a combo se o modo estiver marcado E o grupo todo estiver ativo
+                if hasattr(self.dlg, 'combo_local_zoomout'):
+                    self.dlg.combo_local_zoomout.setEnabled(is_loc_ativo and is_modo_zoom)
+                if hasattr(self.dlg, 'combo_camada_loc'):
+                    self.dlg.combo_camada_loc.setEnabled(is_loc_ativo and not is_modo_zoom)
 
-        # 2. Controles da Legenda
+        # ====================================================================
+        # A MÁGICA 2: TRAVA DE TEMPLATES (O Freio)
+        # Protege o groupBox_5 contra reativação indevida pelos sinais
+        # ====================================================================
+        if hasattr(self.dlg, 'combo_presets'):
+            is_template = str(self.dlg.combo_presets.currentData()).endswith('.qpt')
+            if is_template:
+                return # Aborta a função aqui! Deixa a _verificar_selecao_template manter tudo trancado.
+
+        # ====================================================================
+        # 2. CONTROLES DA LEGENDA
+        # ====================================================================
         if hasattr(self.dlg, 'chk_legenda'):
             is_legenda_ativa = self.dlg.chk_legenda.isChecked()
             if hasattr(self.dlg, 'chk_add_raster'):
@@ -1654,19 +1702,27 @@ class VectorToMap:
             if hasattr(self.dlg, 'comboLegenda'):
                 self.dlg.comboLegenda.setEnabled(is_legenda_ativa)
 
-        # 3. Controles do Norte
+        # ====================================================================
+        # 3. CONTROLES DO NORTE
+        # ====================================================================
         if hasattr(self.dlg, 'chk_norte'):
             is_norte_ativo = self.dlg.chk_norte.isChecked()
             if hasattr(self.dlg, 'comboNorte'):
                 self.dlg.comboNorte.setEnabled(is_norte_ativo)
+            if hasattr(self.dlg, 'combo_estilo_norte'):
+                self.dlg.combo_estilo_norte.setEnabled(is_norte_ativo)
 
-        # 4. Controles da Escala
+        # ====================================================================
+        # 4. CONTROLES DA ESCALA
+        # ====================================================================
         if hasattr(self.dlg, 'chk_escala'):
             is_escala_ativa = self.dlg.chk_escala.isChecked()
             if hasattr(self.dlg, 'comboEscala'):
                 self.dlg.comboEscala.setEnabled(is_escala_ativa)
 
-        # 5. Controles da Grade (Grid)
+        # ====================================================================
+        # 5. CONTROLES DA GRADE (GRID)
+        # ====================================================================
         if hasattr(self.dlg, 'chk_grid'):
             is_grid_ativo = self.dlg.chk_grid.isChecked()
             if hasattr(self.dlg, 'comboGrid'):
@@ -1723,7 +1779,16 @@ class VectorToMap:
         
         # Só atualiza a interface se a camada escolhida for realmente nova
         if camada.id() != self.ultimo_id_camada_ativa:
-            
+            # ================================================================
+            # NOVO: SINCRONIZAÇÃO UNIDIRECIONAL DA CAMADA DE LOCALIZAÇÃO
+            # ================================================================
+            if hasattr(self.dlg, 'combo_camada_loc'):
+                # Bloqueia os sinais para não disparar uma preview dupla na tela
+                self.dlg.combo_camada_loc.blockSignals(True)
+                self.dlg.combo_camada_loc.setLayer(camada)
+                self.dlg.combo_camada_loc.blockSignals(False)
+            # ================================================================
+
             # ================================================================
             # A CURA DO WIDGET VAZIO (RESTAURADA E BLINDADA)
             # ================================================================
@@ -1892,12 +1957,14 @@ class VectorToMap:
             'pos_norte': self.dlg.comboNorte.currentData() if hasattr(self.dlg, 'comboNorte') else "SD",
             'inserir_grade': self.dlg.chk_grid.isChecked() if hasattr(self.dlg, 'chk_grid') else False,
             'estilo_grade': self.dlg.comboGrid.currentData() if hasattr(self.dlg, 'comboGrid') else "solido",
-            'inserir_mapa_loc': self.dlg.chk_mapa_loc.isChecked() if hasattr(self.dlg, 'chk_mapa_loc') else False,
+            'inserir_mapa_loc': self.dlg.group_mapa_loc.isChecked() if hasattr(self.dlg, 'group_mapa_loc') else False,
             'add_raster_loc': self.dlg.chk_incluir_raster.isChecked() if hasattr(self.dlg, 'chk_incluir_raster') else False,
             'camada_loc': self.dlg.combo_camada_loc.currentLayer() if hasattr(self.dlg, 'combo_camada_loc') else None,
             'pos_mapa_loc': self.dlg.comboPosLoc.currentData() if hasattr(self.dlg, 'comboPosLoc') else "ID",
             'zoom_out_auto': self.dlg.comboZoomOut.currentData() if hasattr(self.dlg, 'comboZoomOut') else 25.0,
-            'estilo_norte': self.dlg.combo_estilo_norte.currentData() if hasattr(self.dlg, 'combo_estilo_norte') else "NorthArrow_02.svg"
+            'estilo_norte': self.dlg.combo_estilo_norte.currentData() if hasattr(self.dlg, 'combo_estilo_norte') else "NorthArrow_02.svg",
+            'modo_local': "zoom" if (hasattr(self.dlg, 'rb_local_zoomout') and self.dlg.rb_local_zoomout.isChecked()) else "camada",
+            'fator_zoom_local': self.dlg.combo_local_zoomout.currentData() if hasattr(self.dlg, 'combo_local_zoomout') else 10.0
         }
 
 

@@ -20,22 +20,31 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Preparar Pacote do Plugin
+      - name: Preparar Pacote do Plugin (Estilo build.py)
         run: |
-          # 1. Define o nome técnico da pasta (exigido pelo QGIS)
           PLUGIN_NAME="vector_to_map"
-          mkdir "$PLUGIN_NAME"
           
-          # 2. Copia arquivos e a pasta i18n
-          cp -r __init__.py vector_to_map.py vector_to_map_dialog.py \
-                vector_to_map_dialog_base.ui metadata.txt icon.png \
-                resources.py LICENSE README.md i18n/ "$PLUGIN_NAME/"
+          # 1. Cria uma pasta temporária para receber os arquivos
+          mkdir temp_build
           
-          # 3. Limpeza: Remove arquivos .ts (fontes de tradução) e qualquer .html perdido
-          find "$PLUGIN_NAME" -name "*.ts" -type f -delete
-          find "$PLUGIN_NAME" -name "*.html" -type f -delete
+          # 2. Copia TUDO do repositório para a pasta temporária, exceto o lixo de desenvolvimento.
+          # Isso garante que as 6 pastas do Sentry, templates e qualquer futura biblioteca sejam incluídas automaticamente!
+          rsync -av ./ temp_build/ \
+            --exclude=".git/" \
+            --exclude=".github/" \
+            --exclude="temp_build/" \
+            --exclude="__pycache__/" \
+            --exclude="*.pyc" \
+            --exclude="*.ts" \
+            --exclude="*.html" \
+            --exclude=".gitignore" \
+            --exclude="build.py" \
+            --exclude="*.zip"
           
-          # 4. Gera o ZIP final
+          # 3. Renomeia a pasta temporária para o nome oficial do plugin exigido pelo QGIS
+          mv temp_build "$PLUGIN_NAME"
+          
+          # 4. Gera o ZIP final perfeito
           zip -r "${PLUGIN_NAME}.zip" "$PLUGIN_NAME"
 
       - name: Criar Release no GitHub
@@ -47,12 +56,16 @@ jobs:
             ### 🗺️ VectorToMap ${{ github.ref_name }}
             Nova versão gerada automaticamente via GitHub Actions.
             
-            **Destaques desta versão:**
-            * Exportação de Mapa Avulso e novos modelos de Layout (Mapa Vertical).
-            * Suporte a fundo transparente nativo do QGIS (Canal Alpha).
-            * Nova opção de exportação vetorial editável (.svg).
-            * Interface de processamento persistente (Janela não fecha após o uso).
-            * Suporte multilíngue massivo: Português, Inglês, Espanhol, Francês, Alemão, Italiano, Chinês e Russo.
+            ### 🚀 New Features & Improvements
+            * **Dynamic Labels in Templates:** Added support for dynamic attribute substitution in custom layouts (`.qpt`) using the `["Column_Name"]` syntax, along with native support for QGIS expressions (`[% %]`).
+            * **New Overview Map Engine:** Users can now choose between a fixed global framing (via a selected layer) or a dynamic, relative Zoom Out from the main map (with options for 2x, 5x, 10x, 15x, 20x, and 25x).
+            * **UI/UX Restructuring:** The Overview Map controls were isolated into an independent Checkable GroupBox (`group_mapa_loc`), ensuring a cleaner and more organized interface.
+            * **Internationalization (i18n):** Complete review and update of UI translations for 7 languages (German, English, Spanish, French, Italian, Russian, and Chinese).
+
+            ### 🐛 Bug Fixes & Optimizations
+            * **Duplicate Window Prevention:** The plugin now properly manages its single instance. If the window is already open or minimized, the code simply brings it to the front and synchronizes the active layer, preventing clone windows from opening.
+            * **Ghost Layers Exorcism:** Implemented a 100% secure active sweep using Custom Properties (`vtm_is_preview_temp`) to ensure no Preview layers get stuck in RAM or ComboBoxes if QGIS suffers a crash or an abrupt reload.
+            * **UI Logic Leaks Fix:** Fixed a bug where UI signals would improperly reactivate elements in the decorations group when a Template (Preset) was selected or when the group was explicitly unchecked.
           draft: false
           prerelease: false
         env:

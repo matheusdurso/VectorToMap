@@ -10,16 +10,17 @@
 
 ### ✨ Key Features
 
-* **🌟 Professional Templates (.qpt):** Load built-in native layout templates or import your custom corporate designs. The engine preserves your layout and injects the dynamic maps.
+* **🌟 Professional Templates (.qpt):** Load built-in native layout templates or import your custom corporate designs. The engine preserves your layout and injects the dynamic maps, including support for auto-text substitution via `["Column_Name"]` syntax and native QGIS expressions `[% %]`.
 * **🖨️ Multi-Format Export:** Bypass the QGIS layout manager and export hundreds of maps directly to **PDF (multi-page), PNG, JPG, and SVG** (with editable paths).
 * **🧮 Data-Defined Overrides (DDO):** Use QGIS SQL expressions (ε) to dynamically control map scales, margins, and complex Atlas grouping based on attribute values.
-* **📐 Smart Decorations:** Auto-generate Coordinate Grids, North Arrows, Scale Bars, Legends, and Overview (Locator) Maps tailored to each page.
+* **📐 Smart Decorations:** Auto-generate Coordinate Grids, North Arrows, Scale Bars, Legends, and Overview (Locator) Maps tailored to each page. Overview maps now feature dynamic relative Zoom Out (2x-25x) and fixed global framing.
 * **✨ Transparent Backgrounds:** Export maps and pages with alpha channel transparency (perfect for PNG/SVG overlays).
 * **🚀 High Performance & Smart Grouping:** Optimized database queries (`QgsFeatureRequest`) and ultra-fast unique value processing for Atlas-style map books.
-* **🛡️ Advanced Layer Management:** Cleanly isolates features using temporary memory layers without cluttering your main project. Full support for locking layer visibility and styles per page.
+* **🛡️ Rock-Solid Stability:** Cleanly isolates features using temporary memory layers without cluttering your project. Features 100% secure "Ghost Layer" exorcism (via custom properties) and duplicate window prevention to keep your RAM clean.
 * **👁️ Real-Time Preview:** Lightning-fast in-memory rendering engine to validate your design before final processing, complete with a dedicated progress bar.
 * **🛑 Safe Abort & Memory Management:** Functional **Cancel** button that safely stops the rendering engine without freezing the QGIS interface. Uses Python's Garbage Collector (`gc`) and `sip` object cleanup.
 * **🎨 Attribute Display Modes:** Form Mode (HTML block) or Individual Mode (inline technical labels with automatic size adjustment).
+* **🌍 Multi-Language Support (i18n):** Fully translated interface available in English, Spanish, French, German, Italian, Russian, Chinese, and Portuguese.
 
 ### 🚀 How to Use
 
@@ -37,23 +38,24 @@
 
 ### ✨ Funcionalidades
 
-* **🌟 Templates Profissionais (.qpt):** Carregue templates nativos já inclusos ou importe seus layouts corporativos personalizados. O motor preserva seu design original e injeta os mapas dinamicamente.
+* **🌟 Templates Profissionais (.qpt):** Carregue templates nativos já inclusos ou importe seus layouts corporativos personalizados. O motor preserva seu design original e injeta os mapas dinamicamente, suportando substituição inteligente de textos com a sintaxe `["Nome_da_Coluna"]` e expressões do QGIS `[% %]`.
 * **🖨️ Exportação Multi-Formato:** Pule o gerenciador de layouts do QGIS e exporte centenas de mapas diretamente para **PDF (múltiplas páginas), PNG, JPG e SVG** (com vetores editáveis).
 * **🧮 Expressões Dinâmicas (DDO):** Use SQL do QGIS (ε) para controlar dinamicamente escalas, margens de respiro e agrupamentos complexos no Atlas com base na tabela de atributos.
-* **📐 Decorações Inteligentes:** Geração automática e adaptativa de Grades de Coordenadas, Rosas dos Ventos, Escalas, Legendas e Mapas de Localização (Overview).
+* **📐 Decorações Inteligentes:** Geração automática e adaptativa de Grades de Coordenadas, Rosas dos Ventos, Escalas, Legendas e Mapas de Localização (Overview). O mapa de localização agora possui opções de Zoom Out relativo dinâmico (2x a 25x) ou enquadramento global fixo.
 * **✨ Fundos Transparentes:** Exporte mapas e pranchas com canal alfa (transparência), ideal para sobreposições em PNG e SVG.
 * **🚀 Alta Performance e Agrupamento:** Consultas otimizadas via banco de dados (`QgsFeatureRequest`) para geração de cadernos de mapas (estilo Atlas) ultrarrápidos.
-* **🛡️ Gestão Avançada de Camadas:** Isola feições de forma limpa usando camadas em memória, sem poluir o projeto. Suporte total para travar a visibilidade e os estilos das camadas por página.
+* **🛡️ Estabilidade Blindada:** Isola feições de forma limpa usando camadas em memória. Conta com sistema de prevenção de janelas duplicadas e "exorcismo" 100% seguro de Camadas Fantasmas de preview, mantendo sua memória RAM e o projeto QGIS sempre limpos.
 * **👁️ Preview em Tempo Real:** Motor de renderização para validar o design antes do processamento final, com barra de progresso dedicada.
 * **🛑 Interrupção Segura:** Botão **Cancelar** funcional que interrompe o motor com segurança. Implementação de *Garbage Collector* (`gc`) para garantir estabilidade com milhares de feições.
 * **🎨 Modos de Exibição de Atributos:** Modo Formulário (bloco HTML) ou Modo Individual (rótulos independentes com ajuste contra sobreposição).
+* **🌍 Suporte Multilíngue (i18n):** Interface totalmente traduzida para Português, Inglês, Espanhol, Francês, Alemão, Italiano, Russo e Chinês.
 
 ### 🚀 Como Usar
 
 1. **Camada Vetorial:** Selecione a camada de origem no menu suspenso.
 2. **Seleção de Atributos:** Marque os campos da tabela que aparecerão no layout impresso.
 3. **Configuração Técnica:** Defina o tamanho da página, orientação e escolha um Preset visual ou um Template `.qpt`.
-4. **Decorações:** Ative Grades, Legendas, Rosas dos Ventos ou Mapas de Localização diretamente na interface.
+4. **Decorações:** Ative Grades, Legendas, Rosas dos Ventos ou Mapas de Localização (agora em um painel isolado) diretamente na interface.
 5. **Agrupamento (Opcional):** Selecione um campo ou crie uma expressão SQL em "Agrupar" para gerar mapas por bairros, proprietários, etc.
 6. **Preview:** Clique em **Preview** para validar o design da primeira página na tela.
 7. **Processamento:** Clique em **Exportar** para salvar direto no disco (PDF/PNG/SVG) ou em **OK** para abrir os layouts no Gerenciador do QGIS.

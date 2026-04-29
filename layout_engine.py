@@ -505,6 +505,8 @@ class LayoutEngine:
         
         chk_ativada = config.get('inserir_mapa_loc', False)
         camada_loc = config.get('camada_loc')
+        modo_local = config.get('modo_local', 'camada')
+        fator_zoom_local = config.get('fator_zoom_local', 10.0)
 
         try:
             overview_map.blockSignals(True)
@@ -512,63 +514,76 @@ class LayoutEngine:
             project_crs = QgsProject.instance().crs()
             overview_map.setCrs(project_crs)
 
+            # =========================================================
+            # 1. DEFINIÇÃO DAS CAMADAS DO MAPA DE LOCALIZAÇÃO
+            # =========================================================
             if is_template and not chk_ativada:
+                # Comportamento Padrão de Template Desmarcado: Clona o mapa principal
                 overview_map.setKeepLayerSet(True)
                 overview_map.setLayers(main_map.layers())
                 overview_map.setKeepLayerStyles(True)
-
-                ext = main_map.extent()
-                if not ext.isEmpty():
-                    ext.scale(10.0) 
-                    overview_map.zoomToExtent(ext) 
-
             else:
+                # Lógica de camadas filtradas (Respeita o chk_incluir_raster)
                 layers_to_show = []
                 root = QgsProject.instance().layerTreeRoot()
-                
-                # Recupera a configuração do usuário
                 incluir_rasters_loc = config.get('add_raster_loc', False)
                 
-                # ====================================================================
-                # A CURA DA ORDEM: root.layerOrder() puxa as camadas exatamente na 
-                # ordem Z (de cima para baixo) que está no painel do seu QGIS!
-                # ====================================================================
                 for layer in root.layerOrder():
                     # Ignora as camadas temporárias do plugin baseando-se EXCLUSIVAMENTE no carimbo!
                     if layer.customProperty("vtm_is_preview_temp"):
                         continue
+                        
                     node = root.findLayer(layer.id())
                     if node and node.isVisible():
-                        
-                        # --- NOVO: Lógica de filtro do Raster ---
                         is_raster = (layer.type() == QgsMapLayerType.RasterLayer)
                         if is_raster and not incluir_rasters_loc:
-                            continue # Pula a camada raster se a checkbox estiver desmarcada
-                        # ----------------------------------------
-                        
+                            continue 
                         layers_to_show.append(layer)
 
-                if camada_loc and camada_loc not in layers_to_show:
-                    # Se a camada de localização estava com o olhinho fechado, 
-                    # a gente joga ela no final da lista (fundo do mapa) para não tampar nada
+                # Se estivermos no modo "camada" e a camada de localizacao estiver fechada no QGIS,
+                # força a exibição dela na lista (para nao tampar outros mapas)
+                if modo_local == "camada" and camada_loc and camada_loc not in layers_to_show:
                     layers_to_show.append(camada_loc)
 
                 overview_map.setKeepLayerSet(True)
                 overview_map.setLayers(layers_to_show)
                 overview_map.setKeepLayerStyles(True)
 
-                if camada_loc:
-                    ext = camada_loc.extent()
-                    if camada_loc.crs() != project_crs:
-                        trans = QgsCoordinateTransform(camada_loc.crs(), project_crs, QgsProject.instance().transformContext())
-                        try: ext = trans.transformBoundingBox(ext)
-                        except: pass
-                    
+            # =========================================================
+            # 2. DEFINIÇÃO DO ENQUADRAMENTO (EXTENT E ZOOM)
+            # =========================================================
+            if is_template and not chk_ativada:
+                # Template sem override: Zoom out genérico
+                ext = main_map.extent()
+                if not ext.isEmpty():
+                    ext.scale(10.0) 
+                    overview_map.zoomToExtent(ext) 
+            
+            elif chk_ativada:
+                # Usuário ativou o override na UI!
+                if modo_local == "zoom":
+                    # Modo 1: Zoom Out a partir do mapa principal
+                    ext = main_map.extent()
                     if not ext.isEmpty():
-                        ext.scale(1.15) 
+                        ext.scale(fator_zoom_local)
                         overview_map.zoomToExtent(ext)
+                else:
+                    # Modo 2: Enquadramento fixo pela camada selecionada
+                    if camada_loc:
+                        ext = camada_loc.extent()
+                        if camada_loc.crs() != project_crs:
+                            trans = QgsCoordinateTransform(camada_loc.crs(), project_crs, QgsProject.instance().transformContext())
+                            try: ext = trans.transformBoundingBox(ext)
+                            except: pass
+                        
+                        if not ext.isEmpty():
+                            ext.scale(1.15) # Margem de respiro leve
+                            overview_map.zoomToExtent(ext)
 
-            # MIRA VERMELHA VAZADA
+            # =========================================================
+            # 3. CRIAÇÃO DA MIRA VERMELHA VAZADA (RED RECTANGLE)
+            # (É desenhado em qualquer cenário!)
+            # =========================================================
             overviews = overview_map.overviews()
             for ov in overviews.asList():
                 overviews.removeOverview(ov.name())
