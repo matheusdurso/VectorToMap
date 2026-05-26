@@ -307,19 +307,20 @@ class VectorToMap:
             self.iface.removePluginMenu(self.menu, action)
             self.iface.removeToolBarIcon(action)
         
-        # 3. Limpeza segura da Toolbar (Foco QGIS 4.0)
+        # 3. Limpeza segura da Toolbar (Foco QGIS 4.0 e Plugin Reloader)
         if hasattr(self, 'toolbar') and self.toolbar:
             if not sip.isdeleted(self.toolbar):
                 self.iface.mainWindow().removeToolBar(self.toolbar)
-                # No QGIS 4.0, deleteLater() é a forma elegante de dizer ao Qt: 
-                # "Delete isso assim que terminar de processar os eventos atuais"
-                self.toolbar.deleteLater() 
+                self.toolbar.hide() # Esconde fisicamente na hora
+                self.toolbar.setParent(None) # Pulo do Gato: Desvincula do QGIS instantaneamente
+                self.toolbar.deleteLater() # Agenda a deleção segura na memória
             del self.toolbar
 
         # 4. Limpeza segura do Diálogo
         if hasattr(self, 'dlg') and self.dlg:
             if not sip.isdeleted(self.dlg):
                 self.dlg.close()
+                self.dlg.setParent(None) # Desvincula da memória principal
                 self.dlg.deleteLater()
             del self.dlg
 
@@ -410,12 +411,6 @@ class VectorToMap:
         if not hasattr(self, 'dlg') or not self.dlg or sip.isdeleted(self.dlg):
             return
 
-        # 1. Traduz os botões da base (ButtonBox)
-        self.btn_export.setText(self.tr("Exportar"))
-        self.btn_render.setText(self.tr("Preview"))
-        self.btn_ok.setText(self.tr("OK"))
-        self.btn_cancel.setText(self.tr("Cancelar"))
-        
         # 2. Traduz a aba de Suporte e Botões da Interface
         if hasattr(self, 'btn_apoiar'):
             self.btn_apoiar.setText(self.tr("☕ Apoiar Desenvolvimento"))
@@ -426,60 +421,53 @@ class VectorToMap:
 
         # 3. Traduz os itens da Combo de Presets (Protegido contra loops)
         self.dlg.combo_presets.blockSignals(True)
-        idx_atual = self.dlg.combo_presets.currentIndex() # Salva onde o usuário estava
-        self.dlg.combo_presets.clear()
         
-        # Mantém os modos matemáticos básicos
-        self.dlg.combo_presets.addItem(self.tr("Mapa Quadrado (Básico)"), "quadrado")
-        self.dlg.combo_presets.addItem(self.tr("Mapa Horizontal (Básico)"), "horizontal")
-        self.dlg.combo_presets.addItem(self.tr("Mapa Vertical (Básico)"), "vertical")
-        
-        # =================================================================
-        # --- LÊ A PASTA DE TEMPLATES NATIVOS DA VERSÃO POR IDIOMA ---
-        # =================================================================
-        
-        # Primeiro, descobrimos a língua do usuário no QGIS (ex: 'pt', 'en', 'es')
-        locale = QgsSettings().value('locale/userLocale', 'en')[0:2] 
-        
-        pasta_base_templates = os.path.join(self.plugin_dir, 'templates')
-        
-        # Se o idioma for português, puxamos da raiz. Se não, tentamos a subpasta.
-        if locale == 'pt':
-            pasta_alvo = pasta_base_templates
-        else:
-            # Exemplo: plugins/vector_to_map/templates/en
-            pasta_alvo = os.path.join(pasta_base_templates, locale)
+        try:
+            idx_atual = self.dlg.combo_presets.currentIndex() # Salva onde o usuário estava
+            self.dlg.combo_presets.clear()
             
-            # Fallback de Segurança: Se um francês abrir o plugin, mas você ainda 
-            # não tiver criado a pasta 'fr', ele volta para o inglês ('en') ou raiz.
-            if not os.path.exists(pasta_alvo):
-                # Tenta puxar a pasta em inglês como padrão mundial
-                pasta_alvo_en = os.path.join(pasta_base_templates, 'en')
-                if os.path.exists(pasta_alvo_en):
-                    pasta_alvo = pasta_alvo_en
-                else:
-                    # Se não achar nada, vai na raiz
-                    pasta_alvo = pasta_base_templates
+            # Mantém os modos matemáticos básicos
+            self.dlg.combo_presets.addItem(self.tr("Mapa Quadrado (Básico)"), "quadrado")
+            self.dlg.combo_presets.addItem(self.tr("Mapa Horizontal (Básico)"), "horizontal")
+            self.dlg.combo_presets.addItem(self.tr("Mapa Vertical (Básico)"), "vertical")
+            
+            # =================================================================
+            # --- LÊ A PASTA DE TEMPLATES NATIVOS DA VERSÃO POR IDIOMA ---
+            # =================================================================
+            locale = QgsSettings().value('locale/userLocale', 'en')[0:2] 
+            pasta_base_templates = os.path.join(self.plugin_dir, 'templates')
+            
+            if locale == 'pt':
+                pasta_alvo = pasta_base_templates
+            else:
+                pasta_alvo = os.path.join(pasta_base_templates, locale)
+                if not os.path.exists(pasta_alvo):
+                    pasta_alvo_en = os.path.join(pasta_base_templates, 'en')
+                    if os.path.exists(pasta_alvo_en):
+                        pasta_alvo = pasta_alvo_en
+                    else:
+                        pasta_alvo = pasta_base_templates
 
-        # Agora, varremos a pasta decidida para listar os .qpt
-        if os.path.exists(pasta_alvo):
-            for arquivo in os.listdir(pasta_alvo):
-                if arquivo.lower().endswith('.qpt'):
-                    # Limpa o nome para ficar bonito na interface e envia pro tradutor (tr)
-                    nome_amigavel = arquivo.replace('.qpt', '').replace('_', ' ').title()
-                    nome_traduzido = self.tr(nome_amigavel)
-                    caminho_completo = os.path.join(pasta_alvo, arquivo)
-                    
-                    self.dlg.combo_presets.addItem(f"📄 {nome_traduzido}", caminho_completo)
-        # =================================================================
-        
-        # --- OPÇÃO PARA O USUÁRIO CARREGAR O PRÓPRIO TEMPLATE ---
-        self.dlg.combo_presets.insertSeparator(self.dlg.combo_presets.count()) # Linha divisória
-        self.dlg.combo_presets.addItem(self.tr("📂 Carregar Template Personalizado..."), "carregar_template")
-        # --------------------------------------------------------------
-        
-        self.dlg.combo_presets.setCurrentIndex(idx_atual if idx_atual >= 0 else 0)
-        self.dlg.combo_presets.blockSignals(False)
+            # Agora, varremos a pasta decidida para listar os .qpt
+            if os.path.exists(pasta_alvo):
+                for arquivo in os.listdir(pasta_alvo):
+                    if arquivo.lower().endswith('.qpt'):
+                        nome_amigavel = arquivo.replace('.qpt', '').replace('_', ' ').title()
+                        nome_traduzido = self.tr(nome_amigavel)
+                        caminho_completo = os.path.join(pasta_alvo, arquivo)
+                        self.dlg.combo_presets.addItem(f"📄 {nome_traduzido}", caminho_completo)
+            # =================================================================
+            
+            # --- OPÇÃO PARA O USUÁRIO CARREGAR O PRÓPRIO TEMPLATE ---
+            self.dlg.combo_presets.insertSeparator(self.dlg.combo_presets.count()) # Linha divisória
+            self.dlg.combo_presets.addItem(self.tr("📂 Carregar Template Personalizado..."), "carregar_template")
+            # --------------------------------------------------------------
+            
+            self.dlg.combo_presets.setCurrentIndex(idx_atual if idx_atual >= 0 else 0)
+            
+        finally:
+            # Liberação garantida da combobox
+            self.dlg.combo_presets.blockSignals(False)
         
         # 5. Traduz o Placeholder de busca de atributos (se já existir)
         if hasattr(self, 'edit_busca_atributos') and not sip.isdeleted(self.edit_busca_atributos):
@@ -993,8 +981,6 @@ class VectorToMap:
 
         if hasattr(self.dlg, 'comboZoomOut'):
             self.dlg.comboZoomOut.currentIndexChanged.connect(self.validar_geometria_escala)
-            # APAGUE A LINHA ABAIXO! A função acima já dispara a preview no final dela.
-            # self.dlg.comboZoomOut.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
         
         # --- 5. GATILHOS DE FILTROS E HIERARQUIA (Aviso do Filtro mora aqui) ---
         self.dlg.chk_filtrar_feicoes.stateChanged.connect(self.atualizar_hierarquia_camadas)
@@ -1266,25 +1252,27 @@ class VectorToMap:
         self.dlg.chk_travar_camadas.blockSignals(True)
         self.dlg.chk_travar_estilos.blockSignals(True)
 
-        # 3. Lógica de Dependência: Se for filtrar ou isolar camada, 
-        # a trava de camadas PRECISA estar ativa e o usuário não pode desmarcar.
-        if filtrar or exibir_atual:
-            self.dlg.chk_travar_camadas.setChecked(True)
-            self.dlg.chk_travar_camadas.setEnabled(False)
-        else:
-            self.dlg.chk_travar_camadas.setEnabled(True)
+        try:
+            # 3. Lógica de Dependência: Se for filtrar ou isolar camada, 
+            # a trava de camadas PRECISA estar ativa e o usuário não pode desmarcar.
+            if filtrar or exibir_atual:
+                self.dlg.chk_travar_camadas.setChecked(True)
+                self.dlg.chk_travar_camadas.setEnabled(False)
+            else:
+                self.dlg.chk_travar_camadas.setEnabled(True)
 
-        # 4. Travar Estilos só faz sentido se as camadas estiverem travadas
-        travado = self.dlg.chk_travar_camadas.isChecked()
-        self.dlg.chk_travar_estilos.setEnabled(travado)
-        
-        # Se a trava principal cair, a de estilos cai junto
-        if not travado:
-            self.dlg.chk_travar_estilos.setChecked(False)
-
-        # Libera os sinais novamente
-        self.dlg.chk_travar_camadas.blockSignals(False)
-        self.dlg.chk_travar_estilos.blockSignals(False)
+            # 4. Travar Estilos só faz sentido se as camadas estiverem travadas
+            travado = self.dlg.chk_travar_camadas.isChecked()
+            self.dlg.chk_travar_estilos.setEnabled(travado)
+            
+            # Se a trava principal cair, a de estilos cai junto
+            if not travado:
+                self.dlg.chk_travar_estilos.setChecked(False)
+                
+        finally:
+            # 5. O SEGURO DE VIDA: Libera os sinais novamente, MESMO SE DER ERRO ACIMA
+            self.dlg.chk_travar_camadas.blockSignals(False)
+            self.dlg.chk_travar_estilos.blockSignals(False)
         
         # --- 5. GESTÃO DO AVISO VISUAL ---
         # Exibe o aviso se o filtro de feições estiver ativo (criação de temps)
@@ -1413,31 +1401,33 @@ class VectorToMap:
             # Bloqueia os sinais para não criar um loop ao adicionar novos itens
             self.dlg.combo_presets.blockSignals(True)
             
-            caminho, _ = QFileDialog.getOpenFileName(
-                self.dlg, 
-                self.tr("Selecionar Layout do QGIS"), 
-                "", 
-                "QGIS Template (*.qpt)"
-            )
-            
-            if caminho:
-                # O usuário escolheu um arquivo! Vamos deixar o nome bonito
-                nome_arquivo = os.path.basename(caminho).replace('.qpt', '').replace('_', ' ').title()
-                nome_amigavel = f"📂 {nome_arquivo}"
+            try:
+                caminho, _ = QFileDialog.getOpenFileName(
+                    self.dlg, 
+                    self.tr("Selecionar Layout do QGIS"), 
+                    "", 
+                    "QGIS Template (*.qpt)"
+                )
                 
-                # Insere o novo arquivo logo ACIMA da linha divisória
-                idx_insercao = self.dlg.combo_presets.count() - 2
-                self.dlg.combo_presets.insertItem(idx_insercao, nome_amigavel, caminho)
-                
-                # Seleciona o item que ele acabou de carregar
-                self.dlg.combo_presets.setCurrentIndex(idx_insercao)
-                dados_atuais = caminho # Atualiza para a trava de UI
-            else:
-                # Se ele cancelar a janela (clicar no X), voltamos para o primeiro mapa da lista
-                self.dlg.combo_presets.setCurrentIndex(0)
-                dados_atuais = self.dlg.combo_presets.currentData()
-                
-            self.dlg.combo_presets.blockSignals(False)
+                if caminho:
+                    # O usuário escolheu um arquivo! Vamos deixar o nome bonito
+                    nome_arquivo = os.path.basename(caminho).replace('.qpt', '').replace('_', ' ').title()
+                    nome_amigavel = f"📂 {nome_arquivo}"
+                    
+                    # Insere o novo arquivo logo ACIMA da linha divisória
+                    idx_insercao = self.dlg.combo_presets.count() - 2
+                    self.dlg.combo_presets.insertItem(idx_insercao, nome_amigavel, caminho)
+                    
+                    # Seleciona o item que ele acabou de carregar
+                    self.dlg.combo_presets.setCurrentIndex(idx_insercao)
+                    dados_atuais = caminho # Atualiza para a trava de UI
+                else:
+                    # Se ele cancelar a janela (clicar no X), voltamos para o primeiro mapa da lista
+                    self.dlg.combo_presets.setCurrentIndex(0)
+                    dados_atuais = self.dlg.combo_presets.currentData()
+            finally:
+                # O SEGURO: A interface sempre volta a responder, mesmo se o QFileDialog falhar
+                self.dlg.combo_presets.blockSignals(False)
 
         # ====================================================================
         # TRAVA INTELIGENTE DA INTERFACE (A MÁGICA DA UX)
@@ -1649,16 +1639,20 @@ class VectorToMap:
             # Se nada estiver marcado, força o Formulário como padrão
             if not self.dlg.chk_modo_formulario.isChecked() and not self.dlg.chk_modo_individual.isChecked():
                 self.dlg.chk_modo_formulario.blockSignals(True)
-                self.dlg.chk_modo_formulario.setChecked(True)
-                self.dlg.chk_modo_formulario.blockSignals(False)
+                try:
+                    self.dlg.chk_modo_formulario.setChecked(True)
+                finally:
+                    self.dlg.chk_modo_formulario.blockSignals(False)
         else:
             # Se desmarcar tudo, desmarca os modos também
             self.dlg.chk_modo_formulario.blockSignals(True)
             self.dlg.chk_modo_individual.blockSignals(True)
-            self.dlg.chk_modo_formulario.setChecked(False)
-            self.dlg.chk_modo_individual.setChecked(False)
-            self.dlg.chk_modo_formulario.blockSignals(False)
-            self.dlg.chk_modo_individual.blockSignals(False)
+            try:
+                self.dlg.chk_modo_formulario.setChecked(False)
+                self.dlg.chk_modo_individual.setChecked(False)
+            finally:
+                self.dlg.chk_modo_formulario.blockSignals(False)
+                self.dlg.chk_modo_individual.blockSignals(False)
 
     
 
@@ -1820,33 +1814,34 @@ class VectorToMap:
 
         self.dlg.combo_escala_fixa.blockSignals(True)
         
-        is_auto = self.dlg.rb_escala_auto.isChecked()
-        is_fixa = self.dlg.rb_escala_fixa.isChecked()
+        try:
+            is_auto = self.dlg.rb_escala_auto.isChecked()
+            is_fixa = self.dlg.rb_escala_fixa.isChecked()
 
-        self.dlg.rb_escala_auto.setEnabled(True)
-        
-        # --- 1. LÓGICA DO ZOOM AUTOMÁTICO (comboZoomOut e exp_ddo_auto) ---
-        if hasattr(self.dlg, 'comboZoomOut'):
-            self.dlg.comboZoomOut.setEnabled(is_auto)
-            usar_exp_auto = (self.dlg.comboZoomOut.currentData() == "expressao")
-        else:
-            usar_exp_auto = True # Fallback de segurança
-
-        if hasattr(self.dlg, 'exp_ddo_auto'):
-            self.dlg.exp_ddo_auto.setEnabled(is_auto and usar_exp_auto)
-
-
-        # --- 2. LÓGICA DA ESCALA FIXA (combo_escala_fixa e exp_ddo_fixa) ---
-        usar_exp_fixa = False
-        if hasattr(self.dlg, 'combo_escala_fixa'):
-            self.dlg.combo_escala_fixa.setEnabled(is_fixa)
-            usar_exp_fixa = (self.dlg.combo_escala_fixa.currentData() == "expressao")
+            self.dlg.rb_escala_auto.setEnabled(True)
             
-        if hasattr(self.dlg, 'exp_ddo_fixa'):
-            # Só acende o Epsilon (ε) se o modo Fixo estiver ativo E a combo estiver em "expressao"
-            self.dlg.exp_ddo_fixa.setEnabled(is_fixa and usar_exp_fixa)
+            # --- 1. LÓGICA DO ZOOM AUTOMÁTICO (comboZoomOut e exp_ddo_auto) ---
+            if hasattr(self.dlg, 'comboZoomOut'):
+                self.dlg.comboZoomOut.setEnabled(is_auto)
+                usar_exp_auto = (self.dlg.comboZoomOut.currentData() == "expressao")
+            else:
+                usar_exp_auto = True # Fallback de segurança
 
-        self.dlg.combo_escala_fixa.blockSignals(False)
+            if hasattr(self.dlg, 'exp_ddo_auto'):
+                self.dlg.exp_ddo_auto.setEnabled(is_auto and usar_exp_auto)
+
+            # --- 2. LÓGICA DA ESCALA FIXA (combo_escala_fixa e exp_ddo_fixa) ---
+            usar_exp_fixa = False
+            if hasattr(self.dlg, 'combo_escala_fixa'):
+                self.dlg.combo_escala_fixa.setEnabled(is_fixa)
+                usar_exp_fixa = (self.dlg.combo_escala_fixa.currentData() == "expressao")
+                
+            if hasattr(self.dlg, 'exp_ddo_fixa'):
+                self.dlg.exp_ddo_fixa.setEnabled(is_fixa and usar_exp_fixa)
+
+        finally:
+            self.dlg.combo_escala_fixa.blockSignals(False)
+            
         self.disparar_preview_se_autorizado()
     
 
@@ -2348,14 +2343,14 @@ class VectorToMap:
 
 
     def set_ui_enabled(self, enabled):
-        """Habilita ou desabilita os botões principais para evitar cliques duplos."""
-        # Desabilita botões da ButtonBox
+        """Habilita ou desabilita os botões principais de forma segura."""
+        if not hasattr(self, 'dlg') or sip.isdeleted(self.dlg):
+            return
+
         self.btn_export.setEnabled(enabled)
         self.btn_render.setEnabled(enabled)
         self.btn_ok.setEnabled(enabled)
         
-        # O botão cancelar deve continuar ativo para permitir o 'Abortar'
-        # Mas mudamos o texto dele para dar feedback
         if not enabled:
             self.btn_cancel.setText(self.tr("Parar Processo"))
             QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
@@ -2363,7 +2358,6 @@ class VectorToMap:
             self.btn_cancel.setText(self.tr("Cancelar"))
             QApplication.restoreOverrideCursor()
         
-        # Desabilita a troca de camada para não bugar o processamento
         self.dlg.mMapLayerComboBox.setEnabled(enabled)
     
 
@@ -2609,9 +2603,10 @@ class VectorToMap:
 
         aba_sobre = self.dlg.tab_2
         
-        # Destruir o layout fantasma e forçar um novo!
+        # O TRUQUE DO DUMMY WIDGET (A forma que realmente funciona no PyQt!)
+        # Remove o layout instantaneamente transferindo-o para um widget fantasma
         if aba_sobre.layout() is not None:
-            QWidget().setLayout(aba_sobre.layout()) 
+            QWidget().setLayout(aba_sobre.layout())
             
         # Cria um layout NOVO e ANCORADO DIRETAMENTE na tab_2
         layout = QVBoxLayout(aba_sobre)

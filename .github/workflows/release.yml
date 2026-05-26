@@ -39,6 +39,8 @@ jobs:
             --exclude="*.html" \
             --exclude=".gitignore" \
             --exclude="build.py" \
+            --exclude="pb_tool.cfg" \
+            --exclude="resources.qrc" \
             --exclude="*.zip"
           
           # 3. Renomeia a pasta temporária para o nome oficial do plugin exigido pelo QGIS
@@ -55,17 +57,19 @@ jobs:
           body: |
             ### 🗺️ VectorToMap ${{ github.ref_name }}
             Nova versão gerada automaticamente via GitHub Actions.
+
+            🎉 **ALL PRO FEATURES ARE NOW 100% FREE AND OPEN-SOURCE!** 🎉
             
             ### 🚀 New Features & Improvements
-            * **Dynamic Labels in Templates:** Added support for dynamic attribute substitution in custom layouts (`.qpt`) using the `["Column_Name"]` syntax, along with native support for QGIS expressions (`[% %]`).
-            * **New Overview Map Engine:** Users can now choose between a fixed global framing (via a selected layer) or a dynamic, relative Zoom Out from the main map (with options for 2x, 5x, 10x, 15x, 20x, and 25x).
-            * **UI/UX Restructuring:** The Overview Map controls were isolated into an independent Checkable GroupBox (`group_mapa_loc`), ensuring a cleaner and more organized interface.
-            * **Internationalization (i18n):** Complete review and update of UI translations for 7 languages (German, English, Spanish, French, Italian, Russian, and Chinese).
+            * **Robust XML Template Parsing:** Implemented `QDomDocument` to automatically sanitize custom `.qpt` templates, cleaning up corrupted files and removing "ghost" maps before loading.
+            * **Smart CRS Reprojection:** Added a robust fallback mechanism (`QgsCsException` protection) to prevent crashes when projecting geometries outside the domain.
+            * **Batch Export Optimization:** Drastically improved export speed and memory stability for massive datasets using UI event throttling and advanced Garbage Collection (`gc.collect()`).
+            * **Sentry Integration:** Added optional and anonymous automatic crash reporting to continuously track and improve plugin stability.
 
             ### 🐛 Bug Fixes & Optimizations
-            * **Duplicate Window Prevention:** The plugin now properly manages its single instance. If the window is already open or minimized, the code simply brings it to the front and synchronizes the active layer, preventing clone windows from opening.
-            * **Ghost Layers Exorcism:** Implemented a 100% secure active sweep using Custom Properties (`vtm_is_preview_temp`) to ensure no Preview layers get stuck in RAM or ComboBoxes if QGIS suffers a crash or an abrupt reload.
-            * **UI Logic Leaks Fix:** Fixed a bug where UI signals would improperly reactivate elements in the decorations group when a Template (Preset) was selected or when the group was explicitly unchecked.
+            * **UI Signal Protection:** Fortified interface event handling using `try...finally` blocks to completely eliminate UI freezes and lockups.
+            * **Removed Cascade Effects:** Cleaned up duplicate signal triggers and redundant translations, making the plugin launch faster and preventing double map rendering.
+            * **Safe Memory Deletion:** Fixed potential QGIS crashes (Segmentation Faults) by replacing UI layout hacks with the official Qt `deleteLater()` method for cleanup.
           draft: false
           prerelease: false
         env:

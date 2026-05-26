@@ -113,8 +113,14 @@ class LayoutEngine:
             layout_temp = None
             # -------------------------------------------
 
-            if progress_callback: progress_callback(i + 1)
-            QCoreApplication.processEvents()
+            if progress_callback: 
+                progress_callback(i + 1)
+            
+            if i % 5 == 0:
+                QCoreApplication.processEvents()
+                
+            if i > 0 and i % 25 == 0:
+                gc.collect()
 
 
 
@@ -240,36 +246,105 @@ class LayoutEngine:
             template_content = f.read()
 
         # =====================================================================
-        # A OPERAÇÃO FAXINA (MATADOR DE MAPAS FANTASMAS)
-        # Seu arquivo tem centenas de <LayoutItem type="65639"> (Mapas).
-        # Vamos usar Regex para manter APENAS os mapas que você nomeou como 
-        # 'main_map' ou 'overview_map'. Todo o resto será deletado do texto.
+        # A OPERAÇÃO FAXINA: O ALGORITMO INTELIGENTE DE FALLBACK (DOM)
         # =====================================================================
-        
-        # 1. Identifica todos os blocos de LayoutItem do tipo Mapa (65639)
-        padrao_mapa = re.compile(r'<LayoutItem[^>]*type="65639"[^>]*>.*?</LayoutItem>', re.DOTALL)
-        
-        def filtrar_mapas(match):
-            bloco = match.group(0)
-            # SÓ mantém o mapa se ele tiver o ID que o VectorToMap usa
-            if 'id="main_map"' in bloco or 'id="overview_map"' in bloco:
-                return bloco
-            # Deleta qualquer mapa sem ID ou com tamanho zerado (lixo do QGIS)
-            return ""
-
-        # Executa a limpeza pesada no texto
-        template_content = padrao_mapa.sub(filtrar_mapas, template_content)
-        
-        # 2. Remove miras vermelhas e travas que restaram
-        template_content = re.sub(r'<overviews>.*?</overviews>', '<overviews/>', template_content, flags=re.DOTALL)
-        template_content = re.sub(r'keepLayerSet="[^"]+"', 'keepLayerSet="1"', template_content)
-        template_content = re.sub(r'<LayerSet>.*?</LayerSet>', '<LayerSet/>', template_content, flags=re.DOTALL)
-
         doc = QDomDocument()
         doc.setContent(template_content)
         
+        elementos = doc.elementsByTagName("LayoutItem")
+        
+        # ---------------------------------------------------------
+        # PASSO 1: O EXTERMINADOR DE FANTASMAS
+        # ---------------------------------------------------------
+        for i in range(elementos.count() - 1, -1, -1):
+            el = elementos.at(i).toElement()
+            size_str = el.attribute("size", "0,0,mm")
+            
+            is_ghost = False
+            try:
+                w, h = map(float, size_str.split(',')[:2])
+                if w <= 0.1 or h <= 0.1:
+                    is_ghost = True
+            except Exception:
+                pass 
+                
+            if is_ghost:
+                el.parentNode().removeChild(el)
+
+        # ---------------------------------------------------------
+        # PASSO 2: O AVALIADOR DE MAPAS
+        # ---------------------------------------------------------
+        elementos = doc.elementsByTagName("LayoutItem")
+        
+        mapas_validos = []
+        tem_mapa_explicito = False
+        
+        for i in range(elementos.count()):
+            el = elementos.at(i).toElement()
+            if el.attribute("type") == "65639":
+                item_id = el.attribute("id")
+                if item_id in ["main_map", "overview_map"]:
+                    tem_mapa_explicito = True
+                
+                try:
+                    w, h = map(float, el.attribute("size", "0,0,mm").split(',')[:2])
+                    area = w * h
+                except:
+                    area = 0
+                
+                mapas_validos.append({'area': area, 'el': el, 'id': item_id})
+
+        def limpar_memoria_mapa(map_node):
+            map_node.setAttribute("keepLayerSet", "1")
+            for tag in ["LayerSet", "overviews"]:
+                tags = map_node.elementsByTagName(tag)
+                for j in range(tags.count()):
+                    node = tags.at(j)
+                    while node.hasChildNodes():
+                        node.removeChild(node.firstChild())
+
+        if tem_mapa_explicito:
+            main_achado = False
+            overview_achado = False
+            
+            for mapa in mapas_validos:
+                el = mapa['el']
+                item_id = mapa['id']
+                
+                is_clone = False
+                if item_id == "main_map":
+                    if main_achado: is_clone = True
+                    else: main_achado = True
+                elif item_id == "overview_map":
+                    if overview_achado: is_clone = True
+                    else: overview_achado = True
+                
+                if item_id not in ["main_map", "overview_map"] or is_clone:
+                    el.parentNode().removeChild(el)
+                else:
+                    limpar_memoria_mapa(el)
+                    
+        else:
+            mapas_validos.sort(key=lambda x: x['area'], reverse=True)
+            
+            for idx, mapa in enumerate(mapas_validos):
+                el = mapa['el']
+                if idx == 0:
+                    el.setAttribute("id", "main_map") 
+                    limpar_memoria_mapa(el)
+                elif idx == 1:
+                    el.setAttribute("id", "overview_map")
+                    limpar_memoria_mapa(el)
+                else:
+                    el.parentNode().removeChild(el)
+
+        # =====================================================================
+        # CARREGAMENTO DO TEMPLATE LIMPO NO QGIS
+        # =====================================================================
         itens_antes = set(layout.items())
         limpar = (pagina_index == 0)
+        
+        # O QGIS carrega o XML higienizado que o DOM acabou de preparar
         layout.loadFromTemplate(doc, QgsReadWriteContext(), clearExisting=limpar)
         layout.setName(nome_original)
 
@@ -283,17 +358,11 @@ class LayoutEngine:
                 if item.id() == 'main_map': map_item = item
                 elif item.id() == 'overview_map': overview_map = item
         
-        # Fallback caso os IDs não estejam no XML (pega os primeiros mapas que sobraram da faxina)
-        if not map_item:
-            for item in novos_itens:
-                if isinstance(item, QgsLayoutItemMap) and item != overview_map:
-                    map_item = item
-                    break
-        
+        # Se mesmo depois de tudo a faxina, não houver map_item, aborta
         if not map_item: return
 
         # ====================================================================
-        # --- EXORCISMO FINAL (SEGURANÇA) ---
+        # --- EXORCISMO FINAL (SEGURANÇA DA API C++) ---
         # ====================================================================
         map_item.blockSignals(True)
         map_item.setAtlasDriven(False)
@@ -828,49 +897,100 @@ class LayoutEngine:
     
     
     def _aplicar_extensao_e_escala(self, map_item, camada, feicoes_da_pagina, w_map, h_map, config):
-        """Gerencia o BoundingBox, CRS e regras de zoom com suporte a Expressões (DDO)."""
-        if not feicoes_da_pagina or sip.isdeleted(camada): return
+        """
+        Gerencia o BoundingBox (Enquadramento), Projeção (CRS) e as regras de zoom.
+        Possui suporte a Expressões (DDO) e proteções contra erros de geometria vazia ou fora do domínio.
+        """
+        # =====================================================================
+        # 1. VALIDAÇÃO INICIAL DE SEGURANÇA
+        # Se a lista de feições estiver vazia ou o QGIS já tiver deletado a camada 
+        # (o que pode acontecer se o usuário fechar o projeto rápido), abortamos.
+        # =====================================================================
+        if not feicoes_da_pagina or (hasattr(sip, 'isdeleted') and sip.isdeleted(camada)): 
+            return
         
         campo_atlas = config.get('campo_atlas')
 
+        # =====================================================================
+        # 2. CRIAÇÃO DO RETÂNGULO DA EXTENSÃO (Bounding Box)
+        # =====================================================================
         if campo_atlas == "__ALL_FEATURES__":
+            # Se for o mapa geral, pegamos a extensão total da camada direto
             ext = camada.extent()
         else:
             ext = QgsRectangle()
-            
-            # --- Compatibilidade Universal entre versões do QGIS 3 ---
+            # Compatibilidade Universal entre versões do QGIS 3 (Evita DeprecationWarning)
             if hasattr(ext, 'setNull'):
-                ext.setNull()    # QGIS Novo: Usa o método atual e evita o DeprecationWarning
+                ext.setNull()
             else:
-                ext.setMinimal() # QGIS Antigo: Fallback seguro onde o setNull não existe
-            # ---------------------------------------------------------
+                ext.setMinimal()
             
-            for f in feicoes_da_pagina: ext.combineExtentWith(f.geometry().boundingBox())
+            # Somamos a "caixa" de cada feição para formar a caixa total da página
+            for f in feicoes_da_pagina:
+                geom = f.geometry()
+                if geom and not geom.isEmpty():
+                    ext.combineExtentWith(geom.boundingBox())
         
+        # =====================================================================
+        # 3. VERIFICAÇÃO DE SANIDADE (Prevenção do Erro do Sentry)
+        # Se as geometrias lidas eram nulas ou inválidas, o retângulo ficará vazio.
+        # Paramos aqui para evitar jogar "lixo" no motor de projeção do C++.
+        # =====================================================================
+        if ext.isEmpty() or ext.isNull():
+            return 
+            
         project_crs = QgsProject.instance().crs()
-        trans = QgsCoordinateTransform(camada.crs(), project_crs, QgsProject.instance().transformContext())
-        ext_proj = trans.transformBoundingBox(ext)
+        camada_crs = camada.crs()
         
+        # =====================================================================
+        # 4. TRANSFORMAÇÃO DE COORDENADAS (Tratamento do QgsCsException)
+        # Tenta projetar a caixa da camada para a caixa do projeto.
+        # Se o ponto for matematicamente inválido na projeção destino, ele cai 
+        # no 'except' e usa a extensão original ao invés de fechar o QGIS.
+        # =====================================================================
+        if camada_crs != project_crs:
+            trans = QgsCoordinateTransform(camada_crs, project_crs, QgsProject.instance().transformContext())
+            try:
+                ext_proj = trans.transformBoundingBox(ext)
+            except Exception:
+                # Ocorreu um erro de domínio (Point outside of projection domain). 
+                # Usa a extensão original como um fallback seguro.
+                ext_proj = ext
+        else:
+            ext_proj = ext
+        
+        # =====================================================================
+        # 5. TRATAMENTO DE COORDENADA ÚNICA (Pontos sem área)
+        # Se for um ponto exato, o retângulo tem largura 0 e altura 0.
+        # Damos um "respiro" artificial para o QGIS conseguir dar o zoom.
+        # =====================================================================
         is_coordenada_unica = (ext_proj.width() == 0 and ext_proj.height() == 0)
         if is_coordenada_unica: 
             respiro = 0.0001 if project_crs.isGeographic() else 1.0
             ext_proj.grow(respiro)
         
+        # Aplica a extensão calculada ao item do layout
         map_item.setExtent(ext_proj)
         
-        # --- A MÁGICA DA EXPRESSÃO (EPSILON) ---
+        # =====================================================================
+        # 6. A MÁGICA DA EXPRESSÃO (O Botão Epsilon ε)
+        # Criamos o contexto lendo os atributos da primeira feição da página
+        # =====================================================================
         if campo_atlas == "__ALL_FEATURES__":
-            feicao_atual = QgsFeature() # Dummy feature vazia para não quebrar a calculadora
+            feicao_atual = QgsFeature() # Dummy feature para não quebrar o motor
         else:
             feicao_atual = feicoes_da_pagina[0]
             
         contexto = QgsExpressionContextUtils.createFeatureBasedContext(feicao_atual, camada.fields())
         
+        # =====================================================================
+        # 7. CÁLCULO DA ESCALA (Modo Fixo vs Modo Automático)
+        # =====================================================================
         if config.get('escala_fixa', False):
+            # --- MODO ESCALA FIXA ---
             escala_config = config.get('escala_val', 10000.0)
-            escala_final = 10000.0 # Valor de segurança
+            escala_final = 10000.0 # Fallback de segurança
             
-            # Se a combo estiver em "expressao", rodamos a matemática do ε
             if escala_config == "expressao":
                 exp_str = config.get('escala_fixa_exp', "")
                 if exp_str:
@@ -883,7 +1003,7 @@ class LayoutEngine:
                     except:
                         pass
             else:
-                # Se for um valor normal da combo (ex: 5000), usa ele direto
+                # Se for valor da ComboBox (ex: 5000), converte direto
                 try:
                     escala_final = float(escala_config)
                 except:
@@ -892,16 +1012,17 @@ class LayoutEngine:
             map_item.setScale(escala_final)
             
         else:
+            # --- MODO ESCALA AUTOMÁTICA (Enquadramento por Zoom Out) ---
             if is_coordenada_unica:
-                escala_final = 10000.0
+                escala_final = 10000.0 # Pontos ganham escala padrão de 1:10000
             else:
+                # Calcula a escala matemática perfeita para caber na caixa
                 unit_to_mm = QgsUnitTypes.fromUnitToUnitFactor(project_crs.mapUnits(), QgsUnitTypes.DistanceMillimeters)
                 scale_w = (ext_proj.width() * unit_to_mm) / w_map
                 scale_h = (ext_proj.height() * unit_to_mm) / h_map
                 
-                # --- NOVA LÓGICA DE ZOOM OUT DINÂMICO ---
                 zoom_out_config = config.get('zoom_out_auto', 25.0)
-                fator_zoom = 1.25 # Padrão de segurança
+                fator_zoom = 1.25 # Padrão = 25% de margem extra
                 
                 if zoom_out_config == "expressao":
                     exp_str = config.get('escala_auto_exp', "")
@@ -911,22 +1032,27 @@ class LayoutEngine:
                             exp.prepare(contexto)
                             val = exp.evaluate(contexto)
                             if val is not None and not exp.hasEvalError():
+                                # Converte o valor inteiro (ex: 15) em fator multiplicador (1.15)
                                 fator_zoom = 1.0 + (float(val) / 100.0)
                         except:
                             pass 
                 else:
-                    # Pega o valor fixo escolhido na combo (ex: 0.0, 15.0, 50.0)
                     try:
                         fator_zoom = 1.0 + (float(zoom_out_config) / 100.0)
                     except:
                         pass
-                # ---------------------------------------- 
                 
+                # Pega a escala que "obriga" a feição a caber (a maior) e multiplica pela margem de respiro
                 escala_calculada = max(scale_w, scale_h) * fator_zoom
+                
+                # Trava de segurança: nunca dá um zoom maior que 1:500 para evitar que o QGIS engasgue renderizando
                 escala_final = 10000.0 if escala_calculada < 500.0 else escala_calculada
         
             map_item.setScale(escala_final)
 
+        # =====================================================================
+        # 8. ATUALIZAÇÃO FINAL NA TELA
+        # =====================================================================
         map_item.refresh()
         map_item.attemptResize(QgsLayoutSize(w_map, h_map, QgsUnitTypes.LayoutMillimeters))
         map_item.attemptMove(QgsLayoutPoint(map_item.pos().x(), map_item.pos().y(), QgsUnitTypes.LayoutMillimeters))
