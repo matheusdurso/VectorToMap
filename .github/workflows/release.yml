@@ -1,4 +1,4 @@
-name: Gerar Release Automático
+name: Gerar Release Automático (DevSecOps)
 
 on:
   push:
@@ -9,7 +9,8 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  sast_scan:
+    name: Análise Estática e Segurança
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do Código
@@ -20,15 +21,41 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Preparar Pacote do Plugin (Estilo build.py)
+      - name: Instalar Ferramentas SAST
+        run: pip install ruff bandit
+
+      - name: Checagem de Qualidade de Código (Ruff)
+        # O "|| true" permite que o pipeline continue mesmo se o Ruff der avisos de formatação
+        run: ruff check . || true
+
+      - name: Varredura de Segurança (Bandit)
+        # Verifica falhas lógicas e de injeção, ignorando pastas irrelevantes
+        run: bandit -r . -x ./tests,./venv,./temp_build -ll
+
+  build:
+    name: Empacotamento Seguro
+    needs: sast_scan # O Pulo do Gato: Só roda se a segurança aprovar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Injetar Segredos DevSecOps
+        run: |
+          # Substitui o placeholder no código pela chave real do GitHub Secrets
+          sed -i "s|INSERIR_DSN_VIA_CI_AQUI|${{ secrets.SENTRY_DSN }}|g" vector_to_map.py
+
+      - name: Preparar Pacote do Plugin
         run: |
           PLUGIN_NAME="vector_to_map"
           
-          # 1. Cria uma pasta temporária para receber os arquivos
           mkdir temp_build
           
-          # 2. Copia TUDO do repositório para a pasta temporária, exceto o lixo de desenvolvimento.
-          # Isso garante que as 6 pastas do Sentry, templates e qualquer futura biblioteca sejam incluídas automaticamente!
           rsync -av ./ temp_build/ \
             --exclude=".git/" \
             --exclude=".github/" \
@@ -43,10 +70,7 @@ jobs:
             --exclude="resources.qrc" \
             --exclude="*.zip"
           
-          # 3. Renomeia a pasta temporária para o nome oficial do plugin exigido pelo QGIS
           mv temp_build "$PLUGIN_NAME"
-          
-          # 4. Gera o ZIP final perfeito
           zip -r "${PLUGIN_NAME}.zip" "$PLUGIN_NAME"
 
       - name: Criar Release no GitHub
@@ -56,20 +80,24 @@ jobs:
           name: Release ${{ github.ref_name }}
           body: |
             ### 🗺️ VectorToMap ${{ github.ref_name }}
-            Nova versão gerada automaticamente via GitHub Actions.
+            Nova versão gerada e verificada automaticamente via Pipeline DevSecOps.
 
             🎉 **ALL PRO FEATURES ARE NOW 100% FREE AND OPEN-SOURCE!** 🎉
             
+            ### 🚀 DevSecOps & Security
+            * **Automated Security Scanning:** Implemented SAST (Bandit/Ruff) checks directly into the CI/CD pipeline.
+            * **PII Sanitization:** Added Regex-based masking for sensitive geographic and personal data (CPF, Emails) before telemetries.
+            * **Secrets Management:** Sentry DSNs are now securely injected during build via GitHub Actions.
+
             ### 🚀 New Features & Improvements
-            * **Robust XML Template Parsing:** Implemented `QDomDocument` to automatically sanitize custom `.qpt` templates, cleaning up corrupted files and removing "ghost" maps before loading.
-            * **Smart CRS Reprojection:** Added a robust fallback mechanism (`QgsCsException` protection) to prevent crashes when projecting geometries outside the domain.
-            * **Batch Export Optimization:** Drastically improved export speed and memory stability for massive datasets using UI event throttling and advanced Garbage Collection (`gc.collect()`).
-            * **Sentry Integration:** Added optional and anonymous automatic crash reporting to continuously track and improve plugin stability.
+            * **Robust XML Template Parsing:** Implemented `QDomDocument` to automatically sanitize custom `.qpt` templates.
+            * **Smart CRS Reprojection:** Added a robust fallback mechanism (`QgsCsException` protection).
+            * **Batch Export Optimization:** Drastically improved export speed and memory stability.
 
             ### 🐛 Bug Fixes & Optimizations
-            * **UI Signal Protection:** Fortified interface event handling using `try...finally` blocks to completely eliminate UI freezes and lockups.
-            * **Removed Cascade Effects:** Cleaned up duplicate signal triggers and redundant translations, making the plugin launch faster and preventing double map rendering.
-            * **Safe Memory Deletion:** Fixed potential QGIS crashes (Segmentation Faults) by replacing UI layout hacks with the official Qt `deleteLater()` method for cleanup.
+            * **UI Signal Protection:** Fortified interface event handling using `try...finally` blocks.
+            * **Removed Cascade Effects:** Cleaned up duplicate signal triggers.
+            * **Safe Memory Deletion:** Fixed potential QGIS crashes using official Qt `deleteLater()`.
           draft: false
           prerelease: false
         env:

@@ -18,6 +18,7 @@
 #  GNU General Public License for more details.
 #  ***************************************************************************/
 
+import re
 import os
 import gc
 import traceback
@@ -358,45 +359,62 @@ class VectorToMap:
 
     
     
+
     def inicializar_sentry(self):
-        """Liga o motor do Sentry se o usuário permitiu e filtra erros externos."""
+        """Liga o motor do Sentry se o usuário permitiu, filtra erros e higieniza PII."""
         self.sentry_ativo = False
         
+        # O GitHub Actions vai substituir esta string exata durante o build
+        SENTRY_DSN_PROD = "INSERIR_DSN_VIA_CI_AQUI"
+        
         def filtro_sentry(event, hint):
-            """Analisa o rastro do erro. Só envia se vier do VectorToMap."""
-            # 1. Verifica se a mensagem de log menciona o seu plugin
+            """Filtra a origem do erro e censura dados pessoais (PII) do Stacktrace."""
+            # 1. Filtro de Origem
             log_msg = event.get('logentry', {}).get('message', '')
-            if 'VectorToMap' in log_msg:
-                return event
+            if 'VectorToMap' not in log_msg:
+                is_our_bug = False
+                try:
+                    frames = event.get('exception', {}).get('values', [])[0].get('stacktrace', {}).get('frames', [])
+                    for frame in frames:
+                        # Garante que só reportamos erros que passaram pelos nossos arquivos
+                        if 'vector_to_map' in frame.get('filename', '').lower():
+                            is_our_bug = True
+                            break
+                except Exception:
+                    pass
                 
-            # 2. Verifica a pilha de erros (traceback)
+                if not is_our_bug:
+                    return None
+
+            # 2. Sanitização de PII (DevSecOps)
             try:
                 frames = event.get('exception', {}).get('values', [])[0].get('stacktrace', {}).get('frames', [])
                 for frame in frames:
-                    arquivo = frame.get('filename', '').lower()
-                    # Se o erro passou por algum arquivo com 'vector_to_map' no nome ou caminho, é nosso!
-                    if 'vector_to_map' in arquivo:
-                        return event
+                    if 'vars' in frame:
+                        for key, value in frame['vars'].items():
+                            val_str = str(value)
+                            # Regex para mascarar CPFs (com ou sem pontuação) e E-mails
+                            val_str = re.sub(r'\b\d{3}\.\d{3}\.\d{3}-\d{2}\b|\b\d{11}\b', '[CPF_OMITIDO]', val_str)
+                            val_str = re.sub(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', '[EMAIL_OMITIDO]', val_str)
+                            frame['vars'][key] = val_str
             except Exception:
                 pass
-                
-            # Se chegou aqui, o erro é de outro plugin do QGIS. Nós descartamos.
-            return None
+
+            return event
 
         try:
-            sentry_sdk.init(
-                dsn="https://3a3fd55bd680f6cc5594929bec0c7609@o4511038786240512.ingest.de.sentry.io/4511038808457296",
-                send_default_pii=False, 
-                release="vectortomap@3.6.0",
-                before_send=filtro_sentry  # <--- INSERIMOS O FILTRO AQUI
-            )
-            self.sentry_ativo = True
-            
+            # Só inicia se a Action injetou a chave real (evita erro rodando localmente)
+            if SENTRY_DSN_PROD != "INSERIR_DSN_VIA_CI_AQUI":
+                sentry_sdk.init(
+                    dsn=SENTRY_DSN_PROD,
+                    send_default_pii=False, 
+                    release="vectortomap@3.8.0",
+                    before_send=filtro_sentry
+                )
+                self.sentry_ativo = True
         except ImportError:
-            # Falha silenciosa se a biblioteca não estiver na pasta
             pass
         except Exception:
-            # Qualquer outro erro de inicialização é ignorado para não travar o plugin
             pass
 
 
