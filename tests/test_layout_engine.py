@@ -1,5 +1,6 @@
+import os
 import pytest
-from qgis.core import QgsProject, QgsPrintLayout, QgsLayoutItemMap
+from qgis.core import QgsProject, QgsPrintLayout, QgsLayoutItemMap, QgsVectorLayer, QgsProject
 from layout_engine import LayoutEngine
 
 def test_engine_inicializacao(mock_iface):
@@ -60,3 +61,65 @@ def test_gerador_nomes_paginas(mock_iface):
     nome_3 = engine._gerar_nome_arquivo_pagina(dados_sujos, 0, "Bairro")
     assert "/" not in nome_3
     assert "?" not in nome_3
+
+
+
+def listar_arquivos_vetoriais_ruins():
+    """Varre a pasta 'data' e retorna todos os arquivos vetoriais suportados."""
+    dir_data = os.path.join(os.path.dirname(__file__), 'data')
+    
+    if not os.path.exists(dir_data):
+        return []
+        
+    # Tupla com as extensões vetoriais que você quer testar
+    extensoes_suportadas = ('.shp', '.kml', '.geojson', '.gpkg', '.sqlite', '.dxf')
+    
+    arquivos = []
+    for arquivo in os.listdir(dir_data):
+        # Transforma para minúsculo para garantir que vai pegar .KML ou .kml
+        if arquivo.lower().endswith(extensoes_suportadas):
+            arquivos.append(os.path.join(dir_data, arquivo))
+            
+    return arquivos
+
+# Passamos a nova função que lê múltiplos formatos
+@pytest.mark.parametrize("caminho_vetor", listar_arquivos_vetoriais_ruins())
+def test_resiliencia_arquivos_corrompidos(mock_iface, caminho_vetor):
+    """
+    Testa a resiliência do motor contra arquivos vetoriais diversos (SHP, KML, GPKG)
+    que possam estar corrompidos ou sem dados.
+    """
+    nome_arquivo = os.path.basename(caminho_vetor)
+    
+    # O "ogr" é mágico: ele lê KML, GeoJSON e SHP com o mesmo comando!
+    camada_corrompida = QgsVectorLayer(caminho_vetor, "Camada Ruim", "ogr")
+    
+    assert camada_corrompida.isValid(), f"O QGIS não conseguiu abrir o arquivo {nome_arquivo}."
+
+    engine = LayoutEngine(mock_iface)
+    layout = QgsPrintLayout(QgsProject.instance())
+    
+    config = {
+        'preset': 'quadrado',
+        'orientacao': 'Retrato',
+        'campo_atlas': None,
+        'escala_fixa': True,
+        'escala_val': 1000.0
+    }
+    
+    passou_sem_crash = False
+    
+    try:
+        engine.montar_design_da_pagina(
+            layout=layout, 
+            camada=camada_corrompida, 
+            feicoes_da_pagina=list(camada_corrompida.getFeatures()), 
+            preset='quadrado', 
+            orientacao='Retrato', 
+            config=config
+        )
+        passou_sem_crash = True
+    except Exception as e:
+        print(f"\nErro tratado pelo plugin ao processar {nome_arquivo}: {e}")
+        
+    assert passou_sem_crash is True, f"O arquivo {nome_arquivo} causou um crash na aplicação!"
