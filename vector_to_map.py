@@ -408,7 +408,7 @@ class VectorToMap:
                 sentry_sdk.init(
                     dsn=SENTRY_DSN_PROD,
                     send_default_pii=False, 
-                    release="vectortomap@3.8.0",
+                    release="vectortomap@3.8.1",
                     before_send=filtro_sentry
                 )
                 self.sentry_ativo = True

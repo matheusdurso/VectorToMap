@@ -8,6 +8,9 @@ on:
 permissions:
   contents: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   sast_scan:
     name: Análise Estática e Segurança
@@ -31,10 +34,40 @@ jobs:
       - name: Varredura de Segurança (Bandit)
         # Verifica falhas lógicas e de injeção, ignorando pastas irrelevantes
         run: bandit -r . -x ./tests,./venv,./temp_build -ll
+  
+  integration_tests:
+    name: Testes Automatizados no QGIS
+    needs: sast_scan # Só testa se passar no SAST
+    runs-on: ubuntu-latest
+    
+    # Roda tudo dentro do Docker oficial do QGIS!
+    container:
+      image: qgis/qgis:latest 
+      
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Instalar Dependências de Teste e Display Virtual
+        run: |
+          apt-get update
+          # Xvfb é o monitor virtual. Pytest é o motor de testes.
+          apt-get install -y xvfb python3-pytest 
+
+      - name: Preparar Ambiente QGIS
+        run: |
+          # Simula a pasta de plugins do QGIS dentro do Docker
+          mkdir -p /root/.local/share/QGIS/QGIS3/profiles/default/python/plugins/vector_to_map
+          cp -r ./* /root/.local/share/QGIS/QGIS3/profiles/default/python/plugins/vector_to_map/
+
+      - name: Executar Suite de Testes (Pytest Headless)
+        run: |
+          # xvfb-run cria a tela falsa e executa o pytest na sua pasta de testes
+          xvfb-run -a pytest tests/ -v
 
   build:
     name: Empacotamento Seguro
-    needs: sast_scan # O Pulo do Gato: Só roda se a segurança aprovar
+    needs: integration_tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do Código

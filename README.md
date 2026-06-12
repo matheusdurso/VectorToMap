@@ -1,6 +1,6 @@
 # 🗺️ VectorToMap - QGIS Plugin
 
-🎉 **VERSION 3.7.0: ALL PRO FEATURES ARE NOW 100% FREE AND OPEN-SOURCE!** 🎉
+🎉 **VERSION 3.8.1: ALL PRO FEATURES ARE NOW 100% FREE AND OPEN-SOURCE!** 🎉
 
 **VectorToMap** is a professional QGIS tool designed to automate the mass generation of Print Layouts. It transforms complex vector data into hundreds of standardized map pages in seconds, making it ideal for inventories, field inspections, and cartographic reports.
 
