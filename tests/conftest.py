@@ -39,7 +39,7 @@ def mock_layer():
     
     f2 = QgsFeature(layer.fields())
     f2.setAttributes([2, "Rural"])
-    f2.setGeometry(QgsGeometry.fromPointXY(-41.95, -18.85))
+    f2.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(-41.95, -18.85)))
     
     provider.addFeatures([f1, f2])
     layer.updateExtents()
