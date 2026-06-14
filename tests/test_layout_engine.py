@@ -91,13 +91,21 @@ def test_resiliencia_arquivos_corrompidos(mock_iface, caminho_vetor):
     """
     nome_arquivo = os.path.basename(caminho_vetor)
     
-    # O "ogr" é mágico: ele lê KML, GeoJSON e SHP com o mesmo comando!
+    # O QGIS tenta ler o arquivo corrompido
     camada_corrompida = QgsVectorLayer(caminho_vetor, "Camada Ruim", "ogr")
     
-    assert camada_corrompida.isValid(), f"O QGIS não conseguiu abrir o arquivo {nome_arquivo}."
+    # SE O QGIS BARRAR NA PORTA: O teste considera um sucesso e encerra.
+    # O arquivo é tão ruim que não passa nem pela biblioteca OGR.
+    if not camada_corrompida.isValid():
+        print(f"\nArquivo {nome_arquivo} rejeitado nativamente pelo QGIS (Comportamento esperado).")
+        return
 
+    # Se o arquivo abriu (mas tem lixo dentro), vamos ver como o seu motor lida com ele
     engine = LayoutEngine(mock_iface)
     layout = QgsPrintLayout(QgsProject.instance())
+    
+    # CORREÇÃO 1: Inicializa a folha em branco para não dar "list index out of range"
+    layout.initializeDefaults()
     
     config = {
         'preset': 'quadrado',
@@ -122,4 +130,5 @@ def test_resiliencia_arquivos_corrompidos(mock_iface, caminho_vetor):
     except Exception as e:
         print(f"\nErro tratado pelo plugin ao processar {nome_arquivo}: {e}")
         
-    assert passou_sem_crash is True, f"O arquivo {nome_arquivo} causou um crash na aplicação!"
+    # CORREÇÃO 2: Só acusa falha se o QGIS tiver crashado (não tratado a exceção)
+    assert passou_sem_crash is True, f"O arquivo {nome_arquivo} não foi tratado e causaria um crash fatal!"
