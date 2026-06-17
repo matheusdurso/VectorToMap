@@ -251,11 +251,40 @@ class LayoutEngine:
         doc = QDomDocument()
         doc.setContent(template_content)
         
-        elementos = doc.elementsByTagName("LayoutItem")
+        # ---------------------------------------------------------
+        # PASSO 0: O FIXADOR DE IMAGENS (Correção de Caminhos Absolutos)
+        # ---------------------------------------------------------
+        pasta_template = os.path.dirname(caminho_qpt)
         
+        # O QGIS chama TODOS os itens de LayoutItem
+        elementos_gerais = doc.elementsByTagName("LayoutItem")
+        
+        for i in range(elementos_gerais.count()):
+            pic_el = elementos_gerais.at(i).toElement()
+            
+            # "65640" é o código universal interno do QGIS para 'QgsLayoutItemPicture'
+            if pic_el.attribute("type") == "65640":
+                # O endereço da imagem mora no atributo "file"
+                caminho_antigo = pic_el.attribute("file")
+                
+                # Ignora links da web e caminhos vazios
+                if caminho_antigo and not caminho_antigo.startswith("http"):
+                    
+                    # Extrai EXCLUSIVAMENTE o nome do arquivo (imune a Windows \ ou Mac/Linux /)
+                    nome_arquivo = caminho_antigo.replace('\\', '/').split('/')[-1]
+                    
+                    # Monta o endereço absoluto combinando a pasta do template e o nome da imagem
+                    caminho_novo = os.path.join(pasta_template, nome_arquivo)
+                    
+                    # Trava de segurança: Se a imagem realmente estiver lá, reescrevemos o XML!
+                    if os.path.exists(caminho_novo):
+                        pic_el.setAttribute("file", caminho_novo.replace('\\', '/'))
+
         # ---------------------------------------------------------
         # PASSO 1: O EXTERMINADOR DE FANTASMAS
         # ---------------------------------------------------------
+        elementos = doc.elementsByTagName("LayoutItem")
+
         for i in range(elementos.count() - 1, -1, -1):
             el = elementos.at(i).toElement()
             size_str = el.attribute("size", "0,0,mm")

@@ -408,7 +408,7 @@ class VectorToMap:
                 sentry_sdk.init(
                     dsn=SENTRY_DSN_PROD,
                     send_default_pii=False, 
-                    release="vectortomap@3.8.3",
+                    release="vectortomap@3.8.4",
                     before_send=filtro_sentry
                 )
                 self.sentry_ativo = True
@@ -508,32 +508,44 @@ class VectorToMap:
         # ====================================================================
         ja_estava_aberta = hasattr(self, 'dlg') and self.dlg and not sip.isdeleted(self.dlg)
 
+        # ==========================================================
+        # FASE 1: CONSTRUÇÃO E FIAÇÃO (Acontece APENAS na 1ª vez)
+        # ==========================================================
         if not ja_estava_aberta:
             # Se não existe, criamos a interface do zero
             self.dlg = VectorToMapDialog()
-            self.colunas_atuais = [] # Mata os fantasmas das checkboxes da janela anterior
-            self.ultimo_id_camada_ativa = None
 
             self.dlg.mMapLayerComboBox.setFilters(QgsMapLayerProxyModel.VectorLayer)
-            self._filtrar_camadas_da_combo()
 
             QgsProject.instance().layersAdded.connect(self._filtrar_camadas_da_combo)
             QgsProject.instance().layersRemoved.connect(self._filtrar_camadas_da_combo)
 
             self.dlg.setWindowFlags(self.dlg.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint | Qt.WindowType.WindowMinimizeButtonHint)
 
-            self._aplicar_estilos()
             self._configurar_widgets_iniciais() # <- Aqui nasce o btn_export
             self._conectar_sinais()
             self._configurar_janela()
             self.setup_ui_strings()
 
-            # Força tradução de botões e combos
-            self.atualizar_textos_interface()
-            
-            # Força a janela a abrir sempre na primeira aba (Configurações)
-            if hasattr(self.dlg, 'tabWidget'):
-                self.dlg.tabWidget.setCurrentIndex(0)
+
+        # ==========================================================
+        # FASE 2: ATUALIZAÇÃO GERAL (Acontece TODA VEZ que reabre)
+        # ==========================================================
+        # 1. Mata os fantasmas das checkboxes da janela anterior e zera o ID
+        self.colunas_atuais = []
+        self.ultimo_id_camada_ativa = None
+
+        # 2. Força a leitura do QGIS para atualizar a lista de camadas IMEDIATAMENTE
+        self._filtrar_camadas_da_combo()
+
+        # 3. Força a atualização visual e de idiomas para pegar mudanças do QGIS
+        self._aplicar_estilos()
+        self.atualizar_textos_interface()
+        
+        # 4. Força a janela a abrir sempre na primeira aba (Configurações)
+        if hasattr(self.dlg, 'tabWidget'):
+            self.dlg.tabWidget.setCurrentIndex(0)
+
 
         # ====================================================================
         # SINCRONIZA CAMADA ATIVA (INTERFACE)
@@ -551,6 +563,7 @@ class VectorToMap:
             # 3. Garante que a lista de atributos seja carregada na abertura
             self.atualizar_lista_atributos()
 
+
         # ====================================================================
         # A CURA DA JANELA ESCONDIDA / MINIMIZADA
         # ====================================================================
@@ -561,13 +574,8 @@ class VectorToMap:
         self.dlg.raise_()          # Traz para a frente de tudo (Z-Order)
         self.dlg.activateWindow()  # Dá o foco do mouse e teclado para ela
 
-        # ====================================================================
-        # O GATILHO DA PRIMEIRA PREVIEW
-        # ====================================================================
-        # Se a janela for nova, dispara a preview. 
-        # Se já estava aberta, a mudança de camada acima já vai acionar a preview automaticamente pelos sinais.
-        if not ja_estava_aberta:
-            QTimer.singleShot(200, self.atualizar_preview)
+
+        QTimer.singleShot(200, self.atualizar_preview)
 
 
 

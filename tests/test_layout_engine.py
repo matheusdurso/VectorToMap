@@ -71,12 +71,15 @@ def listar_arquivos_vetoriais_ruins():
     if not os.path.exists(dir_data):
         return []
         
-    # Tupla com as extensões vetoriais que você quer testar
-    extensoes_suportadas = ('.shp', '.kml', '.geojson', '.gpkg', '.sqlite', '.dxf')
+    # Agora a esteira é um trator que lê tudo!
+    extensoes_suportadas = (
+        '.shp', '.kml', '.geojson', '.json', 
+        '.gpkg', '.sqlite', '.db', 
+        '.dxf', '.gml', '.tab'
+    )
     
     arquivos = []
     for arquivo in os.listdir(dir_data):
-        # Transforma para minúsculo para garantir que vai pegar .KML ou .kml
         if arquivo.lower().endswith(extensoes_suportadas):
             arquivos.append(os.path.join(dir_data, arquivo))
             

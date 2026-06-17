@@ -92,6 +92,7 @@ jobs:
           rsync -av ./ temp_build/ \
             --exclude=".git/" \
             --exclude=".github/" \
+            --exclude="tests/" \
             --exclude="temp_build/" \
             --exclude="__pycache__/" \
             --exclude="*.pyc" \
@@ -106,31 +107,27 @@ jobs:
           mv temp_build "$PLUGIN_NAME"
           zip -r "${PLUGIN_NAME}.zip" "$PLUGIN_NAME"
 
+      # --- A MÁGICA DO CHANGELOG ENTRA AQUI ---
+      - name: Extrair Notas de Lançamento do CHANGELOG.md
+        id: changelog
+        run: |
+          # Pega a tag do GitHub (ex: v3.8.4) e remove a letra 'v'
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "Extraindo notas para a versão: $VERSION"
+          
+          # O script 'awk' lê o CHANGELOG.md, acha a versão atual e copia o texto até achar a próxima
+          awk -v ver="^## \\[$VERSION\\]" '
+            $0 ~ ver { flag=1; next }
+            /^## \[.*\]/ { if(flag) exit }
+            flag { print }
+          ' CHANGELOG.md > release_notes.txt
+
       - name: Criar Release no GitHub
         uses: softprops/action-gh-release@v2
         with:
           files: vector_to_map.zip
-          name: Release ${{ github.ref_name }}
-          body: |
-            ### 🗺️ VectorToMap ${{ github.ref_name }}
-            Nova versão gerada e verificada automaticamente via Pipeline DevSecOps.
-
-            🎉 **ALL PRO FEATURES ARE NOW 100% FREE AND OPEN-SOURCE!** 🎉
-            
-            ### 🚀 DevSecOps & Security
-            * **Automated Security Scanning:** Implemented SAST (Bandit/Ruff) checks directly into the CI/CD pipeline.
-            * **PII Sanitization:** Added Regex-based masking for sensitive geographic and personal data (CPF, Emails) before telemetries.
-            * **Secrets Management:** Sentry DSNs are now securely injected during build via GitHub Actions.
-
-            ### 🚀 New Features & Improvements
-            * **Robust XML Template Parsing:** Implemented `QDomDocument` to automatically sanitize custom `.qpt` templates.
-            * **Smart CRS Reprojection:** Added a robust fallback mechanism (`QgsCsException` protection).
-            * **Batch Export Optimization:** Drastically improved export speed and memory stability.
-
-            ### 🐛 Bug Fixes & Optimizations
-            * **UI Signal Protection:** Fortified interface event handling using `try...finally` blocks.
-            * **Removed Cascade Effects:** Cleaned up duplicate signal triggers.
-            * **Safe Memory Deletion:** Fixed potential QGIS crashes using official Qt `deleteLater()`.
+          name: VectorToMap ${{ github.ref_name }}
+          body_path: release_notes.txt # <-- Ele lê aquele arquivo de texto que o robô criou!
           draft: false
           prerelease: false
         env:

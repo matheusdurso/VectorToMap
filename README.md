@@ -1,6 +1,6 @@
 # 🗺️ VectorToMap - QGIS Plugin
 
-🎉 **VERSION 3.8.3: ALL PRO FEATURES ARE NOW 100% FREE AND OPEN-SOURCE!** 🎉
+🎉 **VERSION 3.8.4: ALL PRO FEATURES ARE NOW 100% FREE AND OPEN-SOURCE!** 🎉
 
 **VectorToMap** is a professional QGIS tool designed to automate the mass generation of Print Layouts. It transforms complex vector data into hundreds of standardized map pages in seconds, making it ideal for inventories, field inspections, and cartographic reports.
 
@@ -11,6 +11,7 @@
 ### ✨ Key Features
 
 * **🌟 Professional Templates (.qpt):** Load built-in native layout templates or import your custom corporate designs. The engine features robust XML sanitization (via `QDomDocument`) to automatically clean corrupted templates and remove "ghost" maps. It preserves your layout and injects the dynamic maps, including support for auto-text substitution via `["Column_Name"]` syntax and native QGIS expressions `[% %]`.
+* **🧩 Smart Template Image Resolver:** Automatically converts relative image paths (`./logo.png`) to absolute paths inside `.qpt` templates, ensuring corporate logos, watermarks, and custom SVGs are always perfectly rendered across different computers.
 * **🖨️ Multi-Format Export:** Bypass the QGIS layout manager and export hundreds of maps directly to **PDF (multi-page), PNG, JPG, and SVG** (with editable paths).
 * **🧮 Data-Defined Overrides (DDO):** Use QGIS SQL expressions (ε) to dynamically control map scales, margins, and complex Atlas grouping based on attribute values.
 * **📐 Smart Decorations:** Auto-generate Coordinate Grids, North Arrows, Scale Bars, Legends, and Overview (Locator) Maps tailored to each page. Overview maps now feature dynamic relative Zoom Out (2x-25x) and fixed global framing.
@@ -18,6 +19,7 @@
 * **🚀 High Performance & Smart Grouping:** Optimized database queries (`QgsFeatureRequest`) and ultra-fast unique value processing with intelligent UI event throttling and advanced Memory Garbage Collection (`gc.collect`) for massive batch exports.
 * **🌐 Smart CRS Reprojection:** Seamlessly handles layers and projects with different Coordinate Reference Systems (CRS). The engine automatically transforms bounding boxes to the project's CRS and features a robust fallback mechanism (`QgsCsException` protection) to prevent crashes if geometries fall outside the projection domain. It also smartly adapts map padding for both geographic (degrees) and projected (meters) coordinate systems.
 * **🛡️ Rock-Solid Stability:** Cleanly isolates features using temporary memory layers without cluttering your project. Features foolproof UI signal handling, safe layout deletion (`deleteLater`), and 100% secure "Ghost Layer" exorcism.
+* **⚙️ Optimized CI/CD Pipeline:** Automated security scanning (SAST), PII sanitization, and a streamlined DevSecOps build process that automatically excludes test suites from the final package, resulting in a lighter and cleaner plugin download.
 * **🚨 Smart Error Handling:** Optional and anonymous automatic crash reporting via Sentry to help improve the plugin continuously.
 * **👁️ Real-Time Preview:** Lightning-fast in-memory rendering engine to validate your design before final processing, complete with a dedicated progress bar.
 * **🛑 Safe Abort & Memory Management:** Functional **Cancel** button that safely stops the rendering engine without freezing the QGIS interface.
@@ -41,6 +43,7 @@
 ### ✨ Funcionalidades
 
 * **🌟 Templates Profissionais (.qpt):** Carregue templates nativos já inclusos ou importe seus layouts corporativos personalizados. O motor conta com sanitização robusta de XML (via `QDomDocument`) para limpar automaticamente templates corrompidos e remover mapas "fantasmas". Ele preserva seu design original e injeta os mapas dinamicamente, suportando substituição inteligente de textos com a sintaxe `["Nome_da_Coluna"]` e expressões do QGIS `[% %]`.
+* **🧩 Resolvedor Inteligente de Imagens:** Converte automaticamente caminhos relativos de imagens (`./logo.png`) para caminhos absolutos dentro de templates `.qpt`, garantindo que logotipos corporativos, marcas d'água e SVGs personalizados sejam sempre renderizados perfeitamente em diferentes computadores.
 * **🖨️ Exportação Multi-Formato:** Pule o gerenciador de layouts do QGIS e exporte centenas de mapas diretamente para **PDF (múltiplas páginas), PNG, JPG e SVG** (com vetores editáveis).
 * **🧮 Expressões Dinâmicas (DDO):** Use SQL do QGIS (ε) para controlar dinamicamente escalas, margens de respiro e agrupamentos complexos no Atlas com base na tabela de atributos.
 * **📐 Decorações Inteligentes:** Geração automática e adaptativa de Grades de Coordenadas, Rosas dos Ventos, Escalas, Legendas e Mapas de Localização (Overview). O mapa de localização agora possui opções de Zoom Out relativo dinâmico (2x a 25x) ou enquadramento global fixo.
@@ -48,6 +51,7 @@
 * **🚀 Alta Performance e Agrupamento:** Consultas otimizadas via banco de dados (`QgsFeatureRequest`) para geração de cadernos de mapas ultrarrápidos. Conta com controle inteligente de eventos de interface e Limpeza de Memória (*Garbage Collection*) avançada para lotes gigantes.
 * **🌐 Reprojeção Inteligente de SRC:** Lida perfeitamente com camadas e projetos em diferentes Sistemas de Referência de Coordenadas (SRC). O motor transforma automaticamente as *bounding boxes* (caixas delimitadoras) para o SRC do projeto e possui um mecanismo de segurança avançado (proteção contra `QgsCsException`) que evita travamentos caso coordenadas caiam fora do domínio da projeção. Além disso, a ferramenta adapta inteligentemente as margens de respiro para geometrias pontuais tanto em sistemas geográficos (graus) quanto em projetados (metros).
 * **🛡️ Estabilidade Blindada:** Isola feições de forma limpa usando camadas em memória. Traz interface à prova de travamentos, deleção segura de layouts (`deleteLater`) e "exorcismo" 100% seguro de Camadas Fantasmas.
+* **⚙️ Pipeline CI/CD Otimizado:** Varredura de segurança automatizada (SAST), sanitização de PII e um processo de *build* DevSecOps aprimorado que exclui as suítes de testes do pacote final, resultando em um download mais leve e limpo do plugin.
 * **🚨 Tratamento Inteligente de Erros:** Integração opcional e anônima de relatórios de falhas via Sentry para melhoria contínua.
 * **👁️ Preview em Tempo Real:** Motor de renderização para validar o design antes do processamento final, com barra de progresso dedicada.
 * **🛑 Interrupção Segura:** Botão **Cancelar** funcional que interrompe o motor com segurança e não congela o QGIS.
@@ -71,7 +75,7 @@
 1. Download the `vector_to_map` plugin folder. / *Baixe a pasta do plugin.*
 2. Paste it into your QGIS plugins directory: / *Cole-a no diretório de plugins do seu perfil QGIS:*
    * **Windows:** `%AppData%\Roaming\QGIS\QGIS3\profiles\default\python\plugins`
-   * **Linux:** `~/.local/share/QGIS/QGIS3/profiles/default/python/plugins`
+   * **Linux:** `~/.local/share/QGIS\QGIS3\profiles\default\python\plugins`
    * **MacOS:** `~/Library/Application Support/QGIS/QGIS3/profiles/default/python/plugins`
 3. In QGIS, go to **Plugins > Manage and Install Plugins** and enable **VectorToMap**. / *No QGIS, vá em **Complementos > Gerenciar e Instalar Complementos** e ative o plugin.*
 
