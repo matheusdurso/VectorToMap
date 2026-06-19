@@ -748,7 +748,20 @@ class LayoutEngine:
             try: legenda.rstyle(Qgis.LegendComponent.Title).setMargin(QgsLegendStyle.Side.Bottom, 2.5)
             except: pass
 
+            # =================================================================
+            # CORREÇÃO QGIS 4: A Mágica da Inicialização Tardia (Lazy Load)
+            # =================================================================
+            layout.addLayoutItem(legenda) # 1. O item PRECISA estar no layout primeiro
+            
+            # 2. Força o QGIS a ler e desenhar a árvore de camadas na memória AGORA
+            legenda.updateLegend() 
+            
+            # 3. Trancamos a árvore para que nossas remoções não sejam desfeitas
             legenda.setAutoUpdateModel(False)
+            
+            # 4. BÔNUS NATIVO: Diz pro QGIS ocultar automaticamente quem não está visível no mapa
+            legenda.setLegendFilterByMapEnabled(True)
+
             root_projeto = QgsProject.instance().layerTreeRoot()
             root_legenda = legenda.model().rootGroup()
             
@@ -776,7 +789,7 @@ class LayoutEngine:
                 if "VectorToMap" in no_grupo.name() or not no_grupo.children():
                     no_grupo.parent().removeChildNode(no_grupo)
 
-            layout.addLayoutItem(legenda)
+            # Só adicionamos na nossa lista de controle interno para o posicionamento final
             elementos.append({'tipo': 'legenda', 'item': legenda, 'pos': config.get('pos_legenda', 'IE')})
 
         # --- 3. ESCALA ---
@@ -962,8 +975,6 @@ class LayoutEngine:
         
         # =====================================================================
         # 3. VERIFICAÇÃO DE SANIDADE (Prevenção do Erro do Sentry)
-        # Se as geometrias lidas eram nulas ou inválidas, o retângulo ficará vazio.
-        # Paramos aqui para evitar jogar "lixo" no motor de projeção do C++.
         # =====================================================================
         if ext.isEmpty() or ext.isNull():
             return 
@@ -972,18 +983,21 @@ class LayoutEngine:
         camada_crs = camada.crs()
         
         # =====================================================================
+        # NOVO: FALLBACK DE SRC (SISTEMA DE REFERÊNCIA)
+        # Se o projeto estiver sem SRC definido ou com unidades desconhecidas,
+        # assumimos o SRC da camada atual como o "mestre" para salvar a matemática.
+        # =====================================================================
+        if not project_crs.isValid() or project_crs.mapUnits() == QgsUnitTypes.DistanceUnknownUnit:
+            project_crs = camada_crs
+        
+        # =====================================================================
         # 4. TRANSFORMAÇÃO DE COORDENADAS (Tratamento do QgsCsException)
-        # Tenta projetar a caixa da camada para a caixa do projeto.
-        # Se o ponto for matematicamente inválido na projeção destino, ele cai 
-        # no 'except' e usa a extensão original ao invés de fechar o QGIS.
         # =====================================================================
         if camada_crs != project_crs:
             trans = QgsCoordinateTransform(camada_crs, project_crs, QgsProject.instance().transformContext())
             try:
                 ext_proj = trans.transformBoundingBox(ext)
             except Exception:
-                # Ocorreu um erro de domínio (Point outside of projection domain). 
-                # Usa a extensão original como um fallback seguro.
                 ext_proj = ext
         else:
             ext_proj = ext
