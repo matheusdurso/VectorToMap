@@ -4,6 +4,16 @@ All notable changes to VectorToMap will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.8.6] - 2026-06-24
+### Added
+- Native QGIS Map Themes Support: Complete integration with native QGIS visibility presets, enabling the main map item (`main_map`) to follow a selected project theme during batch exports and layouts.
+- Dynamic Theme UI Components: Integrated a new checkbox (`chk_usar_tema`) and combobox (`combo_temas`) that actively monitors the QGIS project's theme collection and updates available presets in real-time without requiring a plugin restart.
+- Multilingual Translation Support: Added full translation strings for the new theme-based interface widgets across 7 languages (German, English, Spanish, French, Italian, Russian, and Simplified Chinese).
+
+### Changed
+- UI State Conflict Management: Enhanced the interface hierarchy engine to automatically disable and uncheck feature filtering (`chk_filtrar_feicoes`) and layer isolation (`chk_exibir_so_camada_atual`) whenever Map Themes are active, eliminating conflicting visibility instructions and establishing a single source of truth.
+- Live Preview Synchronization: Connected the theme selection combobox signals directly to the automated layout rendering pipeline, triggering real-time preview canvas updates upon selection change.
+
 ## [3.8.5] - 2026-06-19
 ### Added
 - Smart CRS Fallback: If the active QGIS project lacks a defined Coordinate Reference System (CRS) or has unknown units, the engine now automatically falls back to the selected vector layer's CRS to ensure accurate scale calculation and map framing.
@@ -36,6 +46,16 @@ Todas as mudanças notáveis no VectorToMap serão documentadas neste arquivo.
 
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), 
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+## [3.8.6] - 2026-06-24
+### Adicionado
+- Suporte Nativo a Temas do QGIS: Integração completa com os presets de visibilidade do QGIS, permitindo que o quadro do mapa principal (`main_map`) siga rigorosamente um tema selecionado do projeto durante a exportação em lote e geração de layouts.
+- Componentes Dinâmicos de Interface: Implementação de uma checkbox de ativação (`chk_usar_tema`) e combobox (`combo_temas`) que monitorizam o ecossistema do QGIS e atualizam a lista de temas ativos em tempo real, sem necessidade de reiniciar o complemento.
+- Internacionalização de Interface: Inclusão de suporte de tradução completo para os novos elementos visuais em 7 idiomas (Alemão, Inglês, Espanhol, Francês, Italiano, Russo e Chinês Simplificado).
+
+### Modificado
+- Gestão de Conflitos e Estados de UI: Refatoração do motor de hierarquia da interface para desativar e desmarcar automaticamente o filtro de feições (`chk_filtrar_feicoes`) e o isolamento de camadas (`chk_exibir_so_camada_atual`) quando um tema está ativo, extinguindo ordens contraditórias de renderização e definindo um ponto único de autoridade lógica.
+- Sincronização com o Motor de Preview: Vinculação dos gatilhos de alteração de índice da combo de temas diretamente ao renderizador automático de layout, forçando a atualização da pré-visualização em tempo real.
 
 ## [3.8.5] - 2026-06-19
 ### Adicionado

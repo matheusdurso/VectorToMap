@@ -1208,6 +1208,29 @@ class LayoutEngine:
         return camada_temp
 
     def _gerenciar_visibilidade_camadas(self, map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index, config):
+        
+        # ====================================================================
+        # NOVO: APLICAÇÃO DO TEMA NO MAPA PRINCIPAL
+        # ====================================================================
+        usar_tema = config.get('usar_tema', False)
+        tema_selecionado = config.get('tema_selecionado', '')
+
+        if usar_tema and tema_selecionado:
+            # 1. Avisa o QGIS para ligar a chavinha nativa de Temas
+            map_item.setFollowVisibilityPreset(True)
+            map_item.setFollowVisibilityPresetName(tema_selecionado)
+            
+            # 2. Como o Tema já diz exatamente o que deve aparecer, não precisamos 
+            # rodar o resto dessa função. Atualizamos a tela e encerramos aqui!
+            map_item.invalidateCache()
+            map_item.refresh()
+            return
+        else:
+            # Se a opção de tema não estiver marcada, garantimos que a trava 
+            # nativa do QGIS esteja desligada para não interferir nas outras funções.
+            map_item.setFollowVisibilityPreset(False)
+        # ====================================================================
+        
         camada_alvo = camada
 
         is_filtrado = config.get('filtrar_feicoes', False)

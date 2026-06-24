@@ -408,7 +408,7 @@ class VectorToMap:
                 sentry_sdk.init(
                     dsn=SENTRY_DSN_PROD,
                     send_default_pii=False, 
-                    release="vectortomap@3.8.5",
+                    release="vectortomap@3.8.6",
                     before_send=filtro_sentry
                 )
                 self.sentry_ativo = True
@@ -545,6 +545,9 @@ class VectorToMap:
         # 4. Força a janela a abrir sempre na primeira aba (Configurações)
         if hasattr(self.dlg, 'tabWidget'):
             self.dlg.tabWidget.setCurrentIndex(0)
+
+        if hasattr(self, 'atualizar_combo_temas'):
+            self.atualizar_combo_temas()
 
 
         # ====================================================================
@@ -732,6 +735,38 @@ class VectorToMap:
         if hasattr(self.dlg, 'lbl_preview'):
             self.dlg.lbl_preview.setGraphicsEffect(sombra)
         # --------------------------------------------------
+
+
+
+
+    def atualizar_combo_temas(self):
+        """Varre os temas do projeto e atualiza o estado do Checkbox e ComboBox."""
+        if not hasattr(self.dlg, 'combo_temas'): return
+
+        self.dlg.combo_temas.blockSignals(True)
+        self.dlg.combo_temas.clear()
+        
+        temas = QgsProject.instance().mapThemeCollection().mapThemes()
+        
+        if not temas:
+            self.dlg.chk_usar_tema.setChecked(False)
+            self.dlg.chk_usar_tema.setEnabled(False)
+            self.dlg.combo_temas.setEnabled(False)
+            
+            aviso = self.tr("Nenhum tema encontrado. Crie um Tema de Mapa no painel do QGIS.")
+            self.dlg.chk_usar_tema.setToolTip(aviso)
+            self.dlg.combo_temas.setToolTip(aviso)
+        else:
+            self.dlg.chk_usar_tema.setEnabled(True)
+            self.dlg.combo_temas.addItems(temas)
+            
+            self.dlg.chk_usar_tema.setToolTip(self.tr("Ativa a renderização baseada em Temas de Mapa."))
+            self.dlg.combo_temas.setToolTip(self.tr("Selecione o tema para o mapa principal."))
+            
+            estado_chk = self.dlg.chk_usar_tema.isChecked()
+            self.dlg.combo_temas.setEnabled(estado_chk)
+            
+        self.dlg.combo_temas.blockSignals(False)
 
 
     
@@ -1128,7 +1163,19 @@ class VectorToMap:
             if hasattr(w, 'currentIndexChanged'): w.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
             elif hasattr(w, 'stateChanged'): w.stateChanged.connect(self.disparar_preview_se_autorizado)
             elif hasattr(w, 'toggled'): w.toggled.connect(self.disparar_preview_se_autorizado)
-            
+        
+        # Ouve o QGIS: atualiza a lista de temas se o usuário criar um tema novo
+        QgsProject.instance().mapThemeCollection().mapThemesChanged.connect(self.atualizar_combo_temas)
+
+        # Lida com os cliques na Checkbox do Tema
+        if hasattr(self.dlg, 'chk_usar_tema'):
+            self.dlg.chk_usar_tema.toggled.connect(lambda estado: self.dlg.combo_temas.setEnabled(estado))
+            self.dlg.chk_usar_tema.toggled.connect(self.atualizar_hierarquia_camadas)
+        
+        # --- NOVO: Gatilho para atualizar a preview ao trocar o tema na lista ---
+        if hasattr(self.dlg, 'combo_temas'):
+            self.dlg.combo_temas.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
+
         # --- 8. GERENCIAMENTO DE REDIMENSIONAMENTO ---
         original_resize = self.dlg.resizeEvent
         def novo_resize_event(event):
@@ -1269,6 +1316,26 @@ class VectorToMap:
         # 1. Se o motor já estiver rodando, não mexe em nada para não causar conflitos
         if self.is_rendering:
             return
+        
+        # ====================================================================
+        # A REGRA DE AUTORIDADE DO TEMA
+        # ====================================================================
+        usar_tema = hasattr(self.dlg, 'chk_usar_tema') and self.dlg.chk_usar_tema.isChecked()
+
+        if usar_tema:
+            # Trava APENAS o "Isolar Camada Atual" diretamente aqui
+            self.dlg.chk_exibir_so_camada_atual.blockSignals(True)
+            self.dlg.chk_exibir_so_camada_atual.setChecked(False)
+            self.dlg.chk_exibir_so_camada_atual.setEnabled(False)
+            self.dlg.chk_exibir_so_camada_atual.blockSignals(False)
+        else:
+            # Devolve o botão "Isolar Camada Atual" para o usuário
+            self.dlg.chk_exibir_so_camada_atual.setEnabled(True)
+
+        # Deixa a nossa função especialista (que acabamos de consertar) 
+        # decidir sozinha se o "Filtro de Feições" deve ser travado ou não!
+        self.atualizar_estado_filtro_feicoes()
+        # ====================================================================
 
         filtrar = self.dlg.chk_filtrar_feicoes.isChecked()
         exibir_atual = self.dlg.chk_exibir_so_camada_atual.isChecked()
@@ -1323,13 +1390,26 @@ class VectorToMap:
         is_geral = self.dlg.rb_atlas_geral.isChecked()
         is_agrupar = self.dlg.rb_atlas_agrupar.isChecked()
         
+        # --- A TRAVA MESTRA: Lê se o Tema está ligado ---
+        usar_tema = hasattr(self.dlg, 'chk_usar_tema') and self.dlg.chk_usar_tema.isChecked()
+        
         # 1. Trava do Filtro de Feições e Atributos (Se for mapa Geral, desliga tudo)
         if is_geral:
+            self.dlg.chk_filtrar_feicoes.blockSignals(True)
             self.dlg.chk_filtrar_feicoes.setChecked(False)
             self.dlg.chk_filtrar_feicoes.setEnabled(False)
+            self.dlg.chk_filtrar_feicoes.blockSignals(False)
             if hasattr(self.dlg, 'groupAtributos'): self.dlg.groupAtributos.setEnabled(False)
         else:
-            self.dlg.chk_filtrar_feicoes.setEnabled(True)
+            # A CURA DO BUG: Só devolvemos o botão se o usuário NÃO estiver usando Temas
+            if usar_tema:
+                self.dlg.chk_filtrar_feicoes.blockSignals(True)
+                self.dlg.chk_filtrar_feicoes.setChecked(False)
+                self.dlg.chk_filtrar_feicoes.setEnabled(False)
+                self.dlg.chk_filtrar_feicoes.blockSignals(False)
+            else:
+                self.dlg.chk_filtrar_feicoes.setEnabled(True)
+                
             if hasattr(self.dlg, 'groupAtributos'): self.dlg.groupAtributos.setEnabled(True)
             
         # 2. Liga/Desliga o botão de Expressão (Epsilon)
@@ -1985,7 +2065,9 @@ class VectorToMap:
             'zoom_out_auto': self.dlg.comboZoomOut.currentData() if hasattr(self.dlg, 'comboZoomOut') else 25.0,
             'estilo_norte': self.dlg.combo_estilo_norte.currentData() if hasattr(self.dlg, 'combo_estilo_norte') else "NorthArrow_02.svg",
             'modo_local': "zoom" if (hasattr(self.dlg, 'rb_local_zoomout') and self.dlg.rb_local_zoomout.isChecked()) else "camada",
-            'fator_zoom_local': self.dlg.combo_local_zoomout.currentData() if hasattr(self.dlg, 'combo_local_zoomout') else 10.0
+            'fator_zoom_local': self.dlg.combo_local_zoomout.currentData() if hasattr(self.dlg, 'combo_local_zoomout') else 10.0,
+            'usar_tema': self.dlg.chk_usar_tema.isChecked() if hasattr(self.dlg, 'chk_usar_tema') else False,
+            'tema_selecionado': self.dlg.combo_temas.currentText() if hasattr(self.dlg, 'combo_temas') else ""
         }
 
 
