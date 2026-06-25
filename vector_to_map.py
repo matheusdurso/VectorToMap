@@ -4,14 +4,14 @@
 #  VectorToMap - QGIS Plugin
 #  Automates the generation of print layouts for vector features.
 #  Author: Matheus Durso Neves Caetano
-# 
+#
 #  Copyright (C) 2026 Matheus Durso Neves Caetano
-# 
+#
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation; either version 2 of the License, or
 #  (at your option) any later version.
-# 
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -53,7 +53,7 @@ class BoasVindasDialog(QDialog):
     """Janela de Boas-Vindas com design moderno, fontes maiores e card de destaque."""
     def __init__(self, parent=None):
         super().__init__(parent)
-        
+
         # --- Atalho interno para tradução ---
         def tr(texto):
             return QCoreApplication.translate('@default', texto)
@@ -61,16 +61,16 @@ class BoasVindasDialog(QDialog):
 
         self.setWindowTitle("VectorToMap")
         # Aumentado o tamanho da janela para acomodar fontes maiores com conforto
-        self.resize(600, 420) 
-        
+        self.resize(600, 420)
+
         self.setWindowIcon(QIcon(':/plugins/vector_to_map/icon.png'))
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
 
         # --- Layout Principal ---
         layout_principal = QVBoxLayout(self)
         # Margens confortáveis para respirar: Esquerda, Topo, Direita, Baixo.
-        layout_principal.setContentsMargins(35, 30, 35, 25) 
-        layout_principal.setSpacing(15) 
+        layout_principal.setContentsMargins(35, 30, 35, 25)
+        layout_principal.setSpacing(15)
 
         # --- 1. CABEÇALHO (Ícone + Título alinhados horizontalmente) ---
         layout_cabecalho = QHBoxLayout()
@@ -86,7 +86,7 @@ class BoasVindasDialog(QDialog):
         lbl_titulo = QLabel(tr("Bem-vindo ao VectorToMap!"))
         lbl_titulo.setStyleSheet("font-size: 18pt; font-weight: bold; color: #2c3e50;")
         layout_cabecalho.addWidget(lbl_titulo)
-        
+
         layout_cabecalho.addStretch() # Alinha tudo à esquerda
         layout_principal.addLayout(layout_cabecalho)
 
@@ -110,8 +110,8 @@ class BoasVindasDialog(QDialog):
         )
         lbl_pro_texto = QLabel(texto_pro_html)
         lbl_pro_texto.setWordWrap(True)
-        lbl_pro_texto.setOpenExternalLinks(True) 
-        lbl_pro_texto.setAlignment(Qt.AlignmentFlag.AlignLeft) 
+        lbl_pro_texto.setOpenExternalLinks(True)
+        lbl_pro_texto.setAlignment(Qt.AlignmentFlag.AlignLeft)
         layout_principal.addWidget(lbl_pro_texto)
 
         layout_principal.addSpacing(5)
@@ -134,37 +134,37 @@ class BoasVindasDialog(QDialog):
         layout_principal.addWidget(lbl_sentry)
 
         # --- 6. ESPAÇADOR VERTICAL (EMPURRA BOTÕES PARA O RODAPÉ) ---
-        layout_principal.addStretch()  
+        layout_principal.addStretch()
 
         # --- 7. BOTÕES DE AÇÃO ---
         layout_botoes = QHBoxLayout()
         layout_botoes.setContentsMargins(0, 10, 0, 0) # Margem superior
-        
+
         self.btn_recusar = QPushButton(tr("Não aceito, apenas começar"))
         self.btn_recusar.setCursor(Qt.CursorShape.PointingHandCursor)
         # CSS limpo para o botão secundário
         self.btn_recusar.setStyleSheet("padding: 10px 18px; font-size: 11pt; color: #555; background-color: #f8f9fa; border: 1px solid #ccc; border-radius: 4px;")
-        self.btn_recusar.clicked.connect(self.reject) 
+        self.btn_recusar.clicked.connect(self.reject)
 
         self.btn_aceitar = QPushButton(tr("Aceitar e Começar"))
         self.btn_aceitar.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.btn_aceitar.setDefault(True) 
+        self.btn_aceitar.setDefault(True)
         # CSS refinado para o botão principal
         self.btn_aceitar.setStyleSheet("""
             QPushButton {
-                background-color: #3498db; 
-                color: white; 
-                font-weight: bold; 
+                background-color: #3498db;
+                color: white;
+                font-weight: bold;
                 font-size: 11pt;
-                padding: 10px 25px; 
-                border: none; 
+                padding: 10px 25px;
+                border: none;
                 border-radius: 4px;
             }
             QPushButton:hover {
                 background-color: #2980b9;
             }
         """)
-        self.btn_aceitar.clicked.connect(self.accept) 
+        self.btn_aceitar.clicked.connect(self.accept)
 
         layout_botoes.addWidget(self.btn_recusar)
         layout_botoes.addStretch() # Mola entre os botões
@@ -195,19 +195,19 @@ class VectorToMap:
         self.ultimo_id_camada_ativa = None
 
         self.colunas_atuais = []
-        
+
         self.preview_data_cache = None
         self.ultimo_id_camada = None
         self.cache_val_atlas = None
         self.clones_preview = []
-        
+
         # Determina a língua de exibição
-        locale = QgsSettings().value('locale/userLocale')[0:2] 
+        locale = QgsSettings().value('locale/userLocale')[0:2]
 
         if locale != 'pt':
             # O path vai buscar vector_to_map_en.qm ou vector_to_map_es.qm
             path = os.path.join(self.plugin_dir, 'i18n', f'vector_to_map_{locale}.qm')
-            
+
             # Se o espanhol não existir por algum motivo, ele volta pro inglês
             if not os.path.exists(path):
                 path = os.path.join(self.plugin_dir, 'i18n', 'vector_to_map_en.qm')
@@ -216,18 +216,18 @@ class VectorToMap:
                 self.translator = QTranslator()
                 self.translator.load(path)
                 QCoreApplication.installTranslator(self.translator)
-    
 
-    
-    
+
+
+
     def tr(self, message):
         """Garante que o contexto coincida com o que o pylupdate gera."""
         # Se no seu .ts aparecer <context><name>VectorToMap</name>, use o nome da classe abaixo:
         return QCoreApplication.translate('VectorToMap', message)
-    
 
-    
-    
+
+
+
     #Determina variáveis de sistema e configuração de aparência
     def add_action(self, icon_path, text, callback, enabled_flag=True, add_to_menu=True, add_to_toolbar=True, status_tip=None, whats_this=None, parent=None):
         """Helper function to add buttons and menus to the QGIS interface."""
@@ -242,15 +242,15 @@ class VectorToMap:
         if add_to_menu: self.iface.addPluginToMenu(self.menu, action)
         self.actions.append(action)
         return action
-    
 
-    
-    
+
+
+
     def initGui(self):
         """Cria as entradas de menu e a barra de ferramentas personalizada."""
 
         icon_path = ':/plugins/vector_to_map/icon.png'
-        
+
         # 1. CRIAÇÃO DA BARRA DE FERRAMENTAS EXCLUSIVA
         self.toolbar = self.iface.addToolBar(u'VectorToMap')
         self.toolbar.setObjectName(u'VectorToMap')
@@ -272,20 +272,20 @@ class VectorToMap:
         # --- INJETANDO O ÍCONE NO MENU PAI DA VERSÃO ---
         # ==========================================================
         menu_complementos = self.iface.pluginMenu()
-        
+
         # 1. Defina o caminho do ícone da versão (ajuste se o nome do arquivo for diferente)
-        icon_pro_path = ':/plugins/vector_to_map/icon.png' 
-        
+        icon_pro_path = ':/plugins/vector_to_map/icon.png'
+
         # 2. Varre o menu em busca da pasta do plugin
         for acao_menu in menu_complementos.actions():
             # O texto deve ser idêntico ao que você definiu no self.menu (geralmente '&VectorToMap')
-            if acao_menu.text() == self.tr(u'&VectorToMap'): 
+            if acao_menu.text() == self.tr(u'&VectorToMap'):
                 acao_menu.setIcon(QIcon(icon_pro_path))
                 break
 
 
-    
-    
+
+
     def unload(self):
         """Limpa os recursos do plugin ao ser desativado."""
 
@@ -293,7 +293,7 @@ class VectorToMap:
         if hasattr(self, 'action') and self.action:
             self.iface.unregisterMainWindowAction(self.action)
         # ----------------------------------------------------
-        
+
         # 1. Limpa as camadas de preview da memória
         self.limpar_clones_preview()
 
@@ -307,7 +307,7 @@ class VectorToMap:
         for action in self.actions:
             self.iface.removePluginMenu(self.menu, action)
             self.iface.removeToolBarIcon(action)
-        
+
         # 3. Limpeza segura da Toolbar (Foco QGIS 4.0 e Plugin Reloader)
         if hasattr(self, 'toolbar') and self.toolbar:
             if not sip.isdeleted(self.toolbar):
@@ -328,27 +328,27 @@ class VectorToMap:
         # 5. Coleta de lixo final
         gc.collect()
 
-    
-    
-    
+
+
+
     def _verificar_consentimento_sentry(self):
         """Pergunta ao usuário apenas na primeira vez que ele abre o plugin."""
         settings = QgsSettings()
-        
+
         # Verifica se já fizemos essa pergunta no passado
         ja_perguntou = settings.value("/VectorToMap/sentry_ja_perguntou", False, type=bool)
-        
+
         if not ja_perguntou:
             # Chama a NOSSA janela estilizada
             dialog = BoasVindasDialog(self.iface.mainWindow())
-            
+
             # Mostra a janela e congela o QGIS até o usuário clicar em algo
             # Compatibilidade QGIS 3 (PyQt5) e QGIS 4 (PyQt6)
             if hasattr(dialog, 'exec'):
                 aceitou = (dialog.exec() == 1)  # Novo padrão do QGIS 4
             else:
                 aceitou = (dialog.exec_() == 1) # Padrão antigo do QGIS 3
-            
+
             # Salva a escolha na memória do QGIS
             settings.setValue("/VectorToMap/enviar_erros_sentry", aceitou)
             settings.setValue("/VectorToMap/sentry_ja_perguntou", True)
@@ -357,16 +357,16 @@ class VectorToMap:
         return settings.value("/VectorToMap/enviar_erros_sentry", False, type=bool)
 
 
-    
-    
+
+
 
     def inicializar_sentry(self):
         """Liga o motor do Sentry se o usuário permitiu, filtra erros e higieniza PII."""
         self.sentry_ativo = False
-        
+
         # O GitHub Actions vai substituir esta string exata durante o build
         SENTRY_DSN_PROD = "INSERIR_DSN_VIA_CI_AQUI"
-        
+
         def filtro_sentry(event, hint):
             """Filtra a origem do erro e censura dados pessoais (PII) do Stacktrace."""
             # 1. Filtro de Origem
@@ -382,7 +382,7 @@ class VectorToMap:
                             break
                 except Exception:
                     pass
-                
+
                 if not is_our_bug:
                     return None
 
@@ -407,8 +407,8 @@ class VectorToMap:
             if SENTRY_DSN_PROD != "INSERIR_DSN_VIA_CI_AQUI":
                 sentry_sdk.init(
                     dsn=SENTRY_DSN_PROD,
-                    send_default_pii=False, 
-                    release="vectortomap@3.8.6",
+                    send_default_pii=False,
+                    release="vectortomap@3.8.6.1",
                     before_send=filtro_sentry
                 )
                 self.sentry_ativo = True
@@ -419,7 +419,7 @@ class VectorToMap:
 
 
 
-    
+
     # ##################################################################################
     # --- 2. INTERFACE E DIÁLOGO (REFATORADO v0.4.4) ---
     # ##################################################################################
@@ -439,22 +439,22 @@ class VectorToMap:
 
         # 3. Traduz os itens da Combo de Presets (Protegido contra loops)
         self.dlg.combo_presets.blockSignals(True)
-        
+
         try:
             idx_atual = self.dlg.combo_presets.currentIndex() # Salva onde o usuário estava
             self.dlg.combo_presets.clear()
-            
+
             # Mantém os modos matemáticos básicos
             self.dlg.combo_presets.addItem(self.tr("Mapa Quadrado (Básico)"), "quadrado")
             self.dlg.combo_presets.addItem(self.tr("Mapa Horizontal (Básico)"), "horizontal")
             self.dlg.combo_presets.addItem(self.tr("Mapa Vertical (Básico)"), "vertical")
-            
+
             # =================================================================
             # --- LÊ A PASTA DE TEMPLATES NATIVOS DA VERSÃO POR IDIOMA ---
             # =================================================================
-            locale = QgsSettings().value('locale/userLocale', 'en')[0:2] 
+            locale = QgsSettings().value('locale/userLocale', 'en')[0:2]
             pasta_base_templates = os.path.join(self.plugin_dir, 'templates')
-            
+
             if locale == 'pt':
                 pasta_alvo = pasta_base_templates
             else:
@@ -475,28 +475,28 @@ class VectorToMap:
                         caminho_completo = os.path.join(pasta_alvo, arquivo)
                         self.dlg.combo_presets.addItem(f"📄 {nome_traduzido}", caminho_completo)
             # =================================================================
-            
+
             # --- OPÇÃO PARA O USUÁRIO CARREGAR O PRÓPRIO TEMPLATE ---
             self.dlg.combo_presets.insertSeparator(self.dlg.combo_presets.count()) # Linha divisória
             self.dlg.combo_presets.addItem(self.tr("📂 Carregar Template Personalizado..."), "carregar_template")
             # --------------------------------------------------------------
-            
+
             self.dlg.combo_presets.setCurrentIndex(idx_atual if idx_atual >= 0 else 0)
-            
+
         finally:
             # Liberação garantida da combobox
             self.dlg.combo_presets.blockSignals(False)
-        
+
         # 5. Traduz o Placeholder de busca de atributos (se já existir)
         if hasattr(self, 'edit_busca_atributos') and not sip.isdeleted(self.edit_busca_atributos):
             self.edit_busca_atributos.setPlaceholderText(self.tr("🔍 Filtrar colunas..."))
 
 
-    
-    
+
+
     def run(self):
         """Maestro da Interface: Inicializa a UI e orquestra a montagem da janela."""
-        
+
         if self.first_start:
             self.first_start = False
             aceitou_sentry = self._verificar_consentimento_sentry()
@@ -541,7 +541,7 @@ class VectorToMap:
         # 3. Força a atualização visual e de idiomas para pegar mudanças do QGIS
         self._aplicar_estilos()
         self.atualizar_textos_interface()
-        
+
         # 4. Força a janela a abrir sempre na primeira aba (Configurações)
         if hasattr(self.dlg, 'tabWidget'):
             self.dlg.tabWidget.setCurrentIndex(0)
@@ -558,11 +558,11 @@ class VectorToMap:
         if camada_ativa and isinstance(camada_ativa, QgsVectorLayer):
             # 1. Seta a camada no mapa principal
             self.dlg.mMapLayerComboBox.setLayer(camada_ativa)
-            
+
             # 2. Seta a camada no mapa de localização
             if hasattr(self.dlg, 'combo_camada_loc'):
                 self.dlg.combo_camada_loc.setLayer(camada_ativa)
-                
+
             # 3. Garante que a lista de atributos seja carregada na abertura
             self.atualizar_lista_atributos()
 
@@ -572,7 +572,7 @@ class VectorToMap:
         # ====================================================================
         if self.dlg.isMinimized():
             self.dlg.showNormal()  # Desminimiza a janela
-            
+
         self.dlg.show()            # Garante que está visível
         self.dlg.raise_()          # Traz para a frente de tudo (Z-Order)
         self.dlg.activateWindow()  # Dá o foco do mouse e teclado para ela
@@ -586,7 +586,7 @@ class VectorToMap:
     # ------------------------------------------------------------------------------------
     # --- SUB-FUNÇÕES DE INTERFACE ---
     # ------------------------------------------------------------------------------------
-    
+
     def _aplicar_estilos(self):
         """Injeta o CSS consolidado (Azul Profissional & Clean) e esconde barras padrão."""
 
@@ -612,7 +612,7 @@ class VectorToMap:
                 border-radius: 4px;
                 background-color: #f0f0f0;
                 height: 3px;
-                color: #333; 
+                color: #333;
             }
             QProgressBar#previewProgressBar::chunk {
                 background-color: #3498db;
@@ -642,12 +642,12 @@ class VectorToMap:
                 height: 0px;
                 width: 0px;
             }
-            
+
             /* 4. PADRONIZAÇÃO DOS WIDGETS DE TEXTO */
             QCheckBox, QLabel, QRadioButton, QgsMapLayerComboBox, QComboBox {
-                font-size: 9pt; 
+                font-size: 9pt;
             }
-            
+
             /* --- 5. BOTÕES DA ABA DE SUPORTE --- */
             QPushButton#pushButton_apoiar {
                 background-color: #3498db;
@@ -693,7 +693,7 @@ class VectorToMap:
             /* =================================================== */
             /* 6. BOTÕES DE INTERFACE (EPSILON E INFO)             */
             /* =================================================== */
-            
+
             /* Foca EXCLUSIVAMENTE nos botões Epsilon (evitando quebrar os botões de cor) */
             QgsFieldExpressionWidget QToolButton {
                 background-color: #f8f9fa; /* Fundo claro fixo */
@@ -727,10 +727,10 @@ class VectorToMap:
 
         # --- NOVO: Efeito de Sombra na Folha de Preview ---
         sombra = QGraphicsDropShadowEffect()
-        sombra.setBlurRadius(20) 
+        sombra.setBlurRadius(20)
         sombra.setXOffset(5)
         sombra.setYOffset(5)
-        sombra.setColor(QColor(0, 0, 0, 80)) 
+        sombra.setColor(QColor(0, 0, 0, 80))
 
         if hasattr(self.dlg, 'lbl_preview'):
             self.dlg.lbl_preview.setGraphicsEffect(sombra)
@@ -745,32 +745,32 @@ class VectorToMap:
 
         self.dlg.combo_temas.blockSignals(True)
         self.dlg.combo_temas.clear()
-        
+
         temas = QgsProject.instance().mapThemeCollection().mapThemes()
-        
+
         if not temas:
             self.dlg.chk_usar_tema.setChecked(False)
             self.dlg.chk_usar_tema.setEnabled(False)
             self.dlg.combo_temas.setEnabled(False)
-            
+
             aviso = self.tr("Nenhum tema encontrado. Crie um Tema de Mapa no painel do QGIS.")
             self.dlg.chk_usar_tema.setToolTip(aviso)
             self.dlg.combo_temas.setToolTip(aviso)
         else:
             self.dlg.chk_usar_tema.setEnabled(True)
             self.dlg.combo_temas.addItems(temas)
-            
+
             self.dlg.chk_usar_tema.setToolTip(self.tr("Ativa a renderização baseada em Temas de Mapa."))
             self.dlg.combo_temas.setToolTip(self.tr("Selecione o tema para o mapa principal."))
-            
+
             estado_chk = self.dlg.chk_usar_tema.isChecked()
             self.dlg.combo_temas.setEnabled(estado_chk)
-            
+
         self.dlg.combo_temas.blockSignals(False)
 
 
-    
-    
+
+
     def _configurar_widgets_iniciais(self):
         """Popula as ComboBoxes, recria os botões na ordem certa e define variáveis de estado."""
 
@@ -825,7 +825,7 @@ class VectorToMap:
         self.dlg.combo_escala_fixa.clear()
         escalas = [
             ("1:1.000", 1000), ("1:5.000", 5000), ("1:10.000", 10000),
-            ("1:25.000", 25000), ("1:50.000", 50000), ("1:100.000", 100000), 
+            ("1:25.000", 25000), ("1:50.000", 50000), ("1:100.000", 100000),
             ("1:250.000", 250000), ("1:500.000", 500000), ("1:1.000.000", 1000000),
             ("1:2.500.000", 2500000), ("1:5.000.000", 5000000), ("1:7.500.000", 7500000),
             ("1:10.000.000", 10000000), ("1:50.000.000", 50000000), ("1:100.000.000", 100000000)
@@ -853,11 +853,11 @@ class VectorToMap:
             self.dlg.comboZoomOut.addItem(self.tr("65%"), 65.0)
             self.dlg.comboZoomOut.addItem(self.tr("75%"), 75.0)
             self.dlg.comboZoomOut.addItem(self.tr("100% (Dobro)"), 100.0)
-            
+
             # Adiciona uma linha divisória visual
             self.dlg.comboZoomOut.insertSeparator(self.dlg.comboZoomOut.count())
             self.dlg.comboZoomOut.addItem(self.tr("Usar Coluna ou Expressão (ε)"), "expressao")
-            
+
             self.dlg.comboZoomOut.setCurrentIndex(2) # Define o 25% como padrão inicial
 
         # Filtro de Camadas Vectoriais
@@ -865,7 +865,7 @@ class VectorToMap:
 
         if hasattr(self.dlg, 'combo_camada_loc'):
             self.dlg.combo_camada_loc.setFilters(QgsMapLayerProxyModel.VectorLayer)
-        
+
         # ====================================================================
         # NOVO: SETUP DAS OPÇÕES DO MAPA DE LOCALIZAÇÃO (Zoom vs Camada)
         # ====================================================================
@@ -874,7 +874,7 @@ class VectorToMap:
             self.grupo_localizacao.addButton(self.dlg.rb_local_zoomout)
             self.grupo_localizacao.addButton(self.dlg.rb_local_camada)
             self.dlg.rb_local_camada.setChecked(True) # Padrão: usar a camada
-            
+
         if hasattr(self.dlg, 'combo_local_zoomout'):
             self.dlg.combo_local_zoomout.clear()
             self.dlg.combo_local_zoomout.addItem(self.tr("2 x"), 2.0)
@@ -899,7 +899,7 @@ class VectorToMap:
             (self.tr("Inferior Esquerdo"), "IE"),
             (self.tr("Inferior Direito"), "ID")
         ]
-        
+
         # Preenche os 3 combos de uma vez, se existirem
         for combo_name in ['comboLegenda', 'comboEscala', 'comboNorte', 'comboPosLoc']:
             if hasattr(self.dlg, combo_name):
@@ -907,7 +907,7 @@ class VectorToMap:
                 combo.clear()
                 for texto, dado in opcoes_posicao:
                     combo.addItem(texto, dado)
-                    
+
         # Define os padrões iniciais (Legenda=InfEsq, Escala=SupEsq, Norte=SupDir)
         if hasattr(self.dlg, 'comboLegenda'): self.dlg.comboLegenda.setCurrentIndex(2)
         if hasattr(self.dlg, 'comboEscala'): self.dlg.comboEscala.setCurrentIndex(0)
@@ -923,7 +923,7 @@ class VectorToMap:
             self.dlg.combo_estilo_norte.addItem(self.tr("Clássica (Seta N)"), "NorthArrow_01.svg")
             self.dlg.combo_estilo_norte.addItem(self.tr("Rosa dos Ventos"), "NorthArrow_04.svg")
             self.dlg.combo_estilo_norte.setCurrentIndex(0)
-            
+
             # Gatilho: Se o usuário mudar a seta, a preview atualiza na hora!
             self.dlg.combo_estilo_norte.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
 
@@ -952,12 +952,12 @@ class VectorToMap:
         self.btn_suporte_ajuda.setObjectName("btn_info_python")
         self.btn_suporte_ajuda.setFixedSize(22, 22) # Mantemos os 22x22
         self.btn_suporte_ajuda.setToolTip(self.tr("Ajuda do VectorToMap"))
-                
+
         self.dlg.button_box.clear()
-        
+
         # Adiciona o botão de suporte no início como ActionRole para ficar do lado esquerdo
         self.dlg.button_box.addButton(self.btn_suporte_ajuda, QDialogButtonBox.ButtonRole.ActionRole)
-        
+
         self.btn_export = QPushButton(self.tr("Exportar"))
         self.btn_render = QPushButton(self.tr("Preview"))
         self.btn_ok = QPushButton(self.tr("OK"))
@@ -975,10 +975,10 @@ class VectorToMap:
 
         if hasattr(self.dlg, 'lineEdit_titulo'):
             self.dlg.lineEdit_titulo.textChanged.connect(self.disparar_preview_se_autorizado)
-            
+
         if hasattr(self.dlg, 'btn_fonte_titulo'):
             self.dlg.btn_fonte_titulo.clicked.connect(self.escolher_fonte_titulo)
-            
+
         # Preenche a ComboBox de Alinhamento e conecta ao gerador de Preview
         if hasattr(self.dlg, 'combo_alinhamento_titulo'):
             self.dlg.combo_alinhamento_titulo.clear()
@@ -993,7 +993,7 @@ class VectorToMap:
         self.export_info = None
         self.abort_processing = False
         self.is_rendering = False
-        
+
         # Setup Timer Preview
         self.timer_preview = QTimer()
         self.timer_preview.setSingleShot(True)
@@ -1007,11 +1007,11 @@ class VectorToMap:
             self.dlg.tabWidget.setCurrentIndex(0)
 
 
-    
-    
+
+
     def _conectar_sinais(self):
         """Faz todas as ligações entre as ações do usuário e as funções lógicas."""
-        
+
         # --- 1. BOTÕES PRINCIPAIS ---
         self.btn_suporte_ajuda.clicked.connect(self.mostrar_tela_sobre)
         self.btn_export.clicked.connect(self.preparar_exportacao)
@@ -1022,7 +1022,7 @@ class VectorToMap:
         # --- 2. NAVEGAÇÃO E SUPORTE ---
         if hasattr(self.dlg, 'pushButton_ir_suporte'):
             self.dlg.pushButton_ir_suporte.clicked.connect(self.ir_para_suporte)
-        
+
         # OS BOTÕES DE SUPORTE AGORA SÃO CONECTADOS DENTRO DA _adicionar_aba_sobre()!
 
         # --- 3. TIMER E PREVIEW AUTOMÁTICA ---
@@ -1042,7 +1042,7 @@ class VectorToMap:
 
         if hasattr(self.dlg, 'comboZoomOut'):
             self.dlg.comboZoomOut.currentIndexChanged.connect(self.validar_geometria_escala)
-        
+
         # --- 5. GATILHOS DE FILTROS E HIERARQUIA (Aviso do Filtro mora aqui) ---
         self.dlg.chk_filtrar_feicoes.stateChanged.connect(self.atualizar_hierarquia_camadas)
         self.dlg.chk_exibir_so_camada_atual.stateChanged.connect(self.atualizar_hierarquia_camadas)
@@ -1051,21 +1051,21 @@ class VectorToMap:
         # --- 6. GATILHOS DE ATRIBUTOS E LAYOUT ---
         self.dlg.chk_selecionar_todos.stateChanged.connect(self.marcar_desmarcar_todos)
         self.dlg.chk_numeracao.toggled.connect(self.disparar_preview_se_autorizado)
-        
-        if hasattr(self.dlg, 'chk_apenas_mapa'): 
+
+        if hasattr(self.dlg, 'chk_apenas_mapa'):
             self.dlg.chk_apenas_mapa.stateChanged.connect(self.disparar_preview_se_autorizado)
-        
-        if hasattr(self.dlg, 'btn_cor_fundo'): 
+
+        if hasattr(self.dlg, 'btn_cor_fundo'):
             self.dlg.btn_cor_fundo.colorChanged.connect(self.disparar_preview_se_autorizado)
-        
+
         # --- NOVO: Conecta o gatilho da cor da página ---
-        if hasattr(self.dlg, 'btn_cor_pagina'): 
+        if hasattr(self.dlg, 'btn_cor_pagina'):
             self.dlg.btn_cor_pagina.colorChanged.connect(self.disparar_preview_se_autorizado)
-        
+
         # --- NOVO: Conecta as checkboxes de transparência à Preview ---
         if hasattr(self.dlg, 'chk_map_fundo_transp'):
             self.dlg.chk_map_fundo_transp.stateChanged.connect(self.disparar_preview_se_autorizado)
-            
+
         if hasattr(self.dlg, 'chk_pag_fundo_transp'):
             self.dlg.chk_pag_fundo_transp.stateChanged.connect(self.disparar_preview_se_autorizado)
         # --------------------------------------------------------------
@@ -1080,12 +1080,12 @@ class VectorToMap:
             self.dlg.btn_info_ddo_auto.clicked.connect(
                 lambda: self.mostrar_info("ddo_auto", self.dlg.btn_info_ddo_auto)
             )
-            
+
         if hasattr(self.dlg, 'btn_info_ddo_fixa'):
             self.dlg.btn_info_ddo_fixa.clicked.connect(
                 lambda: self.mostrar_info("ddo_fixa", self.dlg.btn_info_ddo_fixa)
             )
-        
+
         # ====================================================================
         # NOVO: GATILHO DO BOTÃO DE INFO DO AGRUPAMENTO (ATLAS)
         # ====================================================================
@@ -1094,9 +1094,9 @@ class VectorToMap:
                 lambda: self.mostrar_info("agrupar", self.dlg.btn_info_agrupar)
             )
         # ====================================================================
-        
+
         # --- GATILHOS DE DECORAÇÕES (Preview e UI Inteligente) ---
-        
+
         # Função auxiliar para disparar as duas ações juntas
         def _ao_mudar_decoracao_principal():
             self.atualizar_estado_decoracoes()
@@ -1107,7 +1107,7 @@ class VectorToMap:
         for chk_name in checkboxes_principais:
             if hasattr(self.dlg, chk_name):
                 getattr(self.dlg, chk_name).stateChanged.connect(_ao_mudar_decoracao_principal)
-        
+
         # --- NOVO: Gatilho do GroupBox de Localização ---
         if hasattr(self.dlg, 'group_mapa_loc'):
             self.dlg.group_mapa_loc.toggled.connect(_ao_mudar_decoracao_principal)
@@ -1117,12 +1117,12 @@ class VectorToMap:
         for chk_name in sub_controles_chk:
             if hasattr(self.dlg, chk_name):
                 getattr(self.dlg, chk_name).stateChanged.connect(self.disparar_preview_se_autorizado)
-        
+
         # --- NOVO: Gatilhos dos RadioButtons de Localização ---
         if hasattr(self.dlg, 'rb_local_zoomout'):
             self.dlg.rb_local_zoomout.toggled.connect(self.atualizar_estado_decoracoes)
             self.dlg.rb_local_zoomout.toggled.connect(self.disparar_preview_se_autorizado)
-            
+
         if hasattr(self.dlg, 'combo_local_zoomout'):
             self.dlg.combo_local_zoomout.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
         # ------------------------------------------------------
@@ -1130,7 +1130,7 @@ class VectorToMap:
         for combo_name in ['comboLegenda', 'comboEscala', 'comboNorte', 'comboPosLoc', 'comboGrid']:
             if hasattr(self.dlg, combo_name):
                 getattr(self.dlg, combo_name).currentIndexChanged.connect(self.disparar_preview_se_autorizado)
-                
+
         if hasattr(self.dlg, 'combo_camada_loc'):
             self.dlg.combo_camada_loc.layerChanged.connect(self.disparar_preview_se_autorizado)
 
@@ -1143,27 +1143,27 @@ class VectorToMap:
             self.dlg.rb_retrato, self.dlg.rb_paisagem,
             self.dlg.chk_modo_formulario, self.dlg.chk_modo_individual, self.dlg.chk_exibir_atributos
         ]
-        
+
         if hasattr(self.dlg, 'rb_atlas_nenhum'):
             widgets_preview.extend([self.dlg.rb_atlas_nenhum, self.dlg.rb_atlas_geral, self.dlg.rb_atlas_agrupar])
             self.dlg.rb_atlas_nenhum.toggled.connect(self.atualizar_estado_filtro_feicoes)
             self.dlg.rb_atlas_geral.toggled.connect(self.atualizar_estado_filtro_feicoes)
             self.dlg.rb_atlas_agrupar.toggled.connect(self.atualizar_estado_filtro_feicoes)
-            
+
         if hasattr(self.dlg, 'exp_atlas_agrupar'):
             self.dlg.exp_atlas_agrupar.fieldChanged.connect(self.disparar_preview_se_autorizado)
 
         if hasattr(self.dlg, 'exp_ddo_auto'):
             self.dlg.exp_ddo_auto.fieldChanged.connect(self.disparar_preview_se_autorizado)
-            
+
         if hasattr(self.dlg, 'exp_ddo_fixa'):
             self.dlg.exp_ddo_fixa.fieldChanged.connect(self.disparar_preview_se_autorizado)
-        
+
         for w in widgets_preview:
             if hasattr(w, 'currentIndexChanged'): w.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
             elif hasattr(w, 'stateChanged'): w.stateChanged.connect(self.disparar_preview_se_autorizado)
             elif hasattr(w, 'toggled'): w.toggled.connect(self.disparar_preview_se_autorizado)
-        
+
         # Ouve o QGIS: atualiza a lista de temas se o usuário criar um tema novo
         QgsProject.instance().mapThemeCollection().mapThemesChanged.connect(self.atualizar_combo_temas)
 
@@ -1171,7 +1171,7 @@ class VectorToMap:
         if hasattr(self.dlg, 'chk_usar_tema'):
             self.dlg.chk_usar_tema.toggled.connect(lambda estado: self.dlg.combo_temas.setEnabled(estado))
             self.dlg.chk_usar_tema.toggled.connect(self.atualizar_hierarquia_camadas)
-        
+
         # --- NOVO: Gatilho para atualizar a preview ao trocar o tema na lista ---
         if hasattr(self.dlg, 'combo_temas'):
             self.dlg.combo_temas.currentIndexChanged.connect(self.disparar_preview_se_autorizado)
@@ -1189,8 +1189,8 @@ class VectorToMap:
         self.atualizar_estado_decoracoes()
 
 
-    
-    
+
+
     def abrir_tutorial_youtube(self):
         """Abre o vídeo tutorial do YouTube no navegador padrão do usuário."""
         url = QUrl("https://www.youtube.com/watch?v=AIITugHD-_o")
@@ -1203,11 +1203,11 @@ class VectorToMap:
         """Define ícones, comportamento do sistema operacional, restaura tamanho e centraliza."""
         self.dlg.setWindowIcon(QIcon(':/plugins/vector_to_map/icon.png'))
         self.dlg.setWindowTitle("VectorToMap")
-        
+
         self.dlg.setWindowFlags(
-            Qt.WindowType.Window | 
-            Qt.WindowType.WindowMinimizeButtonHint | 
-            Qt.WindowType.WindowMaximizeButtonHint | 
+            Qt.WindowType.Window |
+            Qt.WindowType.WindowMinimizeButtonHint |
+            Qt.WindowType.WindowMaximizeButtonHint |
             Qt.WindowType.WindowCloseButtonHint
         )
 
@@ -1217,13 +1217,13 @@ class VectorToMap:
         # Restore window geometry
         settings = QgsSettings()
         geometria = settings.value("/VectorToMap/geometry")
-        if geometria: 
+        if geometria:
             self.dlg.restoreGeometry(geometria)
-        else: 
-            self.dlg.resize(1100, 750) 
-        
-        if hasattr(self.dlg, 'splitter'): 
-            self.dlg.splitter.setSizes([600, 500]) 
+        else:
+            self.dlg.resize(1100, 750)
+
+        if hasattr(self.dlg, 'splitter'):
+            self.dlg.splitter.setSizes([600, 500])
 
         # Centralizar na Tela
         screen_geometry = QApplication.primaryScreen().availableGeometry()
@@ -1231,7 +1231,7 @@ class VectorToMap:
         geometria_janela = self.dlg.frameGeometry()
         geometria_janela.moveCenter(centro_tela)
         self.dlg.move(geometria_janela.topLeft())
-    
+
 
 
 
@@ -1246,7 +1246,7 @@ class VectorToMap:
 
         # Monta um nome base amigável já no diretório correto
         nome_sugerido = os.path.join(ultimo_dir, f"Mapas_{camada.name()}")
-        
+
         # 1. ADICIONAMOS O SVG AQUI NO FILTRO
         filtros = "PDF (*.pdf);;SVG (*.svg);;PNG (*.png);;JPEG (*.jpg)"
 
@@ -1263,7 +1263,7 @@ class VectorToMap:
             ext = ".pdf"
             if "PNG" in filtro_selecionado: ext = ".png"
             elif "JPEG" in filtro_selecionado: ext = ".jpg"
-            elif "SVG" in filtro_selecionado: ext = ".svg" 
+            elif "SVG" in filtro_selecionado: ext = ".svg"
 
             # Adiciona a extensão se o usuário esqueceu de digitar
             if not caminho_arquivo.lower().endswith(ext):
@@ -1285,12 +1285,12 @@ class VectorToMap:
 
     def limpar_clones_preview(self):
         """Remove da memória os clones gerados invisivelmente para a preview (Baseado 100% em Custom Properties)."""
-        
+
         # 1. Limpeza pelo rastreio em memória (O método original rápido)
         if hasattr(self, 'clones_preview') and self.clones_preview:
             QgsProject.instance().removeMapLayers(self.clones_preview)
             self.clones_preview.clear()
-            
+
         if hasattr(self, 'engine') and self.engine.clones_preview:
             QgsProject.instance().removeMapLayers(self.engine.clones_preview)
             self.engine.clones_preview.clear()
@@ -1300,11 +1300,11 @@ class VectorToMap:
         # ====================================================================
         camadas_para_deletar = []
         for layer_id, layer in QgsProject.instance().mapLayers().items():
-            
+
             # Checa EXCLUSIVAMENTE se a camada tem o nosso carimbo secreto no metadado
             if layer.customProperty("vtm_is_preview_temp"):
                 camadas_para_deletar.append(layer_id)
-                
+
         if camadas_para_deletar:
             QgsProject.instance().removeMapLayers(camadas_para_deletar)
 
@@ -1316,7 +1316,7 @@ class VectorToMap:
         # 1. Se o motor já estiver rodando, não mexe em nada para não causar conflitos
         if self.is_rendering:
             return
-        
+
         # ====================================================================
         # A REGRA DE AUTORIDADE DO TEMA
         # ====================================================================
@@ -1332,7 +1332,7 @@ class VectorToMap:
             # Devolve o botão "Isolar Camada Atual" para o usuário
             self.dlg.chk_exibir_so_camada_atual.setEnabled(True)
 
-        # Deixa a nossa função especialista (que acabamos de consertar) 
+        # Deixa a nossa função especialista (que acabamos de consertar)
         # decidir sozinha se o "Filtro de Feições" deve ser travado ou não!
         self.atualizar_estado_filtro_feicoes()
         # ====================================================================
@@ -1340,13 +1340,13 @@ class VectorToMap:
         filtrar = self.dlg.chk_filtrar_feicoes.isChecked()
         exibir_atual = self.dlg.chk_exibir_so_camada_atual.isChecked()
 
-        # 2. Bloqueia sinais dos checkboxes de trava para que eles não disparem 
+        # 2. Bloqueia sinais dos checkboxes de trava para que eles não disparem
         # a preview múltiplas vezes enquanto mudamos o estado deles via código
         self.dlg.chk_travar_camadas.blockSignals(True)
         self.dlg.chk_travar_estilos.blockSignals(True)
 
         try:
-            # 3. Lógica de Dependência: Se for filtrar ou isolar camada, 
+            # 3. Lógica de Dependência: Se for filtrar ou isolar camada,
             # a trava de camadas PRECISA estar ativa e o usuário não pode desmarcar.
             if filtrar or exibir_atual:
                 self.dlg.chk_travar_camadas.setChecked(True)
@@ -1357,16 +1357,16 @@ class VectorToMap:
             # 4. Travar Estilos só faz sentido se as camadas estiverem travadas
             travado = self.dlg.chk_travar_camadas.isChecked()
             self.dlg.chk_travar_estilos.setEnabled(travado)
-            
+
             # Se a trava principal cair, a de estilos cai junto
             if not travado:
                 self.dlg.chk_travar_estilos.setChecked(False)
-                
+
         finally:
             # 5. O SEGURO DE VIDA: Libera os sinais novamente, MESMO SE DER ERRO ACIMA
             self.dlg.chk_travar_camadas.blockSignals(False)
             self.dlg.chk_travar_estilos.blockSignals(False)
-        
+
         # --- 5. GESTÃO DO AVISO VISUAL ---
         # Exibe o aviso se o filtro de feições estiver ativo (criação de temps)
         if hasattr(self.dlg, 'lbl_aviso_feicoes'):
@@ -1376,23 +1376,23 @@ class VectorToMap:
                 self.dlg.lbl_aviso_feicoes.setText(self.tr("⚠️ O filtro de feições gera camadas temporárias internas para o layout."))
             else:
                 self.dlg.lbl_aviso_feicoes.hide()
-        
+
         # 6. Dispara a atualização da preview respeitando o timer
         self.disparar_preview_se_autorizado()
-    
+
 
 
 
     def atualizar_estado_filtro_feicoes(self):
         """Bloqueia os filtros e o widget Epsilon dependendo do Radio Button escolhido."""
         if not hasattr(self.dlg, 'rb_atlas_geral'): return
-        
+
         is_geral = self.dlg.rb_atlas_geral.isChecked()
         is_agrupar = self.dlg.rb_atlas_agrupar.isChecked()
-        
+
         # --- A TRAVA MESTRA: Lê se o Tema está ligado ---
         usar_tema = hasattr(self.dlg, 'chk_usar_tema') and self.dlg.chk_usar_tema.isChecked()
-        
+
         # 1. Trava do Filtro de Feições e Atributos (Se for mapa Geral, desliga tudo)
         if is_geral:
             self.dlg.chk_filtrar_feicoes.blockSignals(True)
@@ -1409,22 +1409,22 @@ class VectorToMap:
                 self.dlg.chk_filtrar_feicoes.blockSignals(False)
             else:
                 self.dlg.chk_filtrar_feicoes.setEnabled(True)
-                
+
             if hasattr(self.dlg, 'groupAtributos'): self.dlg.groupAtributos.setEnabled(True)
-            
+
         # 2. Liga/Desliga o botão de Expressão (Epsilon)
         if hasattr(self.dlg, 'exp_atlas_agrupar'):
             self.dlg.exp_atlas_agrupar.setEnabled(is_agrupar)
-    
+
 
 
 
     def atualizar_estado_travar_estilos(self):
         """Habilita o 'Travar Estilos' apenas se o 'Travar Camadas' estiver marcado."""
-        
+
         travado = self.dlg.chk_travar_camadas.isChecked()
         self.dlg.chk_travar_estilos.setEnabled(travado)
-        
+
         # Se o 'Travar Camadas' for desmarcado, garantimos que o de estilos desmarque também
         if not travado:
             self.dlg.chk_travar_estilos.blockSignals(True)
@@ -1458,21 +1458,21 @@ class VectorToMap:
             # Se estiver processando, apenas levantamos a bandeira de parada
             self.engine.abort_processing = True
             self.iface.messageBar().pushMessage(
-                self.tr("Aviso"), 
-                self.tr("Cancelando processamento... A janela permanecerá aberta."), 
-                level=Qgis.MessageLevel.Success, 
+                self.tr("Aviso"),
+                self.tr("Cancelando processamento... A janela permanecerá aberta."),
+                level=Qgis.MessageLevel.Success,
                 duration=3
             )
         else:
             # Se não houver nada rodando, o comportamento de fechar é seguro
             self.dlg.reject()
-    
+
 
 
 
     def abrir_gumroad(self):
         """Abre a página de doação para apoiar o projeto."""
-        url_doacao = "https://buymeacoffee.com/matheusdurso" 
+        url_doacao = "https://buymeacoffee.com/matheusdurso"
         QDesktopServices.openUrl(QUrl(url_doacao))
 
 
@@ -1482,48 +1482,48 @@ class VectorToMap:
         """Abre a página de Issues do GitHub para relatar bugs."""
         url_github = "https://github.com/matheusdurso/VectorToMap/issues"
         QDesktopServices.openUrl(QUrl(url_github))
-    
+
 
 
 
     def ir_para_suporte(self):
         """Muda a aba ativa para a página de Desenvolvimento e Suporte."""
         if hasattr(self.dlg, 'tabWidget'):
-            # setCurrentIndex(1) muda para a segunda aba. 
+            # setCurrentIndex(1) muda para a segunda aba.
             # Se a aba de suporte for a terceira no seu layout, mude para 2.
             self.dlg.tabWidget.setCurrentIndex(1)
-    
+
 
 
 
     def _verificar_selecao_template(self):
         """Abre o seletor de arquivos se o usuário escolher carregar um template externo e tranca a interface."""
         if not hasattr(self, 'dlg') or not self.dlg or sip.isdeleted(self.dlg) or not hasattr(self.dlg, 'combo_presets'): return
-        
+
         # Lemos a opção clicada
         dados_atuais = self.dlg.combo_presets.currentData()
-        
+
         if dados_atuais == "carregar_template":
             # Bloqueia os sinais para não criar um loop ao adicionar novos itens
             self.dlg.combo_presets.blockSignals(True)
-            
+
             try:
                 caminho, _ = QFileDialog.getOpenFileName(
-                    self.dlg, 
-                    self.tr("Selecionar Layout do QGIS"), 
-                    "", 
+                    self.dlg,
+                    self.tr("Selecionar Layout do QGIS"),
+                    "",
                     "QGIS Template (*.qpt)"
                 )
-                
+
                 if caminho:
                     # O usuário escolheu um arquivo! Vamos deixar o nome bonito
                     nome_arquivo = os.path.basename(caminho).replace('.qpt', '').replace('_', ' ').title()
                     nome_amigavel = f"📂 {nome_arquivo}"
-                    
+
                     # Insere o novo arquivo logo ACIMA da linha divisória
                     idx_insercao = self.dlg.combo_presets.count() - 2
                     self.dlg.combo_presets.insertItem(idx_insercao, nome_amigavel, caminho)
-                    
+
                     # Seleciona o item que ele acabou de carregar
                     self.dlg.combo_presets.setCurrentIndex(idx_insercao)
                     dados_atuais = caminho # Atualiza para a trava de UI
@@ -1539,7 +1539,7 @@ class VectorToMap:
         # TRAVA INTELIGENTE DA INTERFACE (A MÁGICA DA UX)
         # ====================================================================
         is_template = str(dados_atuais).endswith('.qpt') or str(dados_atuais) == "template"
-        
+
         # Lista dos widgets visuais que queremos trancar (ignora layouts invisíveis para evitar bugs)
         widgets_visiveis = (QComboBox, QCheckBox, QRadioButton, QLineEdit, QSpinBox, QDoubleSpinBox, QPushButton, QLabel)
 
@@ -1555,8 +1555,8 @@ class VectorToMap:
         # 2. Desativar todo o groupAtributos
         if hasattr(self.dlg, 'groupAtributos'):
             self.dlg.groupAtributos.setEnabled(not is_template)
-            
-            # Se voltarmos pro Modelo Matemático (is_template = False), 
+
+            # Se voltarmos pro Modelo Matemático (is_template = False),
             # garantimos que o grupo não fique ativado à força se a opção de "Zoom Camada" estiver ligada.
             if not is_template:
                 self.atualizar_estado_filtro_feicoes()
@@ -1569,7 +1569,7 @@ class VectorToMap:
 
         # Dispara a preview visual para atualizar a tela
         self.disparar_preview_se_autorizado()
-    
+
 
 
 
@@ -1598,7 +1598,7 @@ class VectorToMap:
             self.edit_busca_atributos.setPlaceholderText(self.tr("🔍 Filtrar colunas..."))
             self.edit_busca_atributos.setClearButtonEnabled(True)
             self.edit_busca_atributos.textChanged.connect(self.filtrar_widgets_atributos)
-            
+
             # INJEÇÃO DIRETA NO NOVO NOME DO GRUPO
             if hasattr(self.dlg, 'groupAtributos') and self.dlg.groupAtributos.layout():
                 self.dlg.groupAtributos.layout().insertWidget(0, self.edit_busca_atributos)
@@ -1612,8 +1612,8 @@ class VectorToMap:
                 cb.blockSignals(True)
                 cb.setChecked(True)
                 cb.blockSignals(False)
-        
-        # Força o checkbox "Selecionar Todos" a fazer a leitura real da tela 
+
+        # Força o checkbox "Selecionar Todos" a fazer a leitura real da tela
         # logo após a restauração. Se a nova camada tiver colunas diferentes, ele desmarca.
         self.verificar_estado_selecionar_todos()
 
@@ -1624,11 +1624,11 @@ class VectorToMap:
     def atualizar_lista_colunas(self, camada):
         """Reconstrói a grade de colunas forçando o QGridLayout no container interno."""
         container = self.dlg.scrollAreaWidgetContents
-        
+
         # Garante que o layout seja Grid (conforme o TypeError anterior)
         if container.layout() and not isinstance(container.layout(), QGridLayout):
-            QWidget().setLayout(container.layout()) 
-        
+            QWidget().setLayout(container.layout())
+
         if not container.layout():
             layout = QGridLayout(container)
             container.setLayout(layout)
@@ -1641,37 +1641,37 @@ class VectorToMap:
             if item.widget(): item.widget().deleteLater()
 
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.colunas_atuais = [] 
+        self.colunas_atuais = []
         campos = list(camada.fields())
-        
+
         for idx, campo in enumerate(campos):
             nome = campo.name()
             cb = QCheckBox(nome)
-            cb.stateChanged.connect(self.atualizar_tabela_por_selecao)                    
+            cb.stateChanged.connect(self.atualizar_tabela_por_selecao)
             cb.stateChanged.connect(self.verificar_estado_selecionar_todos)
             cb.stateChanged.connect(self.atualizar_estado_modos_exibicao)
             cb.stateChanged.connect(self.disparar_preview_se_autorizado)
-            
+
             self.colunas_atuais.append(cb)
             layout.addWidget(cb, idx // 3, idx % 3)
 
-    
+
     def _organizar_grid_atributos(self):
         """Distribui os widgets VISÍVEIS no grid interno da scrollArea."""
         # Usamos o container que se provou estável nos testes anteriores
         container = self.dlg.scrollAreaWidgetContents
         layout = container.layout()
-        
-        if not layout: 
+
+        if not layout:
             return
-        
+
         # Remove do layout sem deletar os objetos (importante para o filtro)
         for i in reversed(range(layout.count())):
             layout.takeAt(i)
 
         # Filtra apenas os CheckBoxes que devem aparecer
         visiveis = [cb for cb in self.colunas_atuais if not cb.isHidden()]
-        
+
         for idx, cb in enumerate(visiveis):
             row = idx // 3 # Mantém as 3 colunas
             col = idx % 3
@@ -1680,14 +1680,14 @@ class VectorToMap:
 
     def filtrar_widgets_atributos(self, texto):
         """Esconde os CheckBoxes que não batem com a busca e reorganiza o grid."""
-        if not hasattr(self, 'colunas_atuais'): 
+        if not hasattr(self, 'colunas_atuais'):
             return
-            
+
         texto = texto.lower().strip()
         for cb in self.colunas_atuais:
             # Se bater com a busca ou a busca estiver vazia, fica visível
             cb.setVisible(texto in cb.text().lower() if texto else True)
-        
+
         # Chama a função acima para "empurrar" os resultados para o topo
         self._organizar_grid_atributos()
 
@@ -1713,20 +1713,20 @@ class VectorToMap:
 
         # 3. Reseta o cache para os rótulos aparecerem
         self.preview_data_cache = None
-        self.ultimo_id_camada = None 
+        self.ultimo_id_camada = None
 
         # 4. Só dispara se estiver no modo automático ou manual (via botão)
         self.disparar_preview_se_autorizado()
-    
+
 
     def verificar_estado_selecionar_todos(self):
         """O mestre só fica marcado se 100% dos filhos estiverem marcados."""
         if not hasattr(self, 'colunas_atuais') or not self.colunas_atuais:
             return
-            
+
         total = len(self.colunas_atuais)
         marcados = sum(1 for cb in self.colunas_atuais if cb.isChecked())
-        
+
         self.dlg.chk_selecionar_todos.blockSignals(True)
         # Lógica booleana: marcado se (total > 0 E marcados for igual ao total)
         self.dlg.chk_selecionar_todos.setChecked(total > 0 and marcados == total)
@@ -1737,10 +1737,10 @@ class VectorToMap:
         """Ativa os modos de exibição e garante que um deles esteja marcado."""
         # Verifica se existe pelo menos uma coluna marcada
         tem_selecao = any(cb.isChecked() for cb in self.colunas_atuais)
-        
+
         self.dlg.chk_modo_formulario.setEnabled(tem_selecao)
         self.dlg.chk_modo_individual.setEnabled(tem_selecao)
-        
+
         if tem_selecao:
             # Se nada estiver marcado, força o Formulário como padrão
             if not self.dlg.chk_modo_formulario.isChecked() and not self.dlg.chk_modo_individual.isChecked():
@@ -1760,23 +1760,23 @@ class VectorToMap:
                 self.dlg.chk_modo_formulario.blockSignals(False)
                 self.dlg.chk_modo_individual.blockSignals(False)
 
-    
+
 
 
     def atualizar_estado_decoracoes(self):
         """Habilita ou desabilita os controles das decorações com base nas checkboxes principais e trava de template."""
         if not self.dlg: return
-        
+
         # ====================================================================
         # 1. CONTROLES DO MAPA DE LOCALIZAÇÃO (Respeitando o group_mapa_loc)
         # ====================================================================
         if hasattr(self.dlg, 'group_mapa_loc'):
             # Lemos se a "chave geral" do grupo está ligada
             is_loc_ativo = self.dlg.group_mapa_loc.isChecked()
-            
+
             if hasattr(self.dlg, 'rb_local_zoomout'):
                 is_modo_zoom = self.dlg.rb_local_zoomout.isChecked()
-                
+
                 # A MÁGICA 1: Só ativa a combo se o modo estiver marcado E o grupo todo estiver ativo
                 if hasattr(self.dlg, 'combo_local_zoomout'):
                     self.dlg.combo_local_zoomout.setEnabled(is_loc_ativo and is_modo_zoom)
@@ -1836,18 +1836,18 @@ class VectorToMap:
         camada = self.dlg.mMapLayerComboBox.currentLayer()
         tabela = self.dlg.tableWidget
         if not camada: return
-        
+
         # Pega os nomes apenas dos checkboxes que estão na lista self.colunas_atuais
         colunas = [cb.text() for cb in self.colunas_atuais if cb.isChecked()]
-        
+
         tabela.clear()
         tabela.setColumnCount(len(colunas))
         tabela.setHorizontalHeaderLabels(colunas)
-        
+
         if not colunas:
             tabela.setRowCount(0)
             return
-            
+
         # Puxa 5 linhas de exemplo
         num_linhas = min(5, camada.featureCount())
         tabela.setRowCount(num_linhas)
@@ -1876,7 +1876,7 @@ class VectorToMap:
 
         if hasattr(self.dlg, 'exp_atlas_agrupar'):
             self.dlg.exp_atlas_agrupar.setLayer(camada)
-        
+
         # Só atualiza a interface se a camada escolhida for realmente nova
         if camada.id() != self.ultimo_id_camada_ativa:
             # ================================================================
@@ -1919,13 +1919,13 @@ class VectorToMap:
         if not camada: return
 
         self.dlg.combo_escala_fixa.blockSignals(True)
-        
+
         try:
             is_auto = self.dlg.rb_escala_auto.isChecked()
             is_fixa = self.dlg.rb_escala_fixa.isChecked()
 
             self.dlg.rb_escala_auto.setEnabled(True)
-            
+
             # --- 1. LÓGICA DO ZOOM AUTOMÁTICO (comboZoomOut e exp_ddo_auto) ---
             if hasattr(self.dlg, 'comboZoomOut'):
                 self.dlg.comboZoomOut.setEnabled(is_auto)
@@ -1941,15 +1941,15 @@ class VectorToMap:
             if hasattr(self.dlg, 'combo_escala_fixa'):
                 self.dlg.combo_escala_fixa.setEnabled(is_fixa)
                 usar_exp_fixa = (self.dlg.combo_escala_fixa.currentData() == "expressao")
-                
+
             if hasattr(self.dlg, 'exp_ddo_fixa'):
                 self.dlg.exp_ddo_fixa.setEnabled(is_fixa and usar_exp_fixa)
 
         finally:
             self.dlg.combo_escala_fixa.blockSignals(False)
-            
+
         self.disparar_preview_se_autorizado()
-    
+
 
 
 
@@ -1967,17 +1967,17 @@ class VectorToMap:
         # Pega a regra dos Radio Buttons pelo config gerado
         config = self._gerar_config_atual()
         campo_atlas = config.get('campo_atlas')
-        
-        if (self.preview_data_cache is None or 
-            self.ultimo_id_camada != camada.id() or 
+
+        if (self.preview_data_cache is None or
+            self.ultimo_id_camada != camada.id() or
             self.cache_val_atlas != campo_atlas):
-            
+
             self.ultimo_id_camada = camada.id()
             self.cache_val_atlas = campo_atlas
-            
+
             request_amostra = QgsFeatureRequest().setLimit(1)
             sample_f = next(camada.getFeatures(request_amostra), None)
-            
+
             if sample_f:
                 if campo_atlas is None:
                     self.preview_data_cache = [sample_f]
@@ -1986,43 +1986,43 @@ class VectorToMap:
                 else:
                     # MAGIA: Lê e executa a expressão matemática para a amostra
                     exp = QgsExpression(campo_atlas)
-                    
+
                     # --- A CORREÇÃO ESTÁ NESTAS DUAS LINHAS ---
                     contexto = QgsExpressionContext()
                     contexto.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(camada))
                     # ------------------------------------------
-                    
+
                     exp.prepare(contexto)
                     contexto.setFeature(sample_f)
                     val_amostra = exp.evaluate(contexto)
-                    
+
                     if val_amostra is None or val_amostra == NULL:
                         filtro = f'({campo_atlas}) IS NULL'
                     else:
                         filtro = f'({campo_atlas}) = {QgsExpression.quotedValue(val_amostra)}'
-                        
+
                     request_filtrado = QgsFeatureRequest().setFilterExpression(filtro)
                     self.preview_data_cache = list(camada.getFeatures(request_filtrado))
             else:
                 self.preview_data_cache = None
-        
+
         return self.preview_data_cache
 
-    
+
 
 
     def _gerar_config_atual(self, feicoes_amostra=None):
         """Centraliza a criação do dicionário para Exportação e Preview."""
         container = self.dlg.scrollAreaWidgetContents
         colunas_selecionadas = [cb.text() for cb in container.findChildren(QCheckBox) if cb.isChecked()]
-        
+
         # Lê a escolha do usuário baseada nos Radio Buttons
         campo_atlas = None
         if hasattr(self.dlg, 'rb_atlas_geral') and self.dlg.rb_atlas_geral.isChecked():
             campo_atlas = "__ALL_FEATURES__"
         elif hasattr(self.dlg, 'rb_atlas_agrupar') and self.dlg.rb_atlas_agrupar.isChecked():
             campo_atlas = self.dlg.exp_atlas_agrupar.asExpression()
-        
+
         return {
             'preset': self.dlg.combo_presets.currentData(),
             'orientacao': "Retrato" if self.dlg.rb_retrato.isChecked() else "Paisagem",
@@ -2071,39 +2071,39 @@ class VectorToMap:
         }
 
 
-    
-    
+
+
     def atualizar_preview(self):
         """Gera a preview. Chamada pelo Timer (auto) ou pelo Botão (manual)."""
         if self.is_rendering or not hasattr(self, 'dlg') or not self.dlg or sip.isdeleted(self.dlg) or not self.dlg.isVisible():
             return
 
         self.is_rendering = True
-        
-        layout = None 
+
+        layout = None
         try:
-            self.dlg.previewProgressBar.show() 
-            self.dlg.previewProgressBar.setRange(0, 0) 
+            self.dlg.previewProgressBar.show()
+            self.dlg.previewProgressBar.setRange(0, 0)
             QCoreApplication.processEvents()
 
             self.dlg.mMapLayerComboBox.blockSignals(True)
             self.limpar_clones_preview()
-            
+
             feicoes = self.obter_dados_preview()
             camada = self.dlg.mMapLayerComboBox.currentLayer()
 
             if feicoes and camada:
                 layout = QgsPrintLayout(QgsProject.instance())
                 layout.initializeDefaults()
-                
+
                 # ================================================================
-                # PUXA O CONFIG AQUI! 
+                # PUXA O CONFIG AQUI!
                 # Ele já sabe ler os seus novos Radio Buttons e Fórmulas!
                 # ================================================================
                 container = self.dlg.scrollAreaWidgetContents
                 colunas_selecionadas = [cb.text() for cb in container.findChildren(QCheckBox) if cb.isChecked()]
                 config = self._gerar_config_atual()
-                
+
                 campo_atlas = config.get('campo_atlas')
                 nome_sufixo_preview = "Preview"
 
@@ -2111,7 +2111,7 @@ class VectorToMap:
                 if campo_atlas == "__ALL_FEATURES__":
                     nome_sufixo_preview = "Geral"
                 elif campo_atlas is not None:
-                    # Como agora o campo_atlas pode ser uma equação SQL inteira, 
+                    # Como agora o campo_atlas pode ser uma equação SQL inteira,
                     # evitamos calcular o nome e apenas marcamos como 'Filtro'
                     nome_sufixo_preview = "Filtro"
 
@@ -2121,15 +2121,15 @@ class VectorToMap:
                     pagina_index=0, is_preview=True, nome_sufixo=nome_sufixo_preview
                 )
 
-                layout.refresh() 
+                layout.refresh()
 
                 exporter = QgsLayoutExporter(layout)
                 # A MÁGICA ACONTECE AQUI: 72 DPI reduz o peso de renderização em 90%!
                 image = exporter.renderPageToImage(0, QSize(), 72.0)
                 if not image.isNull():
                     self.dlg.lbl_preview.setPixmap(QPixmap.fromImage(image).scaled(
-                        self.dlg.lbl_preview.size(), 
-                        Qt.AspectRatioMode.KeepAspectRatio, 
+                        self.dlg.lbl_preview.size(),
+                        Qt.AspectRatioMode.KeepAspectRatio,
                         Qt.TransformationMode.SmoothTransformation
                     ))
             else:
@@ -2140,11 +2140,11 @@ class VectorToMap:
 
         finally:
             self.dlg.mMapLayerComboBox.blockSignals(False)
-            
+
             if layout:
                 layout.pageCollection().clear()
                 sip.delete(layout)
-            
+
             self.limpar_clones_preview()
             QTimer.singleShot(200, self._liberar_render)
 
@@ -2177,96 +2177,96 @@ class VectorToMap:
 
     def processar_clique_ok(self):
         """Processes configurations and generates the multi-page layout."""
-        
+
         camada = self.dlg.mMapLayerComboBox.currentLayer()
         if not camada: return
-        
+
         self.abort_processing = False
-        
+
         try:
             # ================================================================
-            # PUXA O CONFIG AQUI! 
-            # O cérebro do _gerar_config_atual já leu os seus novos Radio 
+            # PUXA O CONFIG AQUI!
+            # O cérebro do _gerar_config_atual já leu os seus novos Radio
             # Buttons e já sabe se tem Expressão Matemática ou não.
             # ================================================================
             config = self._gerar_config_atual()
             campo_atlas = config.get('campo_atlas')
 
             paginas_dados = []
-            
+
             if campo_atlas is None:
-                request = QgsFeatureRequest() 
-                for f in camada.getFeatures(request): 
+                request = QgsFeatureRequest()
+                for f in camada.getFeatures(request):
                     paginas_dados.append({'feicoes': [f], 'valor_grupo': None})
-            
+
             elif campo_atlas == "__ALL_FEATURES__":
                 paginas_dados.append({'feicoes': ["ALL"], 'valor_grupo': "Geral"})
-            
+
             else:
-                # O AGRUPADOR DE EXPRESSÕES DINÂMICAS! 
+                # O AGRUPADOR DE EXPRESSÕES DINÂMICAS!
                 exp = QgsExpression(campo_atlas)
-                
+
                 # --- A CORREÇÃO AQUI TAMBÉM ---
                 contexto = QgsExpressionContext()
                 contexto.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(camada))
                 # ------------------------------
-                
+
                 exp.prepare(contexto)
 
                 grupos = {}
                 for f in camada.getFeatures():
                     contexto.setFeature(f)
                     val = exp.evaluate(contexto)
-                    
+
                     # Transforma o resultado da equação em texto para podermos criar lotes
                     val_chave = "Null" if val is None or val == NULL else str(val).strip()
                     if val_chave not in grupos:
                         grupos[val_chave] = []
                     grupos[val_chave].append(f)
-                
+
                 # Ordena os lotes criados alfabeticamente
                 chaves_ordenadas = sorted(grupos.keys())
                 for chave in chaves_ordenadas:
                     paginas_dados.append({'feicoes': grupos[chave], 'valor_grupo': chave})
 
-            if paginas_dados: 
+            if paginas_dados:
                 self.criar_layout_multi_paginas(
-                    camada, 
+                    camada,
                     paginas_dados,
                     export_info=getattr(self, 'export_info', None)
                 )
-                
+
         except RuntimeError as e:
             # Captura APENAS o erro de "Camada Removida" (ou outros RuntimeErrors que você lançar)
             # Mostramos o alerta para o usuário, MAS NÃO enviamos para o Sentry, pois foi o usuário quem causou.
             self.iface.messageBar().pushMessage(
-                self.tr("Aviso"), 
-                str(e), 
+                self.tr("Aviso"),
+                str(e),
                 level=Qgis.MessageLevel.Warning
             )
 
         except Exception as e:
             # Captura todos os outros erros inesperados (bugs reais)
             erro_detalhado = traceback.format_exc()
-            
+
             if getattr(self, 'sentry_ativo', False):
                 try:
                     sentry_sdk.capture_exception(e)
                     sentry_sdk.flush(timeout=2.0)
                 except Exception:
                     pass
-            
+
             self.iface.messageBar().pushMessage(
-                self.tr("Erro"), 
-                f"{str(e)}. {self.tr('Veja o console para detalhes.')}", 
+                self.tr("Erro"),
+                f"{str(e)}. {self.tr('Veja o console para detalhes.')}",
                 level=Qgis.MessageLevel.Critical
             )
             QgsMessageLog.logMessage(erro_detalhado, "VectorToMap", Qgis.MessageLevel.Critical)
-        
+
         finally:
             self.export_info = None # Reseta a variável para o botão OK padrão
 
-    
+
 
 
     # ====================================================================================
@@ -2279,11 +2279,11 @@ class VectorToMap:
         self.is_rendering = True
         self.engine.abort_processing = False # Avisa o motor que o sinal está verde
         self.set_ui_enabled(False)
-        
+
         try:
             project = QgsProject.instance()
             manager = project.layoutManager()
-            
+
             # 1. Inicializa Variáveis de Exportação
             is_individual = export_info.get('individual', False) if export_info else False
             base_path = export_info.get('path', '') if export_info else ''
@@ -2303,7 +2303,7 @@ class VectorToMap:
             config = self._gerar_config_atual()
 
             # --- CURA DO SVG: Re-injetamos a extensão no config para proteger as tabelas ---
-            config['ext'] = ext 
+            config['ext'] = ext
             config['base_sem_ext'] = base_sem_ext  # <--- ADICIONE ESTA LINHA AQUI!
             # --------------------------------------------------------------------------------
 
@@ -2318,7 +2318,7 @@ class VectorToMap:
 
             # 5. Roteamento de Trabalho para o Engine
             layout_persistente = None
-            
+
             if is_individual:
                 self.engine.exportar_paginas_individuais(
                     project, camada, paginas_dados, config, progress_callback=atualizar_progresso
@@ -2338,13 +2338,13 @@ class VectorToMap:
                         settings = QgsLayoutExporter.PdfExportSettings()
                         settings.dpi = 300
                         exporter.exportToPdf(base_path, settings)
-                        
+
                         # --- CORREÇÃO: LIMPEZA SEGURA ---
                         for item in layout_persistente.items():
                             if isinstance(item, QgsLayoutItemMap):
                                 item.setKeepLayerSet(False)
                                 item.setLayers([])
-                                
+
                         layout_persistente.pageCollection().clear()
                         layout_persistente.deleteLater()
                         layout_persistente = None
@@ -2355,14 +2355,14 @@ class VectorToMap:
                     url_pasta = QUrl.fromLocalFile(dir_path).toString()
                     texto_sucesso = self.tr("Layout exportado com sucesso para")
                     mensagem_html = f"{texto_sucesso} <a href='{url_pasta}' style='color: #005e00; text-decoration: underline;'>{dir_path}</a>"
-                    
+
                     self.iface.messageBar().pushMessage(self.tr("Exportar layout"), mensagem_html, level=Qgis.MessageLevel.Success, duration=0)
 
                     # --- LÓGICA DE ABRIR ARQUIVO/PASTA AUTOMATICAMENTE ---
                     if hasattr(self.dlg, 'chk_abrir_arquivo') and self.dlg.chk_abrir_arquivo.isChecked():
                         url_pasta = QUrl.fromLocalFile(dir_path)
                         QDesktopServices.openUrl(url_pasta)
-                        
+
                         if not is_individual and ext == ".pdf":
                             url_arquivo = QUrl.fromLocalFile(base_path)
                             QDesktopServices.openUrl(url_arquivo)
@@ -2378,17 +2378,17 @@ class VectorToMap:
 
         except Exception as e:
             erro_detalhado = traceback.format_exc()
-            
+
             if getattr(self, 'sentry_ativo', False):
                 try:
                     sentry_sdk.capture_exception(e)
                     sentry_sdk.flush(timeout=2.0)
                 except Exception:
                     pass
-            
+
             self.iface.messageBar().pushMessage(
-                self.tr("Erro"), 
-                f"{str(e)}. {self.tr('Veja o console para detalhes.')}", 
+                self.tr("Erro"),
+                f"{str(e)}. {self.tr('Veja o console para detalhes.')}",
                 level=Qgis.MessageLevel.Critical
             )
             QgsMessageLog.logMessage(erro_detalhado, "VectorToMap", Qgis.MessageLevel.Critical)
@@ -2398,7 +2398,7 @@ class VectorToMap:
             self.set_ui_enabled(True)
             self.dlg.progressBar.hide()
             gc.collect()
-    
+
 
 
 
@@ -2409,16 +2409,16 @@ class VectorToMap:
     def _verificar_sobrescrita_arquivos(self, base_sem_ext, ext, paginas_dados, is_individual):
         """Pre-flight: Avalia o disco antes de rodar o motor pesado."""
         arquivos_existentes = False
-        
+
         # 1. Pegamos o valor do atlas consultando o nosso Cérebro Central de Configurações
         config = self._gerar_config_atual()
         campo_atlas = config.get('campo_atlas')
-        
+
         if is_individual:
             for i, dados in enumerate(paginas_dados):
                 # 2. Chamamos a função usando o self.engine e passamos o campo_atlas e os dados pré-calculados!
                 nome_teste = self.engine._gerar_nome_arquivo_pagina(dados, i, campo_atlas)
-                
+
                 if os.path.exists(f"{base_sem_ext}_{nome_teste}{ext}"):
                     arquivos_existentes = True
                     break
@@ -2446,7 +2446,7 @@ class VectorToMap:
         if ok:
             self.fonte_titulo = fonte
             self.disparar_preview_se_autorizado()
-    
+
 
 
 
@@ -2458,35 +2458,35 @@ class VectorToMap:
         self.btn_export.setEnabled(enabled)
         self.btn_render.setEnabled(enabled)
         self.btn_ok.setEnabled(enabled)
-        
+
         if not enabled:
             self.btn_cancel.setText(self.tr("Parar Processo"))
             QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         else:
             self.btn_cancel.setText(self.tr("Cancelar"))
             QApplication.restoreOverrideCursor()
-        
+
         self.dlg.mMapLayerComboBox.setEnabled(enabled)
-    
+
 
 
 
     def _filtrar_camadas_da_combo(self):
         """Varre o projeto e remove da combo qualquer camada que não seja a principal."""
-        if not hasattr(self, 'dlg') or not self.dlg or sip.isdeleted(self.dlg) or not hasattr(self.dlg, 'mMapLayerComboBox'): 
+        if not hasattr(self, 'dlg') or not self.dlg or sip.isdeleted(self.dlg) or not hasattr(self.dlg, 'mMapLayerComboBox'):
             return
-        
+
         excluidas = []
         for layer in QgsProject.instance().mapLayers().values():
             # Critério EXCLUSIVO: Se tem o carimbo do plugin, é escondida
             if layer.customProperty("vtm_is_preview_temp"):
                 excluidas.append(layer)
-        
+
         self.dlg.mMapLayerComboBox.setExceptedLayerList(excluidas)
-        
+
         if hasattr(self.dlg, 'combo_camada_loc'):
             self.dlg.combo_camada_loc.setExceptedLayerList(excluidas)
-    
+
 
 
 
@@ -2502,7 +2502,7 @@ class VectorToMap:
             t_ex_lbl = self.tr("Exemplo:")
             t_ex_txt = self.tr("Uma coluna com o número '15' aplicará 15% de margem no enquadramento.")
             t_sql_lbl = self.tr("Expressão SQL:")
-            t_sql_txt = "if(\"Tipo\" = 'Urbano', 10, 25)" 
+            t_sql_txt = "if(\"Tipo\" = 'Urbano', 10, 25)"
             t_obs = self.tr("Se o cálculo falhar ou a célula estiver vazia, o plugin usará a margem padrão (25%).")
 
             texto_ajuda = (
@@ -2547,7 +2547,7 @@ class VectorToMap:
                 f"<b>{t_tpl_lbl}</b><br>{t_tpl_txt}<br><br>"
                 f"<b>{t_cus_lbl}</b><br>{t_cus_txt}"
             )
-        
+
         elif topico == "agrupar":
             t_titulo = self.tr("Agrupamento Avançado (Atlas)")
             t_desc = self.tr("Agrupe feições no mesmo mapa usando uma coluna da tabela ou uma expressão matemática (ε).")
@@ -2608,11 +2608,11 @@ class VectorToMap:
             }
         """)
         # Mantemos a largura fixa para o texto não ficar super largo e ruim de ler
-        lbl.setFixedWidth(280) 
-        
+        lbl.setFixedWidth(280)
+
         layout_interno.addWidget(lbl)
         layout_interno.addStretch() # Empurra o texto para cima se a caixa for maior que ele
-        
+
         # Junta tudo
         scroll_area.setWidget(conteudo_interno)
         layout_container_externo.addWidget(scroll_area)
@@ -2630,20 +2630,20 @@ class VectorToMap:
         # ====================================================================
         # Pega as coordenadas globais da tela com base no botão clicado
         ponto_ancora = widget_ancora.mapToGlobal(widget_ancora.rect().bottomLeft())
-        
+
         # Pega a altura total disponível na janela principal do QGIS
         altura_janela = self.dlg.height()
-        
+
         # Converte o Y absoluto do botão para um Y relativo à janela do QGIS
         y_relativo_botao = self.dlg.mapFromGlobal(ponto_ancora).y()
-        
+
         # Calcula quanto espaço sobra daquele botão até o fundo da tela (deixando uma margem de segurança de 30px)
         espaco_disponivel = altura_janela - y_relativo_botao - 30
-        
-        # Define a altura máxima do popup. 
+
+        # Define a altura máxima do popup.
         # Nunca passa de 350px (para não ficar gigante) e respeita o espaço disponível até o chão.
         altura_maxima = min(350, max(150, espaco_disponivel)) # Mínimo de 150px de altura para não esmagar demais
-        
+
         # Trava as dimensões do popup
         self.info_popup.setFixedWidth(330) # 280 do texto + margens + scrollbar
         self.info_popup.setFixedHeight(int(altura_maxima))
@@ -2653,17 +2653,17 @@ class VectorToMap:
 
         # Exibe!
         self.info_popup.show()
-    
+
 
 
 
     def mostrar_tela_sobre(self):
         """Exibe a janela de ajuda com texto corrido, no estilo algoritmo e sem ícone grande no corpo."""
-        
+
         # Cria uma QMessageBox genérica com o diálogo principal como pai
         msg_box = QMessageBox(self.dlg)
         msg_box.setWindowTitle(self.tr("Ajuda do Algoritmo"))
-        
+
         # Força a remoção do ícone grande dentro do corpo do texto
         msg_box.setIcon(QMessageBox.Icon.NoIcon)
 
@@ -2673,49 +2673,49 @@ class VectorToMap:
             "O VectorToMap automatiza a geração de layouts de impressão para cartografia técnica. "
             "Este algoritmo transforma os dados da camada vetorial em pranchas prontas, "
             "com enquadramento e escala calculados dinamicamente.<br><br>"
-            
+
             "O parâmetro de agrupamento funciona de forma semelhante a um Atlas, permitindo gerar um mapa individual para cada feição "
             "ou agrupar várias feições que compartilham o mesmo valor em uma coluna específica da tabela.<br><br>"
-            
+
             "O parâmetro de escala controla o nível de zoom do mapa. Pode ser definido para centralização "
             "automática ou fixado em valores absolutos. O uso de expressões (ε) permite que a margem de respiro ou "
             "a escala exata sejam lidas e aplicadas diretamente a partir dos atributos da feição atual.<br><br>"
-            
+
             "A opção de filtrar geometrias controla a visibilidade dos elementos no layout final. "
             "Quando ativada, ela isola e exibe apenas as feições que pertencem à página que está sendo gerada, "
             "ocultando automaticamente o restante dos dados do mapa.<br><br>"
-            
+
             "<ul><li><i>Utilize o botão de Preview para validar o enquadramento, os estilos e a renderização das "
             "informações na tela antes de executar a exportação em lote para arquivos finais.</i></li></ul>"
         )
-        
+
         # Padrão nativo para o texto
         msg_box.setText(texto_corrido)
         msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-        
+
         # Exibe a janela de forma modal compatível com QGIS 3 e QGIS 4
         if hasattr(msg_box, 'exec'):
             msg_box.exec()
         else:
             msg_box.exec_()
-    
+
 
 
 
     def _adicionar_aba_sobre(self):
         """Injeta dinamicamente o conteúdo na 'tab_2' (Aba Sobre) já existente na interface."""
-        
+
         # Verifica se a tab_2 existe na interface desenhada
-        if not hasattr(self.dlg, 'tab_2'): 
+        if not hasattr(self.dlg, 'tab_2'):
             return
 
         aba_sobre = self.dlg.tab_2
-        
+
         # O TRUQUE DO DUMMY WIDGET (A forma que realmente funciona no PyQt!)
         # Remove o layout instantaneamente transferindo-o para um widget fantasma
         if aba_sobre.layout() is not None:
             QWidget().setLayout(aba_sobre.layout())
-            
+
         # Cria um layout NOVO e ANCORADO DIRETAMENTE na tab_2
         layout = QVBoxLayout(aba_sobre)
         layout.setContentsMargins(20, 20, 20, 20)
@@ -2723,7 +2723,7 @@ class VectorToMap:
         # TRADUZIMOS APENAS OS TEXTOS CURTOS E LIMPOS (TÍTULOS)
         t_title = self.tr("VectorToMap")
         t_sub = self.tr("Motor de Renderização Cartográfica Automatizada")
-        
+
         # ====================================================================
         # 1. CABEÇALHO (TÍTULO E SUBTÍTULO NATIVOS)
         # ====================================================================
@@ -2737,31 +2737,31 @@ class VectorToMap:
         # ====================================================================
         layout_botoes = QHBoxLayout()
         layout_botoes.setSpacing(10) # Espaço entre os botões
-        
+
         self.btn_apoiar = QPushButton(self.tr("☕ Apoiar Desenvolvimento"), aba_sobre)
         self.btn_bugreport = QPushButton(self.tr("🐞 Relatar Bug (GitHub)"), aba_sobre)
         self.btn_tutorial = QPushButton(self.tr("▶ Assistir Tutorial"), aba_sobre)
-        
+
         self.btn_apoiar.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_bugreport.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_tutorial.setCursor(Qt.CursorShape.PointingHandCursor)
-        
+
         self.btn_apoiar.setObjectName("pushButton_apoiar")
         self.btn_bugreport.setObjectName("pushButton_bugreport")
         self.btn_tutorial.setObjectName("pushButton_tutorial")
-        
+
         self.btn_apoiar.clicked.connect(self.abrir_gumroad)
         self.btn_bugreport.clicked.connect(self.abrir_github)
         self.btn_tutorial.clicked.connect(self.abrir_tutorial_youtube)
-        
+
         layout_botoes.addWidget(self.btn_apoiar)
         layout_botoes.addWidget(self.btn_bugreport)
         layout_botoes.addWidget(self.btn_tutorial)
-        layout_botoes.addStretch() 
-        
+        layout_botoes.addStretch()
+
         layout.addLayout(layout_botoes)
         layout.addSpacing(10)
-        
+
         # Linha divisória fina e elegante
         linha = QFrame()
         linha.setFrameShape(QFrame.Shape.HLine)
@@ -2777,21 +2777,21 @@ class VectorToMap:
         txt_browser.setStyleSheet("border: none; background-color: transparent;")
 
         t_h1 = self.tr("Visão Geral do Sistema")
-        
+
         t_p1_pt1 = self.tr("O VectorToMap é uma solução avançada de automação em software livre para Sistemas de Informação Geográfica (SIG), criada para otimizar a sua cartografia técnica. Projetado para lidar com rotinas de alta demanda cartográfica, o complemento atua diretamente sobre a API de layouts nativa do QGIS (QgsPrintLayout), permitindo a renderização em lote de feições espaciais com parâmetros de enquadramento escaláveis.")
-        
+
         t_p1_pt2 = self.tr("Todo esse projeto se mantém vivo e em constante evolução graças ao apoio da comunidade. Ao apoiar o nosso desenvolvimento contínuo, você garante que a ferramenta continue recebendo melhorias e se mantenha sempre funcional.")
-        
+
         t_h2 = self.tr("Aplicações Técnicas")
         t_li1 = self.tr("<b>Engenharia e Licenciamento:</b> Geração massiva de plantas de situação, croquis de acesso e anexos cartográficos padronizados para estudos ambientais.")
         t_li2 = self.tr("<b>Gestão Fundiária:</b> Automatização de pranchas para o Cadastro Ambiental Rural (CAR), regularização fundiária e cadastros técnicos multifinalitários urbanos.")
         t_li3 = self.tr("<b>Inspeção e Laudos:</b> Padronização visual e geração rápida de encartes de mapas para relatórios de vistoria em campo.")
-        
+
         t_h3 = self.tr("Arquitetura e Funcionalidades Core")
         t_li4 = self.tr("<b>Integração QGIS Expressions:</b> Suporte nativo a Data-Defined Overrides (DDO). O motor lê funções SQL inseridas pelo usuário para calcular dinamicamente margens e escalas com base no contexto geométrico.")
         t_li5 = self.tr("<b>Isolamento em Memória:</b> Utiliza rotinas de instanciamento de camadas transitórias (Memory Layers) e filtros de visibilidade sem afetar a Layer Tree principal do projeto.")
         t_li6 = self.tr("<b>Engine de Exportação:</b> Suporte multi-thread e multi-formato dinâmico perfeitamente ajustado para lotes de impressão.")
-        
+
         t_dev = self.tr("Desenvolvido por:")
         t_inpi = self.tr("Registro INPI:")
         t_contato = self.tr("Contato:")

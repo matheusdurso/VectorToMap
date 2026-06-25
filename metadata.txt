@@ -6,7 +6,7 @@ qgisMaximumVersion=4.99
 description=VectorToMap: Advanced Cartographic Automation for QGIS. > The Pro version is now 100%% free! Elevate your mapping workflow with high-performance multi-page layout generation. Features advanced Atlas grouping, Data-Defined Overrides (DDO), SVG/PNG exports, dynamic scale management, and exclusive layout templates. Built for GIS professionals who need speed, precision, and production-ready technical maps.
 about=[English]
  VectorToMap automates the creation of multi-page layouts and map books in QGIS, saving hours of manual work. Easily export hundreds of individual or attribute-grouped maps with dynamic scaling, smart layer isolation, and real-time previews. Version 3.0: All Pro features are now 100%% free! Enjoy unlimited exports, SVG/PNG formats, professional templates, and Data-Defined Overrides (DDO).
- 
+
  [Português]
  O VectorToMap automatiza a criação de layouts de múltiplas páginas e cadernos de mapas no QGIS, economizando horas de trabalho manual. Exporte facilmente centenas de mapas individuais ou agrupados por atributos com escala dinâmica, isolamento inteligente de camadas e pré-visualização em tempo real. Versão 3.0: Todos os recursos Pro agora são 100%% gratuitos! Aproveite exportações ilimitadas, formatos SVG/PNG, templates profissionais e Data-Defined Overrides (DDO).
 
@@ -27,8 +27,8 @@ about=[English]
 
  [Français]
  VectorToMap automatise la création de mises en page multipages et d'atlas dans QGIS, économisant des heures de travail manuel. Exportez facilement des centaines de cartes individuelles ou regroupées par attributs avec une échelle dynamique, une isolation intelligente des couches et des aperçus en temps réel. Version 3.0 : Toutes les fonctionnalités Pro sont désormais 100 %% gratuites ! Profitez d'exportations illimitées, des formats SVG/PNG, de modèles professionnels et des Data-Defined Overrides (DDO).
-version=3.8.6
-changelog=Version 3.8.6: Added native QGIS Map Themes support for batch exports and layouts, introduced dynamic real-time UI components with multilingual translation, resolved UI state conflicts by automatically disabling feature filtering and layer isolation when themes are active, and synchronized theme selection directly with the live layout preview engine.
+version=3.8.6.1
+changelog=Version 3.8.6.1: Added native QGIS Map Themes support for batch exports and layouts, introduced dynamic real-time UI components with multilingual translation, resolved UI state conflicts by automatically disabling feature filtering and layer isolation when themes are active, and synchronized theme selection directly with the live layout preview engine.
 author=Matheus Durso N. Caetano
 email=matheusdursonc@gmail.com
 license=GNU GPLv2
