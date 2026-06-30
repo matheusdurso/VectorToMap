@@ -4,6 +4,11 @@ All notable changes to VectorToMap will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.8.7] - 2026-06-30
+### Changed
+- Architectural Refactoring: Extracted the XML template parsing and sanitization logic from `layout_engine.py` into a dedicated `TemplateManager` module, strictly enforcing Separation of Concerns (SoC) and reducing the main engine's complexity by over 120 lines.
+- Dependency Injection: Decoupled the dynamic text replacement and expression evaluation logic (`[% %]` and `[""]`) from the core rendering engine, passing translation capabilities via parameter injection to maintain the purity and independence of the new template module.
+
 ## [3.8.6.1] - 2026-06-25
 ### Changed
 - Codebase Hygiene & Formatting: Stripped trailing whitespaces, redundant tabs, and accidental indentations from all empty lines across the source files to eliminate Git diff noise, prevent merge conflicts, and strictly adhere to PEP 8 standards.
@@ -50,6 +55,11 @@ Todas as mudanças notáveis no VectorToMap serão documentadas neste arquivo.
 
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+## [3.8.7] - 2026-06-30
+### Modificado
+- Refatoração Arquitetural: Lógica de sanitização e leitura de templates XML (`.qpt`) extraída do arquivo `layout_engine.py` para um novo módulo independente chamado `TemplateManager`, aplicando rigorosamente a Separação de Responsabilidades (SoC) e reduzindo a complexidade do motor principal em mais de 120 linhas.
+- Injeção de Dependência: Desacoplamento do motor de substituição de textos dinâmicos e processamento de expressões (`[% %]` e `[""]`). A capacidade de tradução do plugin agora é injetada no módulo de template via parâmetros, mantendo a classe pura e agnóstica à interface.
 
 ## [3.8.6.1] - 2026-06-25
 ### Modificado

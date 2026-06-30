@@ -19,6 +19,7 @@ from qgis.core import (
     QgsReadWriteContext, QgsLayoutItemMapOverview, QgsFillSymbol,
     QgsMessageLog, QgsMapLayerType, QgsApplication
 )
+from .template_manager import TemplateManager
 
 class LayoutEngine:
     """Motor de geração de layouts e mapas do VectorToMap (Desacoplado da UI)."""
@@ -209,7 +210,36 @@ class LayoutEngine:
     def montar_design_da_pagina(self, layout, camada, feicoes_da_pagina, preset, orientacao, config, pagina_index=0, is_preview=False, nome_sufixo=""):
         """Orquestra a montagem completa da página lendo dados do dicionário config."""
         if preset.endswith('.qpt') and os.path.exists(preset):
-            self._montar_por_template(layout, camada, feicoes_da_pagina, preset, config, is_preview, nome_sufixo, pagina_index)
+            # 1. Carrega o XML limpo e extrai os itens de mapa principais
+            map_item, overview_map, novos_itens = TemplateManager.carregar_template_sanitizado(
+                layout, preset, pagina_index
+            )
+
+            if not map_item:
+                return
+
+            # 2. Identifica se há uma feição ativa nesta prancha
+            feicao_atual = None
+            if feicoes_da_pagina and feicoes_da_pagina[0] != "ALL":
+                feicao_atual = feicoes_da_pagina[0]
+
+            # 3. Processa textos, expressões [% %], sintaxes [""] e deslocamento de página
+            # Passamos 'self.tr' por parâmetro para que ele use as traduções do motor
+            TemplateManager.processar_textos_dinamicos(
+                novos_itens, layout, feicao_atual, camada, pagina_index, self.tr
+            )
+
+            # 4. Aplica escala geográfica e enquadramento (extents)
+            w_map, h_map = map_item.rect().width(), map_item.rect().height()
+            self._aplicar_extensao_e_escala(map_item, camada, feicoes_da_pagina, w_map, h_map, config)
+
+            # 5. Gerencia visibilidade de camadas (inclusive a nossa nova regra de Temas!)
+            self._gerenciar_visibilidade_camadas(map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index, config)
+
+            # 6. Atualiza o mapa de localização (Locator Map) se existir no template
+            if overview_map:
+                self._aplicar_regras_overview(overview_map, map_item, config, is_template=True)
+
             return
 
         geometria, apenas_mapa, cor_fundo_mapa = self._configurar_papel_e_fundo(layout, pagina_index, preset, orientacao, config)
@@ -232,244 +262,6 @@ class LayoutEngine:
 
         if not apenas_mapa:
             self.adicionar_numeracao_pagina(layout, geometria['w_pg'], geometria['h_pg'], geometria['y_zero'], config)
-
-
-
-
-    def _montar_por_template(self, layout, camada, feicoes_da_pagina, caminho_qpt, config, is_preview, nome_sufixo, pagina_index):
-        """Carrega o .qpt limpando centenas de mapas duplicados e fantasmas do XML corrompido."""
-        if not os.path.exists(caminho_qpt): return
-
-        nome_original = layout.name()
-
-        with open(caminho_qpt, 'rt', encoding='utf-8') as f:
-            template_content = f.read()
-
-        # =====================================================================
-        # A OPERAÇÃO FAXINA: O ALGORITMO INTELIGENTE DE FALLBACK (DOM)
-        # =====================================================================
-        doc = QDomDocument()
-        doc.setContent(template_content)
-
-        # ---------------------------------------------------------
-        # PASSO 0: O FIXADOR DE IMAGENS (Correção de Caminhos Absolutos)
-        # ---------------------------------------------------------
-        pasta_template = os.path.dirname(caminho_qpt)
-
-        # O QGIS chama TODOS os itens de LayoutItem
-        elementos_gerais = doc.elementsByTagName("LayoutItem")
-
-        for i in range(elementos_gerais.count()):
-            pic_el = elementos_gerais.at(i).toElement()
-
-            # "65640" é o código universal interno do QGIS para 'QgsLayoutItemPicture'
-            if pic_el.attribute("type") == "65640":
-                # O endereço da imagem mora no atributo "file"
-                caminho_antigo = pic_el.attribute("file")
-
-                # Ignora links da web e caminhos vazios
-                if caminho_antigo and not caminho_antigo.startswith("http"):
-
-                    # Extrai EXCLUSIVAMENTE o nome do arquivo (imune a Windows \ ou Mac/Linux /)
-                    nome_arquivo = caminho_antigo.replace('\\', '/').split('/')[-1]
-
-                    # Monta o endereço absoluto combinando a pasta do template e o nome da imagem
-                    caminho_novo = os.path.join(pasta_template, nome_arquivo)
-
-                    # Trava de segurança: Se a imagem realmente estiver lá, reescrevemos o XML!
-                    if os.path.exists(caminho_novo):
-                        pic_el.setAttribute("file", caminho_novo.replace('\\', '/'))
-
-        # ---------------------------------------------------------
-        # PASSO 1: O EXTERMINADOR DE FANTASMAS
-        # ---------------------------------------------------------
-        elementos = doc.elementsByTagName("LayoutItem")
-
-        for i in range(elementos.count() - 1, -1, -1):
-            el = elementos.at(i).toElement()
-            size_str = el.attribute("size", "0,0,mm")
-
-            is_ghost = False
-            try:
-                w, h = map(float, size_str.split(',')[:2])
-                if w <= 0.1 or h <= 0.1:
-                    is_ghost = True
-            except Exception:
-                pass
-
-            if is_ghost:
-                el.parentNode().removeChild(el)
-
-        # ---------------------------------------------------------
-        # PASSO 2: O AVALIADOR DE MAPAS
-        # ---------------------------------------------------------
-        elementos = doc.elementsByTagName("LayoutItem")
-
-        mapas_validos = []
-        tem_mapa_explicito = False
-
-        for i in range(elementos.count()):
-            el = elementos.at(i).toElement()
-            if el.attribute("type") == "65639":
-                item_id = el.attribute("id")
-                if item_id in ["main_map", "overview_map"]:
-                    tem_mapa_explicito = True
-
-                try:
-                    w, h = map(float, el.attribute("size", "0,0,mm").split(',')[:2])
-                    area = w * h
-                except:
-                    area = 0
-
-                mapas_validos.append({'area': area, 'el': el, 'id': item_id})
-
-        def limpar_memoria_mapa(map_node):
-            map_node.setAttribute("keepLayerSet", "1")
-            for tag in ["LayerSet", "overviews"]:
-                tags = map_node.elementsByTagName(tag)
-                for j in range(tags.count()):
-                    node = tags.at(j)
-                    while node.hasChildNodes():
-                        node.removeChild(node.firstChild())
-
-        if tem_mapa_explicito:
-            main_achado = False
-            overview_achado = False
-
-            for mapa in mapas_validos:
-                el = mapa['el']
-                item_id = mapa['id']
-
-                is_clone = False
-                if item_id == "main_map":
-                    if main_achado: is_clone = True
-                    else: main_achado = True
-                elif item_id == "overview_map":
-                    if overview_achado: is_clone = True
-                    else: overview_achado = True
-
-                if item_id not in ["main_map", "overview_map"] or is_clone:
-                    el.parentNode().removeChild(el)
-                else:
-                    limpar_memoria_mapa(el)
-
-        else:
-            mapas_validos.sort(key=lambda x: x['area'], reverse=True)
-
-            for idx, mapa in enumerate(mapas_validos):
-                el = mapa['el']
-                if idx == 0:
-                    el.setAttribute("id", "main_map")
-                    limpar_memoria_mapa(el)
-                elif idx == 1:
-                    el.setAttribute("id", "overview_map")
-                    limpar_memoria_mapa(el)
-                else:
-                    el.parentNode().removeChild(el)
-
-        # =====================================================================
-        # CARREGAMENTO DO TEMPLATE LIMPO NO QGIS
-        # =====================================================================
-        itens_antes = set(layout.items())
-        limpar = (pagina_index == 0)
-
-        # O QGIS carrega o XML higienizado que o DOM acabou de preparar
-        layout.loadFromTemplate(doc, QgsReadWriteContext(), clearExisting=limpar)
-        layout.setName(nome_original)
-
-        # --- Localização dos Itens Reais ---
-        novos_itens = list(set(layout.items()) - itens_antes)
-        map_item = None
-        overview_map = None
-
-        for item in novos_itens:
-            if hasattr(item, 'id'):
-                if item.id() == 'main_map': map_item = item
-                elif item.id() == 'overview_map': overview_map = item
-
-        # Se mesmo depois de tudo a faxina, não houver map_item, aborta
-        if not map_item: return
-
-        # ====================================================================
-        # --- EXORCISMO FINAL (SEGURANÇA DA API C++) ---
-        # ====================================================================
-        map_item.blockSignals(True)
-        map_item.setAtlasDriven(False)
-        map_item.setLayers([])
-        map_item.blockSignals(False)
-
-        if overview_map:
-            overview_map.blockSignals(True)
-            overviews = overview_map.overviews()
-            for ov in overviews.asList(): overviews.removeOverview(ov.name())
-            overview_map.setLayers([])
-            overview_map.blockSignals(False)
-
-        # ====================================================================
-        # --- DESLOCAMENTO MULTI-PÁGINA, TRADUÇÃO E TEXTOS DINÂMICOS ---
-        # ====================================================================
-        h_pg = layout.pageCollection().page(0).rect().height() if pagina_index > 0 else 0
-        y_offset = pagina_index * (h_pg + 10.0) if pagina_index > 0 else 0
-
-        # Pega a feição base da página atual para extrair os atributos
-        # (Se for um grupo do Atlas, ele pega a primeira feição do grupo como referência)
-        feicao_atual = None
-        if feicoes_da_pagina and feicoes_da_pagina[0] != "ALL":
-            feicao_atual = feicoes_da_pagina[0]
-
-        for item in novos_itens:
-            if isinstance(item, QgsLayoutItemLabel):
-                texto_original = item.text()
-                texto_final = self.tr(texto_original)
-
-                # --- A MÁGICA DA SUBSTITUIÇÃO DINÂMICA (Sintaxe: ["Coluna"]) ---
-                if feicao_atual:
-                    # 1. Suporte à sua sintaxe personalizada: ["Nome_da_coluna"]
-                    def replace_chave(match):
-                        coluna = match.group(1) # Pega apenas o texto dentro das aspas
-                        try:
-                            # Verifica se o que está dentro das aspas realmente é uma coluna válida
-                            idx = feicao_atual.fields().lookupField(coluna)
-                            if idx != -1:
-                                val = feicao_atual.attribute(coluna)
-                                return str(val).strip() if val is not None and val != NULL else ""
-                        except:
-                            pass
-                        return match.group(0) # Se não for coluna, deixa o ["Texto"] intacto
-
-                    # NOVO REGEX: Exige colchetes e aspas duplas, ex: ["AI_2"]
-                    texto_final = re.sub(r'\["(.*?)"\]', replace_chave, texto_final)
-
-                    # 2. Suporte Avançado (Bônus): Processa expressões matemáticas nativas do QGIS [% ... %]
-                    if '[%' in texto_final:
-                        contexto = QgsExpressionContextUtils.createFeatureBasedContext(feicao_atual, camada.fields())
-                        texto_final = QgsExpression.replaceExpressionText(texto_final, contexto)
-                # ------------------------------------------
-
-                if texto_final != texto_original:
-                    item.setText(texto_final)
-                    # O auto-ajuste garante que se a palavra for muito grande, a caixa aumenta
-                    item.adjustSizeToText()
-
-            elif isinstance(item, QgsLayoutItemLegend):
-                titulo_original = item.title()
-                titulo_traduzido = self.tr(titulo_original)
-                if titulo_traduzido != titulo_original:
-                    item.setTitle(titulo_traduzido)
-
-            # Empurra os itens para a página correta lá embaixo!
-            if pagina_index > 0 and not isinstance(item, QgsLayoutItemPage):
-                pos_x = item.pos().x()
-                pos_y = item.pos().y()
-                item.attemptMove(QgsLayoutPoint(pos_x, pos_y + y_offset, QgsUnitTypes.LayoutMillimeters))
-
-        # --- Processamento de Escala e Visibilidade ---
-        w_map, h_map = map_item.rect().width(), map_item.rect().height()
-        self._aplicar_extensao_e_escala(map_item, camada, feicoes_da_pagina, w_map, h_map, config)
-        self._gerenciar_visibilidade_camadas(map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index, config)
-
-        if overview_map:
-            self._aplicar_regras_overview(overview_map, map_item, config, is_template=True)
 
 
 
