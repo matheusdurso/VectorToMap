@@ -19,7 +19,12 @@ from qgis.core import (
     QgsReadWriteContext, QgsLayoutItemMapOverview, QgsFillSymbol,
     QgsMessageLog, QgsMapLayerType, QgsApplication
 )
-from .template_manager import TemplateManager
+try:
+    # Modo QGIS (O arquivo sabe que faz parte de um pacote)
+    from .template_manager import TemplateManager
+except ImportError:
+    # Modo Pytest Headless (O arquivo é lido isoladamente)
+    from template_manager import TemplateManager
 
 class LayoutEngine:
     """Motor de geração de layouts e mapas do VectorToMap (Desacoplado da UI)."""
