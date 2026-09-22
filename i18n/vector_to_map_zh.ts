@@ -25,13 +25,13 @@
     </message>
     <message>
         <location filename="../vector_to_map.py" line="102"/>
-        <source>&lt;div style=&apos;background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;&apos;&gt;&lt;h3 style=&apos;margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;&apos;&gt;🎉 Agora 100% Gratuito e Open-Source!&lt;/h3&gt;&lt;p style=&apos;margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;&apos;&gt;Todos os recursos avançados da versão Pro, exportação sem limites e templates profissionais foram liberados para a comunidade.&lt;/p&gt;&lt;p style=&apos;margin: 0; font-size: 11pt; color: #34495e;&apos;&gt;☕ &lt;b&gt;Apoie para manter o projeto vivo:&lt;/b&gt; &lt;a href=&apos;https://buymeacoffee.com/matheusdurso&apos; style=&apos;color: #e67e22; text-decoration: none; font-weight: bold;&apos;&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</source>
-        <translation>&lt;div style=&apos;background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;&apos;&gt;&lt;h3 style=&apos;margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;&apos;&gt;🎉 现在 100% 免费开源！&lt;/h3&gt;&lt;p style=&apos;margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;&apos;&gt;Pro 版本的所有高级功能、无限制导出和专业模板现已向社区开放。&lt;/p&gt;&lt;p style=&apos;margin: 0; font-size: 11pt; color: #34495e;&apos;&gt;☕ &lt;b&gt;支持以保持项目活跃：&lt;/b&gt; &lt;a href=&apos;https://buymeacoffee.com/matheusdurso&apos; style=&apos;color: #e67e22; text-decoration: none; font-weight: bold;&apos;&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</translation>
+        <source>&lt;div style='background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;'&gt;&lt;h3 style='margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;'&gt;🎉 Agora 100% Gratuito e Open-Source!&lt;/h3&gt;&lt;p style='margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;'&gt;Todos os recursos avançados da versão Pro, exportação sem limites e templates profissionais foram liberados para a comunidade.&lt;/p&gt;&lt;p style='margin: 0; font-size: 11pt; color: #34495e;'&gt;☕ &lt;b&gt;Apoie para manter o projeto vivo:&lt;/b&gt; &lt;a href='https://buymeacoffee.com/matheusdurso' style='color: #e67e22; text-decoration: none; font-weight: bold;'&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</source>
+        <translation>&lt;div style='background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;'&gt;&lt;h3 style='margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;'&gt;🎉 现在 100% 免费开源！&lt;/h3&gt;&lt;p style='margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;'&gt;Pro 版本的所有高级功能、无限制导出和专业模板现已向社区开放。&lt;/p&gt;&lt;p style='margin: 0; font-size: 11pt; color: #34495e;'&gt;☕ &lt;b&gt;支持以保持项目活跃：&lt;/b&gt; &lt;a href='https://buymeacoffee.com/matheusdurso' style='color: #e67e22; text-decoration: none; font-weight: bold;'&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="127"/>
-        <source>&lt;b style=&apos;font-size: 11pt; color: #444;&apos;&gt;Relatórios de Erro:&lt;/b&gt;&lt;br&gt;&lt;span style=&apos;font-size: 10pt; color: #666;&apos;&gt;Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? Nenhuma informação pessoal ou dado geográfico será enviado.&lt;/span&gt;</source>
-        <translation>&lt;b style=&apos;font-size: 11pt; color: #444;&apos;&gt;错误报告：&lt;/b&gt;&lt;br&gt;&lt;span style=&apos;font-size: 10pt; color: #666;&apos;&gt;如果系统发生错误，您是否同意发送完全匿名的自动错误报告？我们不会发送任何个人信息或地理数据。&lt;/span&gt;</translation>
+        <source>&lt;b style='font-size: 11pt; color: #444;'&gt;Relatórios de Erro:&lt;/b&gt;&lt;br&gt;&lt;span style='font-size: 10pt; color: #666;'&gt;Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? Nenhuma informação pessoal ou dado geográfico será enviado.&lt;/span&gt;</source>
+        <translation>&lt;b style='font-size: 11pt; color: #444;'&gt;错误报告：&lt;/b&gt;&lt;br&gt;&lt;span style='font-size: 10pt; color: #666;'&gt;如果系统发生错误，您是否同意发送完全匿名的自动错误报告？我们不会发送任何个人信息或地理数据。&lt;/span&gt;</translation>
     </message>
 </context>
 <context>
@@ -118,7 +118,7 @@
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="289"/>
-        <source>Agrupa feições na mesma prancha de impressão usando o valor desta coluna (Ex: &apos;Bairro&apos; gera um mapa por bairro).</source>
+        <source>Agrupa feições na mesma prancha de impressão usando o valor desta coluna (Ex: 'Bairro' gera um mapa por bairro).</source>
         <translation>使用此列的值在同一图纸上对要素进行分组（例如：“街区”将按街区生成地图）。</translation>
     </message>
     <message>
@@ -560,52 +560,52 @@
 <context>
     <name>LayoutEngine</name>
     <message>
-        <location filename="../layout_engine.py" line="744"/>
+        <location filename="../layout_engine.py" line="541"/>
         <source>Legenda</source>
         <translation>图例</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1488"/>
+        <location filename="../layout_engine.py" line="1285"/>
         <source>Grade Automática</source>
         <translation>自动网格</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="44"/>
+        <location filename="../layout_engine.py" line="50"/>
         <source>Zoom_Camada</source>
         <translation>图层_缩放</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1315"/>
+        <location filename="../layout_engine.py" line="1112"/>
         <source>Resumo do Mapa Geral</source>
         <translation>总图摘要</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1316"/>
+        <location filename="../layout_engine.py" line="1113"/>
         <source>Camada Vetorial</source>
         <translation>矢量图层</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1317"/>
+        <location filename="../layout_engine.py" line="1114"/>
         <source>Tipo de Geometria</source>
         <translation>几何类型</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1318"/>
+        <location filename="../layout_engine.py" line="1115"/>
         <source>Total de Feições</source>
         <translation>要素总数</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1319"/>
+        <location filename="../layout_engine.py" line="1116"/>
         <source>SRC da Camada</source>
         <translation>图层 CRS</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1320"/>
+        <location filename="../layout_engine.py" line="1117"/>
         <source>SRC do Projeto</source>
         <translation>项目 CRS</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="159"/>
+        <location filename="../layout_engine.py" line="165"/>
         <source>A camada original foi removida do QGIS durante a exportação. Processo abortado.</source>
         <translation>原始图层在导出期间从 QGIS 中移除。进程已中止。</translation>
     </message>
@@ -863,7 +863,7 @@ Deseja sobrescrevê-los?</source>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2501"/>
-        <source>Use o botão &apos;ε&apos; para definir a margem de zoom dinamicamente com base na sua tabela de atributos.</source>
+        <source>Use o botão 'ε' para definir a margem de zoom dinamicamente com base na sua tabela de atributos.</source>
         <translation>使用“ε”按钮根据您的属性表动态定义缩放边距。</translation>
     </message>
     <message>
@@ -873,7 +873,7 @@ Deseja sobrescrevê-los?</source>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2503"/>
-        <source>Uma coluna com o número &apos;15&apos; aplicará 15% de margem no enquadramento.</source>
+        <source>Uma coluna com o número '15' aplicará 15% de margem no enquadramento.</source>
         <translation>包含数字“15”的列将在框架上应用 15% 的边距。</translation>
     </message>
     <message>
@@ -893,12 +893,12 @@ Deseja sobrescrevê-los?</source>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2518"/>
-        <source>Use o botão &apos;ε&apos; para definir a escala absoluta dinamicamente com base na sua tabela de atributos.</source>
+        <source>Use o botão 'ε' para definir a escala absoluta dinamicamente com base na sua tabela de atributos.</source>
         <translation>使用“ε”按钮根据您的属性表动态定义绝对比例尺。</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2520"/>
-        <source>Uma coluna com o número &apos;5000&apos; forçará o mapa para a escala 1:5000.</source>
+        <source>Uma coluna com o número '5000' forçará o mapa para a escala 1:5000.</source>
         <translation>包含数字“5000”的列将强制地图使用 1:5000 的比例尺。</translation>
     </message>
     <message>
@@ -963,7 +963,7 @@ Deseja sobrescrevê-los?</source>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2555"/>
-        <source>Escolher a coluna &apos;Bairro&apos; gerará um mapa para cada bairro, unindo todos os lotes que pertencem a ele na mesma prancha.</source>
+        <source>Escolher a coluna 'Bairro' gerará um mapa para cada bairro, unindo todos os lotes que pertencem a ele na mesma prancha.</source>
         <translation>选择“街区”列将为每个街区生成一张地图，将属于该街区的所有地块合并在同一张图纸上。</translation>
     </message>
     <message>

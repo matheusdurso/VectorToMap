@@ -3,7 +3,7 @@ import os
 import re
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.core import (
-    QgsReadWriteContext, QgsLayoutItemMap, QgsLayoutItemLabel,
+    QgsReadWriteContext, QgsLayoutItemLabel,
     QgsLayoutItemLegend, QgsExpression, QgsExpressionContextUtils,
     QgsLayoutPoint, QgsUnitTypes, NULL, QgsLayoutItemPage
 )
@@ -68,7 +68,7 @@ class TemplateManager:
                 try:
                     w, h = map(float, el.attribute("size", "0,0,mm").split(',')[:2])
                     area = w * h
-                except:
+                except Exception:
                     area = 0
                 mapas_validos.append({'area': area, 'el': el, 'id': item_id})
 
@@ -165,7 +165,7 @@ class TemplateManager:
                             if idx != -1:
                                 val = feicao_atual.attribute(coluna)
                                 return str(val).strip() if val is not None and val != NULL else ""
-                        except:
+                        except Exception:
                             pass
                         return match.group(0)
 

@@ -25,13 +25,13 @@
     </message>
     <message>
         <location filename="../vector_to_map.py" line="102"/>
-        <source>&lt;div style=&apos;background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;&apos;&gt;&lt;h3 style=&apos;margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;&apos;&gt;🎉 Agora 100% Gratuito e Open-Source!&lt;/h3&gt;&lt;p style=&apos;margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;&apos;&gt;Todos os recursos avançados da versão Pro, exportação sem limites e templates profissionais foram liberados para a comunidade.&lt;/p&gt;&lt;p style=&apos;margin: 0; font-size: 11pt; color: #34495e;&apos;&gt;☕ &lt;b&gt;Apoie para manter o projeto vivo:&lt;/b&gt; &lt;a href=&apos;https://buymeacoffee.com/matheusdurso&apos; style=&apos;color: #e67e22; text-decoration: none; font-weight: bold;&apos;&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</source>
-        <translation>&lt;div style=&apos;background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;&apos;&gt;&lt;h3 style=&apos;margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;&apos;&gt;🎉 Теперь 100% бесплатно и с открытым исходным кодом!&lt;/h3&gt;&lt;p style=&apos;margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;&apos;&gt;Все расширенные функции версии Pro, неограниченный экспорт и профессиональные шаблоны теперь доступны сообществу.&lt;/p&gt;&lt;p style=&apos;margin: 0; font-size: 11pt; color: #34495e;&apos;&gt;☕ &lt;b&gt;Поддержите, чтобы проект продолжал развиваться:&lt;/b&gt; &lt;a href=&apos;https://buymeacoffee.com/matheusdurso&apos; style=&apos;color: #e67e22; text-decoration: none; font-weight: bold;&apos;&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</translation>
+        <source>&lt;div style='background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;'&gt;&lt;h3 style='margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;'&gt;🎉 Agora 100% Gratuito e Open-Source!&lt;/h3&gt;&lt;p style='margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;'&gt;Todos os recursos avançados da versão Pro, exportação sem limites e templates profissionais foram liberados para a comunidade.&lt;/p&gt;&lt;p style='margin: 0; font-size: 11pt; color: #34495e;'&gt;☕ &lt;b&gt;Apoie para manter o projeto vivo:&lt;/b&gt; &lt;a href='https://buymeacoffee.com/matheusdurso' style='color: #e67e22; text-decoration: none; font-weight: bold;'&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</source>
+        <translation>&lt;div style='background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;'&gt;&lt;h3 style='margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;'&gt;🎉 Теперь 100% бесплатно и с открытым исходным кодом!&lt;/h3&gt;&lt;p style='margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;'&gt;Все расширенные функции версии Pro, неограниченный экспорт и профессиональные шаблоны теперь доступны сообществу.&lt;/p&gt;&lt;p style='margin: 0; font-size: 11pt; color: #34495e;'&gt;☕ &lt;b&gt;Поддержите, чтобы проект продолжал развиваться:&lt;/b&gt; &lt;a href='https://buymeacoffee.com/matheusdurso' style='color: #e67e22; text-decoration: none; font-weight: bold;'&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="127"/>
-        <source>&lt;b style=&apos;font-size: 11pt; color: #444;&apos;&gt;Relatórios de Erro:&lt;/b&gt;&lt;br&gt;&lt;span style=&apos;font-size: 10pt; color: #666;&apos;&gt;Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? Nenhuma informação pessoal ou dado geográfico será enviado.&lt;/span&gt;</source>
-        <translation>&lt;b style=&apos;font-size: 11pt; color: #444;&apos;&gt;Отчеты об ошибках:&lt;/b&gt;&lt;br&gt;&lt;span style=&apos;font-size: 10pt; color: #666;&apos;&gt;Согласны ли вы отправлять автоматические и полностью анонимные отчеты об ошибках в случае сбоя системы? Никакая личная или географическая информация не будет отправлена.&lt;/span&gt;</translation>
+        <source>&lt;b style='font-size: 11pt; color: #444;'&gt;Relatórios de Erro:&lt;/b&gt;&lt;br&gt;&lt;span style='font-size: 10pt; color: #666;'&gt;Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? Nenhuma informação pessoal ou dado geográfico será enviado.&lt;/span&gt;</source>
+        <translation>&lt;b style='font-size: 11pt; color: #444;'&gt;Отчеты об ошибках:&lt;/b&gt;&lt;br&gt;&lt;span style='font-size: 10pt; color: #666;'&gt;Согласны ли вы отправлять автоматические и полностью анонимные отчеты об ошибках в случае сбоя системы? Никакая личная или географическая информация не будет отправлена.&lt;/span&gt;</translation>
     </message>
 </context>
 <context>
@@ -118,8 +118,8 @@
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="289"/>
-        <source>Agrupa feições na mesma prancha de impressão usando o valor desta coluna (Ex: &apos;Bairro&apos; gera um mapa por bairro).</source>
-        <translation>Группирует объекты на одном листе, используя значение этого столбца (например, &apos;Район&apos; создает карту для каждого района).</translation>
+        <source>Agrupa feições na mesma prancha de impressão usando o valor desta coluna (Ex: 'Bairro' gera um mapa por bairro).</source>
+        <translation>Группирует объекты на одном листе, используя значение этого столбца (например, 'Район' создает карту для каждого района).</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="356"/>
@@ -560,52 +560,52 @@
 <context>
     <name>LayoutEngine</name>
     <message>
-        <location filename="../layout_engine.py" line="744"/>
+        <location filename="../layout_engine.py" line="541"/>
         <source>Legenda</source>
         <translation>Легенда</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1488"/>
+        <location filename="../layout_engine.py" line="1285"/>
         <source>Grade Automática</source>
         <translation>Автоматическая сетка</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="44"/>
+        <location filename="../layout_engine.py" line="50"/>
         <source>Zoom_Camada</source>
         <translation>Зум_Слоя</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1315"/>
+        <location filename="../layout_engine.py" line="1112"/>
         <source>Resumo do Mapa Geral</source>
         <translation>Сводка общей карты</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1316"/>
+        <location filename="../layout_engine.py" line="1113"/>
         <source>Camada Vetorial</source>
         <translation>Векторный слой</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1317"/>
+        <location filename="../layout_engine.py" line="1114"/>
         <source>Tipo de Geometria</source>
         <translation>Тип геометрии</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1318"/>
+        <location filename="../layout_engine.py" line="1115"/>
         <source>Total de Feições</source>
         <translation>Всего объектов</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1319"/>
+        <location filename="../layout_engine.py" line="1116"/>
         <source>SRC da Camada</source>
         <translation>СК слоя</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1320"/>
+        <location filename="../layout_engine.py" line="1117"/>
         <source>SRC do Projeto</source>
         <translation>СК проекта</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="159"/>
+        <location filename="../layout_engine.py" line="165"/>
         <source>A camada original foi removida do QGIS durante a exportação. Processo abortado.</source>
         <translation>Исходный слой был удален из QGIS во время экспорта. Процесс прерван.</translation>
     </message>
@@ -863,8 +863,8 @@ Deseja sobrescrevê-los?</source>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2501"/>
-        <source>Use o botão &apos;ε&apos; para definir a margem de zoom dinamicamente com base na sua tabela de atributos.</source>
-        <translation>Используйте кнопку &apos;ε&apos;, чтобы динамически задать поле масштабирования на основе вашей таблицы атрибутов.</translation>
+        <source>Use o botão 'ε' para definir a margem de zoom dinamicamente com base na sua tabela de atributos.</source>
+        <translation>Используйте кнопку 'ε', чтобы динамически задать поле масштабирования на основе вашей таблицы атрибутов.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2519"/>
@@ -873,8 +873,8 @@ Deseja sobrescrevê-los?</source>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2503"/>
-        <source>Uma coluna com o número &apos;15&apos; aplicará 15% de margem no enquadramento.</source>
-        <translation>Столбец со значением &apos;15&apos; применит 15% поля к охвату.</translation>
+        <source>Uma coluna com o número '15' aplicará 15% de margem no enquadramento.</source>
+        <translation>Столбец со значением '15' применит 15% поля к охвату.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2556"/>
@@ -893,13 +893,13 @@ Deseja sobrescrevê-los?</source>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2518"/>
-        <source>Use o botão &apos;ε&apos; para definir a escala absoluta dinamicamente com base na sua tabela de atributos.</source>
-        <translation>Используйте кнопку &apos;ε&apos;, чтобы динамически задать абсолютный масштаб на основе вашей таблицы атрибутов.</translation>
+        <source>Use o botão 'ε' para definir a escala absoluta dinamicamente com base na sua tabela de atributos.</source>
+        <translation>Используйте кнопку 'ε', чтобы динамически задать абсолютный масштаб на основе вашей таблицы атрибутов.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2520"/>
-        <source>Uma coluna com o número &apos;5000&apos; forçará o mapa para a escala 1:5000.</source>
-        <translation>Столбец со значением &apos;5000&apos; установит масштаб карты 1:5000.</translation>
+        <source>Uma coluna com o número '5000' forçará o mapa para a escala 1:5000.</source>
+        <translation>Столбец со значением '5000' установит масштаб карты 1:5000.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2523"/>
@@ -963,8 +963,8 @@ Deseja sobrescrevê-los?</source>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2555"/>
-        <source>Escolher a coluna &apos;Bairro&apos; gerará um mapa para cada bairro, unindo todos os lotes que pertencem a ele na mesma prancha.</source>
-        <translation>Выбор столбца &apos;Район&apos; создаст карту для каждого района, объединив все относящиеся к нему участки на одном листе.</translation>
+        <source>Escolher a coluna 'Bairro' gerará um mapa para cada bairro, unindo todos os lotes que pertencem a ele na mesma prancha.</source>
+        <translation>Выбор столбца 'Район' создаст карту для каждого района, объединив все относящиеся к нему участки на одном листе.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2558"/>

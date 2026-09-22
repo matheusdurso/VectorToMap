@@ -25,13 +25,13 @@
     </message>
     <message>
         <location filename="../vector_to_map.py" line="102"/>
-        <source>&lt;div style=&apos;background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;&apos;&gt;&lt;h3 style=&apos;margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;&apos;&gt;🎉 Agora 100% Gratuito e Open-Source!&lt;/h3&gt;&lt;p style=&apos;margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;&apos;&gt;Todos os recursos avançados da versão Pro, exportação sem limites e templates profissionais foram liberados para a comunidade.&lt;/p&gt;&lt;p style=&apos;margin: 0; font-size: 11pt; color: #34495e;&apos;&gt;☕ &lt;b&gt;Apoie para manter o projeto vivo:&lt;/b&gt; &lt;a href=&apos;https://buymeacoffee.com/matheusdurso&apos; style=&apos;color: #e67e22; text-decoration: none; font-weight: bold;&apos;&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</source>
-        <translation>&lt;div style=&apos;background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;&apos;&gt;&lt;h3 style=&apos;margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;&apos;&gt;🎉 Jetzt 100% kostenlos und Open-Source!&lt;/h3&gt;&lt;p style=&apos;margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;&apos;&gt;Alle erweiterten Funktionen der Pro-Version, unbegrenzter Export und professionelle Vorlagen wurden für die Community freigegeben.&lt;/p&gt;&lt;p style=&apos;margin: 0; font-size: 11pt; color: #34495e;&apos;&gt;☕ &lt;b&gt;Unterstützen Sie das Projekt, um es am Leben zu erhalten:&lt;/b&gt; &lt;a href=&apos;https://buymeacoffee.com/matheusdurso&apos; style=&apos;color: #e67e22; text-decoration: none; font-weight: bold;&apos;&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</translation>
+        <source>&lt;div style='background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;'&gt;&lt;h3 style='margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;'&gt;🎉 Agora 100% Gratuito e Open-Source!&lt;/h3&gt;&lt;p style='margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;'&gt;Todos os recursos avançados da versão Pro, exportação sem limites e templates profissionais foram liberados para a comunidade.&lt;/p&gt;&lt;p style='margin: 0; font-size: 11pt; color: #34495e;'&gt;☕ &lt;b&gt;Apoie para manter o projeto vivo:&lt;/b&gt; &lt;a href='https://buymeacoffee.com/matheusdurso' style='color: #e67e22; text-decoration: none; font-weight: bold;'&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</source>
+        <translation>&lt;div style='background-color: #f0f8ff; padding: 15px 20px; border-radius: 6px; border-left: 5px solid #3498db;'&gt;&lt;h3 style='margin: 0 0 10px 0; color: #2980b9; font-size: 14pt;'&gt;🎉 Jetzt 100% kostenlos und Open-Source!&lt;/h3&gt;&lt;p style='margin: 0 0 12px 0; color: #2c3e50; font-size: 11pt; line-height: 1.4;'&gt;Alle erweiterten Funktionen der Pro-Version, unbegrenzter Export und professionelle Vorlagen wurden für die Community freigegeben.&lt;/p&gt;&lt;p style='margin: 0; font-size: 11pt; color: #34495e;'&gt;☕ &lt;b&gt;Unterstützen Sie das Projekt, um es am Leben zu erhalten:&lt;/b&gt; &lt;a href='https://buymeacoffee.com/matheusdurso' style='color: #e67e22; text-decoration: none; font-weight: bold;'&gt;buymeacoffee.com/matheusdurso&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="127"/>
-        <source>&lt;b style=&apos;font-size: 11pt; color: #444;&apos;&gt;Relatórios de Erro:&lt;/b&gt;&lt;br&gt;&lt;span style=&apos;font-size: 10pt; color: #666;&apos;&gt;Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? Nenhuma informação pessoal ou dado geográfico será enviado.&lt;/span&gt;</source>
-        <translation>&lt;b style=&apos;font-size: 11pt; color: #444;&apos;&gt;Fehlerberichte:&lt;/b&gt;&lt;br&gt;&lt;span style=&apos;font-size: 10pt; color: #666;&apos;&gt;Stimmen Sie dem Senden automatischer und völlig anonymer Fehlerberichte zu, falls ein Fehler auftritt? Es werden keine persönlichen oder geografischen Daten gesendet.&lt;/span&gt;</translation>
+        <source>&lt;b style='font-size: 11pt; color: #444;'&gt;Relatórios de Erro:&lt;/b&gt;&lt;br&gt;&lt;span style='font-size: 10pt; color: #666;'&gt;Você aceita enviar relatórios automáticos e totalmente anônimos caso algum erro ocorra no sistema? Nenhuma informação pessoal ou dado geográfico será enviado.&lt;/span&gt;</source>
+        <translation>&lt;b style='font-size: 11pt; color: #444;'&gt;Fehlerberichte:&lt;/b&gt;&lt;br&gt;&lt;span style='font-size: 10pt; color: #666;'&gt;Stimmen Sie dem Senden automatischer und völlig anonymer Fehlerberichte zu, falls ein Fehler auftritt? Es werden keine persönlichen oder geografischen Daten gesendet.&lt;/span&gt;</translation>
     </message>
 </context>
 <context>
@@ -468,8 +468,8 @@
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="289"/>
-        <source>Agrupa feições na mesma prancha de impressão usando o valor desta coluna (Ex: &apos;Bairro&apos; gera um mapa por bairro).</source>
-        <translation>Gruppiert Objekte im selben Drucklayout anhand des Werts dieser Spalte (Bsp.: &apos;Bairro&apos; generiert eine Karte pro Viertel).</translation>
+        <source>Agrupa feições na mesma prancha de impressão usando o valor desta coluna (Ex: 'Bairro' gera um mapa por bairro).</source>
+        <translation>Gruppiert Objekte im selben Drucklayout anhand des Werts dieser Spalte (Bsp.: 'Bairro' generiert eine Karte pro Viertel).</translation>
     </message>
     <message>
         <location filename="../vector_to_map_dialog_base.ui" line="356"/>
@@ -560,52 +560,52 @@
 <context>
     <name>LayoutEngine</name>
     <message>
-        <location filename="../layout_engine.py" line="744"/>
+        <location filename="../layout_engine.py" line="541"/>
         <source>Legenda</source>
         <translation>Legende</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1488"/>
+        <location filename="../layout_engine.py" line="1285"/>
         <source>Grade Automática</source>
         <translation>Automatisches Gitter</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="44"/>
+        <location filename="../layout_engine.py" line="50"/>
         <source>Zoom_Camada</source>
         <translation>Layer_Zoom</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1315"/>
+        <location filename="../layout_engine.py" line="1112"/>
         <source>Resumo do Mapa Geral</source>
         <translation>Zusammenfassung der Gesamtkarte</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1316"/>
+        <location filename="../layout_engine.py" line="1113"/>
         <source>Camada Vetorial</source>
         <translation>Vektorlayer</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1317"/>
+        <location filename="../layout_engine.py" line="1114"/>
         <source>Tipo de Geometria</source>
         <translation>Geometrietyp</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1318"/>
+        <location filename="../layout_engine.py" line="1115"/>
         <source>Total de Feições</source>
         <translation>Gesamtzahl der Objekte</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1319"/>
+        <location filename="../layout_engine.py" line="1116"/>
         <source>SRC da Camada</source>
         <translation>KBS des Layers</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="1320"/>
+        <location filename="../layout_engine.py" line="1117"/>
         <source>SRC do Projeto</source>
         <translation>Projekt-KBS</translation>
     </message>
     <message>
-        <location filename="../layout_engine.py" line="159"/>
+        <location filename="../layout_engine.py" line="165"/>
         <source>A camada original foi removida do QGIS durante a exportação. Processo abortado.</source>
         <translation>Der ursprüngliche Layer wurde während des Exports aus QGIS entfernt. Vorgang abgebrochen.</translation>
     </message>
@@ -863,8 +863,8 @@ Möchten Sie sie überschreiben?</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2501"/>
-        <source>Use o botão &apos;ε&apos; para definir a margem de zoom dinamicamente com base na sua tabela de atributos.</source>
-        <translation>Verwenden Sie die Schaltfläche &apos;ε&apos;, um den Zoomrand dynamisch basierend auf Ihrer Attributtabelle festzulegen.</translation>
+        <source>Use o botão 'ε' para definir a margem de zoom dinamicamente com base na sua tabela de atributos.</source>
+        <translation>Verwenden Sie die Schaltfläche 'ε', um den Zoomrand dynamisch basierend auf Ihrer Attributtabelle festzulegen.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2519"/>
@@ -873,8 +873,8 @@ Möchten Sie sie überschreiben?</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2503"/>
-        <source>Uma coluna com o número &apos;15&apos; aplicará 15% de margem no enquadramento.</source>
-        <translation>Eine Spalte mit der Zahl &apos;15&apos; wendet einen Rand von 15 % auf den Rahmen an.</translation>
+        <source>Uma coluna com o número '15' aplicará 15% de margem no enquadramento.</source>
+        <translation>Eine Spalte mit der Zahl '15' wendet einen Rand von 15 % auf den Rahmen an.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2556"/>
@@ -893,13 +893,13 @@ Möchten Sie sie überschreiben?</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2518"/>
-        <source>Use o botão &apos;ε&apos; para definir a escala absoluta dinamicamente com base na sua tabela de atributos.</source>
-        <translation>Verwenden Sie die Schaltfläche &apos;ε&apos;, um den absoluten Maßstab dynamisch basierend auf Ihrer Attributtabelle festzulegen.</translation>
+        <source>Use o botão 'ε' para definir a escala absoluta dinamicamente com base na sua tabela de atributos.</source>
+        <translation>Verwenden Sie die Schaltfläche 'ε', um den absoluten Maßstab dynamisch basierend auf Ihrer Attributtabelle festzulegen.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2520"/>
-        <source>Uma coluna com o número &apos;5000&apos; forçará o mapa para a escala 1:5000.</source>
-        <translation>Eine Spalte mit der Zahl &apos;5000&apos; erzwingt die Karte auf den Maßstab 1:5000.</translation>
+        <source>Uma coluna com o número '5000' forçará o mapa para a escala 1:5000.</source>
+        <translation>Eine Spalte mit der Zahl '5000' erzwingt die Karte auf den Maßstab 1:5000.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2523"/>
@@ -963,8 +963,8 @@ Möchten Sie sie überschreiben?</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2555"/>
-        <source>Escolher a coluna &apos;Bairro&apos; gerará um mapa para cada bairro, unindo todos os lotes que pertencem a ele na mesma prancha.</source>
-        <translation>Wenn Sie die Spalte &apos;Bairro&apos; (Viertel) auswählen, wird für jedes Viertel eine Karte erstellt, die alle dazugehörigen Grundstücke auf demselben Layout vereint.</translation>
+        <source>Escolher a coluna 'Bairro' gerará um mapa para cada bairro, unindo todos os lotes que pertencem a ele na mesma prancha.</source>
+        <translation>Wenn Sie die Spalte 'Bairro' (Viertel) auswählen, wird für jedes Viertel eine Karte erstellt, die alle dazugehörigen Grundstücke auf demselben Layout vereint.</translation>
     </message>
     <message>
         <location filename="../vector_to_map.py" line="2558"/>

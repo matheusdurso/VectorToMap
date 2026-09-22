@@ -4,7 +4,6 @@ import re
 import gc
 import unicodedata
 import math
-from qgis.PyQt.QtXml import QDomDocument
 from qgis.PyQt import sip
 from qgis.PyQt.QtCore import QCoreApplication, Qt, QSize
 from qgis.PyQt.QtGui import QColor
@@ -12,11 +11,10 @@ from qgis.core import (
     QgsPrintLayout, QgsLayoutExporter, QgsProject, QgsRectangle,
     QgsCoordinateTransform, QgsLayoutItemPage, QgsLayoutItemLabel,
     QgsLayoutItemMap, QgsLayoutPoint, QgsLayoutSize, QgsUnitTypes,
-    QgsWkbTypes, QgsVectorLayer, QgsLayoutItem, NULL,
-    QgsExpression, QgsExpressionContextUtils, QgsLayoutItemScaleBar,
+    QgsWkbTypes, QgsVectorLayer, QgsLayoutItem, QgsExpression, QgsExpressionContextUtils, QgsLayoutItemScaleBar,
     QgsLayoutItemPicture, QgsLayoutItemLegend, Qgis, QgsLegendStyle,
     QgsLayoutRenderContext, QgsFeature, QgsLayoutItemMapGrid,
-    QgsReadWriteContext, QgsLayoutItemMapOverview, QgsFillSymbol,
+    QgsLayoutItemMapOverview, QgsFillSymbol,
     QgsMessageLog, QgsMapLayerType, QgsApplication
 )
 try:
@@ -469,7 +467,7 @@ class LayoutEngine:
                         if camada_loc.crs() != project_crs:
                             trans = QgsCoordinateTransform(camada_loc.crs(), project_crs, QgsProject.instance().transformContext())
                             try: ext = trans.transformBoundingBox(ext)
-                            except: pass
+                            except Exception: pass # nosec
 
                         if not ext.isEmpty():
                             ext.scale(1.15) # Margem de respiro leve
@@ -543,7 +541,7 @@ class LayoutEngine:
             legenda.setBackgroundEnabled(True)
             legenda.setBackgroundColor(QColor(255, 255, 255, 204))
             try: legenda.rstyle(Qgis.LegendComponent.Title).setMargin(QgsLegendStyle.Side.Bottom, 2.5)
-            except: pass
+            except Exception: pass # nosec
 
             # =================================================================
             # CORREÇÃO QGIS 4: A Mágica da Inicialização Tardia (Lazy Load)
@@ -840,13 +838,13 @@ class LayoutEngine:
                         val = exp.evaluate(contexto)
                         if val is not None and not exp.hasEvalError():
                             escala_final = float(val)
-                    except:
-                        pass
+                    except Exception:
+                        pass # nosec
             else:
                 # Se for valor da ComboBox (ex: 5000), converte direto
                 try:
                     escala_final = float(escala_config)
-                except:
+                except Exception:
                     escala_final = 10000.0
 
             map_item.setScale(escala_final)
@@ -874,13 +872,13 @@ class LayoutEngine:
                             if val is not None and not exp.hasEvalError():
                                 # Converte o valor inteiro (ex: 15) em fator multiplicador (1.15)
                                 fator_zoom = 1.0 + (float(val) / 100.0)
-                        except:
-                            pass
+                        except Exception:
+                            pass # nosec
                 else:
                     try:
                         fator_zoom = 1.0 + (float(zoom_out_config) / 100.0)
-                    except:
-                        pass
+                    except Exception:
+                        pass # nosec
 
                 # Pega a escala que "obriga" a feição a caber (a maior) e multiplica pela margem de respiro
                 escala_calculada = max(scale_w, scale_h) * fator_zoom
@@ -1216,7 +1214,7 @@ class LayoutEngine:
                     else:
                         # HTML com negrito e quebra web (<br>)
                         txt += f"<b>{col}:</b> {valor}<br>"
-                except: continue
+                except Exception: continue # nosec
 
         # O parâmetro is_html desliga automaticamente se for um arquivo SVG
         self._inserir_label_no_layout(
@@ -1249,7 +1247,7 @@ class LayoutEngine:
                     texto = f"{col}: {str(val).strip() if val is not None else ''}"
                     largura_ocupada = self._inserir_label_no_layout(layout, texto, xi, yi, auto_resize=True)
                     xi += largura_ocupada + 2.0
-                except: continue
+                except Exception: continue # nosec
         else:
             altura_total = len(feicoes_da_pagina) * altura_linha
             yi = (geom['limite_fundo'] - altura_total) if (geom['y_ind_min'] + altura_total) > geom['limite_fundo'] else geom['y_ind_min']
@@ -1262,7 +1260,7 @@ class LayoutEngine:
                         texto = f"{col}: {str(val).strip() if val is not None else ''}"
                         largura_ocupada = self._inserir_label_no_layout(layout, texto, xi, yi, auto_resize=True)
                         xi += largura_ocupada + 2.0
-                    except: continue
+                    except Exception: continue # nosec
                 yi += altura_linha
 
     def adicionar_numeracao_pagina(self, layout, w_pg, h_pg, y_zero_folha, config):

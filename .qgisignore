@@ -1,0 +1,9 @@
+# Pastas e arquivos que DEVEM ir para o GitHub, mas NÃO para o pacote final do QGIS
+.github/
+tests/
+.gitignore
+.qgisignore
+pyproject.toml
+requirements.txt
+pb_tool.cfg
+build.py

@@ -4,6 +4,13 @@ All notable changes to VectorToMap will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.8.8] - 2026-09-22
+### Security & DevSecOps
+- Complete CI/CD Pipeline Overhaul: Replaced manual release scripts with the official `qgis-plugin-ci` tool for robust, secure packaging and automated publishing directly to the QGIS official plugin repository.
+- Matrix Testing Implementation: Upgraded GitHub Actions to run headless integration tests (Pytest) against both QGIS `latest` and `latest-ltr` Docker containers simultaneously, ensuring backward and forward compatibility.
+- Hardened SAST Pipeline: Enforced strict static code analysis by integrating a dedicated `pyproject.toml` to properly exclude vendored dependencies (e.g., `sentry_sdk`, `urllib3`) from linting (`ruff`), and enabled automated security updates via Dependabot (`requirements.txt`).
+- Secure Packaging Optimization: Introduced a dedicated `.qgisignore` file to strictly prevent development assets, test suites, and CI/CD configurations from leaking into the final production `.zip` package, maintaining full GitHub repository integrity.
+
 ## [3.8.7] - 2026-06-30
 ### Changed
 - Architectural Refactoring: Extracted the XML template parsing and sanitization logic from `layout_engine.py` into a dedicated `TemplateManager` module, strictly enforcing Separation of Concerns (SoC) and reducing the main engine's complexity by over 120 lines.
@@ -55,6 +62,13 @@ Todas as mudanças notáveis no VectorToMap serão documentadas neste arquivo.
 
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+## [3.8.8] - 2026-09-22
+### Segurança & DevSecOps
+- Reformulação Arquitetural do CI/CD: Substituição de scripts manuais de empacotamento pela ferramenta oficial `qgis-plugin-ci`, garantindo a geração segura de pacotes e publicação automatizada direta no repositório oficial da OSGeo/QGIS.
+- Implementação de Matriz de Testes: Upgrade no GitHub Actions para executar testes de integração (Pytest) de forma oculta (*headless*) contra containers Docker do QGIS nas versões `latest` e `latest-ltr` simultaneamente, assegurando estabilidade em múltiplas versões.
+- Blindagem de Análise Estática (SAST): Aplicação rigorosa de regras de linting (`ruff`) com a introdução do arquivo `pyproject.toml` para ignorar adequadamente bibliotecas de terceiros (*vendoring* como `sentry_sdk` e `urllib3`), além da ativação do Dependabot via `requirements.txt`.
+- Otimização de Empacotamento Limpo: Criação de um arquivo `.qgisignore` dedicado para garantir que a suíte de testes, arquivos do GitHub Actions e configurações locais sejam estritamente bloqueados do pacote `.zip` final do usuário, mantendo a integridade do repositório fonte.
 
 ## [3.8.7] - 2026-06-30
 ### Modificado

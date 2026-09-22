@@ -1,0 +1,35 @@
+[tool.ruff]
+# 1. ARQUIVOS IGNORADOS (Crucial para plugins QGIS!)
+exclude = [
+    ".git",
+    ".github",
+    "venv",
+    "temp_build",
+    "tests",      # Ignora a pasta de testes para focar só no código do plugin
+    "*_rc.py",    # Ignora os arquivos de imagem gerados pelo Pyrcc5
+    "*_ui.py",    # Ignora os arquivos de interface gerados pelo Qt Designer
+    # --- NOVO: Ignorar bibliotecas de terceiros (Vendored) ---
+    "sentry_sdk",
+    "certifi",
+    "urllib3",
+    "*.dist-info"
+]
+
+# Aumentamos o limite de caracteres da linha.
+# O QGIS tem funções muito compridas (ex: QCoreApplication.translate),
+# então o padrão de 88 do Python deixa o código espremido.
+line-length = 120
+
+[tool.ruff.lint]
+# 2. O QUE O PORTEIRO VAI FISCALIZAR (Regras Ativas)
+# F = Pyflakes (Erros lógicos graves: variáveis não usadas, imports faltando)
+# E = Pycodestyle Erros (Erros básicos de sintaxe e estilo PEP8)
+# B = Bugbear (Prevenção de bugs armadilhas comuns no Python)
+select = ["F", "E", "B"]
+
+# 3. O QUE O PORTEIRO VAI IGNORAR (Regras Desativadas)
+ignore = [
+    "E501", # Ignora o erro de "Linha muito longa" mesmo se passar de 120
+    "B018", # Ignora expressões inúteis soltas no código
+    "E701"
+]

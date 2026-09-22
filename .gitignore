@@ -4,6 +4,12 @@ __pycache__/
 *$py.class
 .pytest_cache/
 
+# Ambientes Virtuais (NOVO - CRUCIAL)
+venv/
+.venv/
+env/
+*.log
+
 # QGIS: Proteção contra arquivos de projeto e cache local
 *.qgs~
 *.qgz
@@ -14,7 +20,7 @@ __pycache__/
 # Interface: Salvamento automático do Qt Designer
 *.ui.autosave
 
-# Dados de Teste: (Essencial para não subir camadas pesadas e dados sensíveis)
+# Dados de Teste:
 *.shp
 *.shx
 *.dbf
@@ -24,22 +30,17 @@ __pycache__/
 *.gpkg
 *.gpkg-journal
 
-# IDEs: Configurações locais do seu ambiente de trabalho
+# IDEs: Configurações locais
 .vscode/
 .idea/
 
-# Build e Releases: (Para não duplicar o que o robô de CI/CD faz)
+# Build e Releases:
 *.zip
 build/
 dist/
+vector_to_map_v*.zip
+build_output/
 
 # Sistema:
 .DS_Store
 Thumbs.db
-
-# Garante que versões nomeadas (ex: vector_to_map_v0.3.1.zip) também fiquem fora
-vector_to_map_v*.zip
-build/
-dist/
-# Opcional: Se você não quer que as pessoas vejam sua pasta de saída de build local
-build_output/
