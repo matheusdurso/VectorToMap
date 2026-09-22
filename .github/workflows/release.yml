@@ -41,7 +41,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        qgis_version: ['latest', 'latest-ltr']
+        qgis_version: ['latest', 'ltr']
 
     container:
       image: qgis/qgis:${{ matrix.qgis_version }}
