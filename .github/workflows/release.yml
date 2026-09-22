@@ -90,11 +90,23 @@ jobs:
       - name: Instalar qgis-plugin-ci
         run: pip install qgis-plugin-ci
 
-      # --- LIMPEZA SEGURA (MANTÉM O .GIT) ---
-      - name: Limpar Arquivos de Teste e Cache
+      # --- LIMPEZA E ESTRUTURAÇÃO SEGURA PARA O QGIS ---
+      - name: Preparar Estrutura Exata do QGIS
         run: |
-          # Apaga apenas o lixo, mantendo a pasta .git e a estrutura original
+          # 1. Limpa lixo pesado (mantendo o .git 100% intacto na raiz)
           rm -rf tests/ temp_build/ *.dist-info/ i18n/*.ts .github/ build.py pb_tool.cfg .qgisignore .gitignore
+
+          # 2. Cria a subpasta obrigatória exigida pela OSGeo
+          mkdir VectorToMap
+
+          # 3. Move tudo para dentro da subpasta, EXCETO o .git e a própria pasta VectorToMap
+          find . -maxdepth 1 ! -name '.' ! -name '.git' ! -name 'VectorToMap' -exec mv {} VectorToMap/ \;
+
+          # 4. Traz o pyproject.toml de volta para a raiz para a ferramenta encontrá-lo
+          mv VectorToMap/pyproject.toml .
+
+          # 5. Corrige o TOML para a ferramenta nomear o ZIP e a pasta interna corretamente
+          sed -i 's|plugin_path = "."|plugin_path = "VectorToMap"|g' pyproject.toml
 
       - name: Empacotar e Enviar para a OSGeo
         env:
