@@ -36,3 +36,5 @@ ignore = [
 
 [tool.qgis-plugin-ci]
 plugin_path = "."
+github_organization_slug = "matheusdurso"
+project_slug = "VectorToMap"
