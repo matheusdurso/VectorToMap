@@ -1,9 +1,30 @@
-# Pastas e arquivos que DEVEM ir para o GitHub, mas NÃO para o pacote final do QGIS
+# --- Pastas de desenvolvimento Python ---
+venv/
+.venv/
+env/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.dist-info/
+
+# --- Pastas de controle e CI/CD ---
+.git/
 .github/
+
+# --- Arquivos de testes e temporários ---
 tests/
+temp_build/
+tests_data/
+CACHEDIR.TAG
+
+# --- Fontes que já foram compiladas ---
+i18n/*.ts
+resources.qrc
+
+# --- Arquivos de configuração e scripts locais ---
 .gitignore
 .qgisignore
 pyproject.toml
 requirements.txt
-pb_tool.cfg
 build.py
+pb_tool.cfg
