@@ -81,7 +81,7 @@ jobs:
         run: |
           sed -i "s|INSERIR_DSN_VIA_CI_AQUI|${{ secrets.SENTRY_DSN }}|g" vector_to_map.py
 
-      # --- NOVO PASSO: CRIA O RELEASE NO GITHUB ANTES DO QGIS-PLUGIN-CI ---
+      # --- CRIA O RELEASE NO GITHUB ANTES DO QGIS-PLUGIN-CI PARA EVITAR ERRO 404 ---
       - name: Criar Release Oficial no GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
