@@ -90,6 +90,16 @@ jobs:
       - name: Instalar qgis-plugin-ci
         run: pip install qgis-plugin-ci
 
+      # --- DELEÇÃO CIRÚRGICA ANTES DO EMPACOTAMENTO ---
+      - name: Limpar Arquivos Pesados do Runner (Reduzir ZIP)
+        run: |
+          rm -rf tests/
+          rm -rf temp_build/
+          rm -rf *.dist-info/
+          rm -rf i18n/*.ts
+          rm -rf .github/
+          rm -f build.py pb_tool.cfg .qgisignore .gitignore
+
       - name: Empacotar e Enviar para a OSGeo
         run: >
           qgis-plugin-ci
