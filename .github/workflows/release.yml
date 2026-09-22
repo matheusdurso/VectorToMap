@@ -91,14 +91,19 @@ jobs:
         run: pip install qgis-plugin-ci
 
       # --- DELEÇÃO CIRÚRGICA ANTES DO EMPACOTAMENTO ---
-      - name: Limpar Arquivos Pesados do Runner (Reduzir ZIP)
+      - name: Limpar Arquivos e Criar Estrutura QGIS
         run: |
-          rm -rf tests/
-          rm -rf temp_build/
-          rm -rf *.dist-info/
-          rm -rf i18n/*.ts
-          rm -rf .github/
-          rm -f build.py pb_tool.cfg .qgisignore .gitignore
+          # 1. Apaga lixo de desenvolvimento e a pasta oculta .git para aliviar o zip
+          rm -rf tests/ temp_build/ *.dist-info/ i18n/*.ts .github/ .git/ build.py pb_tool.cfg .qgisignore .gitignore
+
+          # 2. Cria a pasta obrigatória exigida pelo QGIS
+          mkdir VectorToMap
+
+          # 3. Move TUDO (exceto a pasta recém-criada e o pyproject) para dentro dela
+          find . -maxdepth 1 ! -name '.' ! -name 'VectorToMap' ! -name 'pyproject.toml' -exec mv {} VectorToMap/ \;
+
+          # 4. Atualiza o pyproject.toml informando à ferramenta onde o plugin está agora
+          sed -i 's|plugin_path = "."|plugin_path = "VectorToMap"|g' pyproject.toml
 
       - name: Empacotar e Enviar para a OSGeo
         env:
