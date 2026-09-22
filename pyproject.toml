@@ -33,3 +33,6 @@ ignore = [
     "B018", # Ignora expressões inúteis soltas no código
     "E701"
 ]
+
+[tool.qgis-plugin-ci]
+plugin_path = "."
