@@ -101,12 +101,18 @@ jobs:
           rm -f build.py pb_tool.cfg .qgisignore .gitignore
 
       - name: Empacotar e Enviar para a OSGeo
-        run: >
-          qgis-plugin-ci
-          release ${{ github.ref_name }}
-          --osgeo-username ${{ secrets.OSGEO_USERNAME }}
-          --osgeo-password ${{ secrets.OSGEO_PASSWORD }}
-          --allow-uncommitted-changes
+        env:
+          SECURE_USER: ${{ secrets.OSGEO_USERNAME }}
+          SECURE_PASS: ${{ secrets.OSGEO_PASSWORD }}
+        run: |
+          # Remove o "v" da tag (ex: v3.8.8 vira 3.8.8) para o QGIS aceitar
+          VERSION_LIMPA="${GITHUB_REF_NAME#v}"
+
+          qgis-plugin-ci \
+            release $VERSION_LIMPA \
+            --osgeo-username "$SECURE_USER" \
+            --osgeo-password "$SECURE_PASS" \
+            --allow-uncommitted-changes
 
       - name: Anexar o .zip na Release do GitHub
         env:
