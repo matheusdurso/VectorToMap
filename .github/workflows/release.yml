@@ -81,22 +81,25 @@ jobs:
         run: |
           sed -i "s|INSERIR_DSN_VIA_CI_AQUI|${{ secrets.SENTRY_DSN }}|g" vector_to_map.py
 
-      # --- CRIA O RELEASE NO GITHUB ANTES DO QGIS-PLUGIN-CI PARA EVITAR ERRO 404 ---
       - name: Criar Release Oficial no GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release view ${{ github.ref_name }} || gh release create ${{ github.ref_name }} --title "VectorToMap ${{ github.ref_name }}" --generate-notes
 
-      # --- A MÁGICA DO QGIS-PLUGIN-CI ENTRA AQUI ---
       - name: Instalar qgis-plugin-ci
         run: pip install qgis-plugin-ci
 
-      - name: Empacotar, Gerar Release no GitHub e Enviar para o QGIS
+      - name: Empacotar e Enviar para a OSGeo
         run: >
           qgis-plugin-ci
           release ${{ github.ref_name }}
-          --github-token ${{ secrets.GITHUB_TOKEN }}
           --osgeo-username ${{ secrets.OSGEO_USERNAME }}
           --osgeo-password ${{ secrets.OSGEO_PASSWORD }}
           --allow-uncommitted-changes
+
+      - name: Anexar o .zip na Release do GitHub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.ref_name }} *.zip --clobber
