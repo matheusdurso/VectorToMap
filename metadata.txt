@@ -1,5 +1,5 @@
 [general]
-name=VectorToMap
+name=VectorToMap (Atlas & Layout)
 module=vector_to_map
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.99

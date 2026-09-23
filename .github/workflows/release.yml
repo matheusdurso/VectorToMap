@@ -60,12 +60,11 @@ jobs:
           mkdir -p /root/.local/share/QGIS/QGIS3/profiles/default/python/plugins/vector_to_map
           cp -r ./* /root/.local/share/QGIS/QGIS3/profiles/default/python/plugins/vector_to_map/
 
-      - name: Executar Suite de Testes (Pytest Headless)
-        run: |
-          xvfb-run -a pytest tests/ -v
+      - name: Executar Suite de Testes
+        run: xvfb-run -a pytest tests/ -v
 
   build:
-    name: Empacotamento Seguro e Publicação
+    name: Empacotamento e Publicação
     needs: integration_tests
     runs-on: ubuntu-latest
     steps:
@@ -77,59 +76,45 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Injetar Segredos DevSecOps
-        run: |
-          sed -i "s|INSERIR_DSN_VIA_CI_AQUI|${{ secrets.SENTRY_DSN }}|g" vector_to_map.py
+      - name: Injetar Segredos de CI
+        run: sed -i "s|INSERIR_DSN_VIA_CI_AQUI|${{ secrets.SENTRY_DSN }}|g" vector_to_map.py
 
-      - name: Criar Release Oficial no GitHub
+      - name: Criar Release no GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release view ${{ github.ref_name }} || gh release create ${{ github.ref_name }} --title "VectorToMap ${{ github.ref_name }}" --generate-notes
 
-      - name: Instalar qgis-plugin-ci
+      - name: Instalar Dependências de Deploy
         run: pip install qgis-plugin-ci
 
-      # --- LIMPEZA E ESTRUTURAÇÃO SEGURA PARA O QGIS ---
-      - name: Preparar Estrutura Exata do QGIS no Git
+      - name: Estruturar Pacote para OSGeo
         run: |
-          # 1. Limpa lixo pesado (mantendo o .git 100% intacto na raiz)
           rm -rf tests/ temp_build/ *.dist-info/ i18n/*.ts .github/ build.py pb_tool.cfg .qgisignore .gitignore
 
-          # 2. Cria a subpasta obrigatória exigida pela OSGeo
-          mkdir VectorToMap
+          # O NOME DA PASTA DEVE SER O NOME EXATO DO PACOTE PYTHON (MINÚSCULO)
+          mkdir vector_to_map
 
-          # 3. Move tudo para dentro da subpasta, EXCETO o .git e a própria pasta VectorToMap
-          find . -maxdepth 1 ! -name '.' ! -name '.git' ! -name 'VectorToMap' -exec mv {} VectorToMap/ \;
+          find . -maxdepth 1 ! -name '.' ! -name '.git' ! -name 'vector_to_map' -exec mv {} vector_to_map/ \;
+          mv vector_to_map/pyproject.toml .
 
-          # 4. Traz o pyproject.toml de volta para a raiz
-          mv VectorToMap/pyproject.toml .
+          # Atualiza o TOML apontando para a pasta minúscula
+          sed -i 's|plugin_path = "."|plugin_path = "vector_to_map"|g' pyproject.toml
 
-          # 5. Corrige o TOML para apontar para a nova pasta
-          sed -i 's|plugin_path = "."|plugin_path = "VectorToMap"|g' pyproject.toml
-
-          # 6. O PULO DO GATO: Salva a estrutura no Git local para o qgis-plugin-ci enxergar!
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "ci: estrutura arquivos em pasta raiz unica para validacao da osgeo"
+          git commit -m "ci: corrige o nome da pasta do pacote para dar update no plugin correto"
 
-      - name: Empacotar e Enviar para a OSGeo
+      - name: Publicar no Repositório QGIS
         env:
           SECURE_USER: ${{ secrets.OSGEO_USERNAME }}
           SECURE_PASS: ${{ secrets.OSGEO_PASSWORD }}
         run: |
-          # Remove o "v" da tag (ex: v3.8.8 vira 3.8.8) para o QGIS aceitar
           VERSION_LIMPA="${GITHUB_REF_NAME#v}"
+          qgis-plugin-ci release $VERSION_LIMPA --osgeo-username "$SECURE_USER" --osgeo-password "$SECURE_PASS" --allow-uncommitted-changes
 
-          qgis-plugin-ci \
-            release $VERSION_LIMPA \
-            --osgeo-username "$SECURE_USER" \
-            --osgeo-password "$SECURE_PASS" \
-            --allow-uncommitted-changes
-
-      - name: Anexar o .zip na Release do GitHub
+      - name: Anexar Artefato no GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release upload ${{ github.ref_name }} *.zip --clobber
+        run: gh release upload ${{ github.ref_name }} *.zip --clobber

@@ -60,7 +60,7 @@ class CloudResourceContextIntegration(Integration):
 
     cloud_provider = ""
 
-    aws_token = ""
+    aws_token = "" # nosec
     http = urllib3.PoolManager(timeout=HTTP_TIMEOUT)
 
     gcp_metadata = None

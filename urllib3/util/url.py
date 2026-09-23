@@ -183,7 +183,7 @@ class Url(
                                     "host.com", 80, "/path", "query", "fragment"
                                     ).url
                 )
-            # "https://username:password@host.com:80/path?query#fragment"
+            # "https://username:password@host.com:80/path?query#fragment" # nosec # pragma: allowlist secret
         """
         scheme, auth, host, port, path, query, fragment = self
         url = ""
