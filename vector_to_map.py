@@ -437,7 +437,11 @@ class VectorToMap:
         self.dlg.lbl_preview.setFrameShape(QFrame.Shape.StyledPanel)
 
         sombra = QGraphicsDropShadowEffect()
-        sombra.setBlurRadius(20); sombra.setXOffset(5); sombra.setYOffset(5); sombra.setColor(QColor(0, 0, 0, 80))
+        sombra.setBlurRadius(20)
+        sombra.setXOffset(5)
+        sombra.setYOffset(5)
+        sombra.setColor(QColor(0, 0, 0, 80))
+
         if hasattr(self.dlg, 'lbl_preview'):
             self.dlg.lbl_preview.setGraphicsEffect(sombra)
 
@@ -1585,8 +1589,11 @@ class VectorToMap:
             except Exception as e:
                 erro_detalhado = traceback.format_exc()
                 if getattr(self, 'sentry_ativo', False):
-                    try: sentry_sdk.capture_exception(e); sentry_sdk.flush(timeout=2.0)
-                    except Exception: pass
+                    try:
+                        sentry_sdk.capture_exception(e)
+                        sentry_sdk.flush(timeout=2.0)
+                    except Exception:
+                        pass
                 self.iface.messageBar().pushMessage(self.tr("Erro"), f"{str(e)}. {self.tr('Veja o console para detalhes.')}", level=Qgis.MessageLevel.Critical)
                 QgsMessageLog.logMessage(erro_detalhado, "VectorToMap", Qgis.MessageLevel.Critical)
 
@@ -1680,8 +1687,11 @@ class VectorToMap:
         except Exception as e:
             erro_detalhado = traceback.format_exc()
             if getattr(self, 'sentry_ativo', False):
-                try: sentry_sdk.capture_exception(e); sentry_sdk.flush(timeout=2.0)
-                except Exception: pass
+                try:
+                    sentry_sdk.capture_exception(e)
+                    sentry_sdk.flush(timeout=2.0)
+                except Exception:
+                    pass
             self.iface.messageBar().pushMessage(self.tr("Erro"), f"{str(e)}. {self.tr('Veja o console para detalhes.')}", level=Qgis.MessageLevel.Critical)
             QgsMessageLog.logMessage(erro_detalhado, "VectorToMap", Qgis.MessageLevel.Critical)
 
@@ -1747,7 +1757,9 @@ class VectorToMap:
         try:
             if not hasattr(self, 'dlg') or not self.dlg or sip.isdeleted(self.dlg): return
             fonte, ok = QFontDialog.getFont(getattr(self, 'fonte_titulo', QFont()), self.dlg, self.tr("Fonte"))
-            if ok: self.fonte_titulo = fonte; self.disparar_preview_se_autorizado()
+            if ok:
+                self.fonte_titulo = fonte
+                self.disparar_preview_se_autorizado()
         except RuntimeError: pass
 
     def atualizar_combo_temas(self, *args, **kwargs):
