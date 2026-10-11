@@ -64,7 +64,7 @@ jobs:
         run: xvfb-run -a pytest tests/ -v
 
   build:
-    name: Empacotamento e Publicação
+    name: Empacotamento Seguro e Publicação
     needs: integration_tests
     runs-on: ubuntu-latest
     steps:
@@ -76,35 +76,28 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Injetar Segredos de CI
-        run: sed -i "s|INSERIR_DSN_VIA_CI_AQUI|${{ secrets.SENTRY_DSN }}|g" vector_to_map.py
-
-      - name: Criar Release no GitHub
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Injetar Segredos DevSecOps
         run: |
-          gh release view ${{ github.ref_name }} || gh release create ${{ github.ref_name }} --title "VectorToMap ${{ github.ref_name }}" --generate-notes
+          sed -i "s|INSERIR_DSN_VIA_CI_AQUI|${{ secrets.SENTRY_DSN }}|g" vector_to_map.py
 
-      - name: Instalar Dependências de Deploy
+      - name: Instalar qgis-plugin-ci
         run: pip install qgis-plugin-ci
 
       - name: Estruturar Pacote para OSGeo
         run: |
-          rm -rf tests/ temp_build/ *.dist-info/ i18n/*.ts .github/ build.py pb_tool.cfg .qgisignore .gitignore
+          # requirements.txt adicionado à lista de exclusão
+          rm -rf tests/ temp_build/ *.dist-info/ i18n/*.ts .github/ build.py pb_tool.cfg .qgisignore .gitignore requirements.txt
 
-          # O NOME DA PASTA DEVE SER O NOME EXATO DO PACOTE PYTHON (MINÚSCULO)
           mkdir vector_to_map
-
           find . -maxdepth 1 ! -name '.' ! -name '.git' ! -name 'vector_to_map' -exec mv {} vector_to_map/ \;
           mv vector_to_map/pyproject.toml .
 
-          # Atualiza o TOML apontando para a pasta minúscula
           sed -i 's|plugin_path = "."|plugin_path = "vector_to_map"|g' pyproject.toml
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "ci: corrige o nome da pasta do pacote para dar update no plugin correto"
+          git commit -m "ci: prepara estrutura validada para deploy"
 
       - name: Publicar no Repositório QGIS
         env:
@@ -114,7 +107,10 @@ jobs:
           VERSION_LIMPA="${GITHUB_REF_NAME#v}"
           qgis-plugin-ci release $VERSION_LIMPA --osgeo-username "$SECURE_USER" --osgeo-password "$SECURE_PASS" --allow-uncommitted-changes
 
-      - name: Anexar Artefato no GitHub
+      - name: Forçar Publicação da Release no GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ github.ref_name }} *.zip --clobber
+        run: |
+          # Tenta criar a release normalmente ou força a remoção do status de rascunho caso a tag já exista
+          gh release create ${{ github.ref_name }} *.zip --title "VectorToMap ${{ github.ref_name }}" --generate-notes || \
+          (gh release upload ${{ github.ref_name }} *.zip --clobber && gh release edit ${{ github.ref_name }} --draft=false)

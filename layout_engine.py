@@ -14,55 +14,56 @@ from qgis.core import (
     QgsWkbTypes, QgsVectorLayer, QgsLayoutItem, QgsExpression, QgsExpressionContextUtils, QgsLayoutItemScaleBar,
     QgsLayoutItemPicture, QgsLayoutItemLegend, Qgis, QgsLegendStyle,
     QgsLayoutRenderContext, QgsFeature, QgsLayoutItemMapGrid,
-    QgsLayoutItemMapOverview, QgsFillSymbol,
+    QgsLayoutItemMapOverview, QgsFillSymbol, QgsExpressionContext,
     QgsMessageLog, QgsMapLayerType, QgsApplication
 )
 try:
     # Modo QGIS (O arquivo sabe que faz parte de um pacote)
     from .template_manager import TemplateManager
 except ImportError:
-    # Modo Pytest Headless (O arquivo é lido isoladamente)
+    # Modo Pytest Headless (O arquivo é lido isoladamente para testes unitários)
     from template_manager import TemplateManager
 
 class LayoutEngine:
-    """Motor de geração de layouts e mapas do VectorToMap (Desacoplado da UI)."""
+    """
+    Motor de geração de layouts e mapas do VectorToMap.
+    Opera de forma totalmente desacoplada da UI (Padrão MVC), recebendo apenas
+    o dicionário de configurações (config) e processando a matemática cartográfica.
+    """
 
     def __init__(self, iface):
         self.iface = iface
         self.abort_processing = False
-        self.clones_preview = [] # Controle interno de lixo
-
-
-
+        self.clones_preview = [] # Controle interno de lixo de Memory Layers
 
     def tr(self, message):
         """Helper para traduções dentro do motor."""
         return QCoreApplication.translate('VectorToMap', message)
 
-
-
-
     def _gerar_nome_arquivo_pagina(self, dados, index, campo_atlas):
-        """Gera um sufixo limpo baseado no resultado da expressão pré-calculada ou sequencial."""
+        """Gera um sufixo limpo (sem caracteres proibidos pelo SO) para nomear os arquivos finais exportados."""
         if campo_atlas == "__ALL_FEATURES__":
             return self.tr("Zoom_Camada")
 
         # O Cérebro Python (vector_to_map.py) já calculou a expressão e colocou na chave 'valor_grupo'
         if campo_atlas and 'valor_grupo' in dados and dados['valor_grupo'] is not None:
             nome = str(dados['valor_grupo'])
+            # Remove caracteres que quebram caminhos de arquivo no Windows/Linux
             return re.sub(r'[\\/*?:"<>|]', "", nome).strip()[:8].strip()
 
+        # Se não houver campo atlas, usa número sequencial
         return str(index + 1)
-
-
-
 
     # =========================================================================
     # --- MÉTODOS DE EXPORTAÇÃO PRINCIPAIS
     # =========================================================================
 
     def exportar_paginas_individuais(self, project, camada, paginas_dados, config, progress_callback=None):
-        """Modo Descartável: Cria, exporta e destrói um layout para cada página."""
+        """
+        Modo Descartável: Usado principalmente para PNG/JPG.
+        Cria, exporta e destrói um layout para CADA página do Atlas. Isso evita que o QGIS
+        consuma toda a memória RAM em lotes de milhares de feições.
+        """
         preset = config['preset']
         orientacao = config['orientacao']
         base_sem_ext = config['base_sem_ext']
@@ -80,6 +81,7 @@ class LayoutEngine:
 
             nome_arquivo = self._gerar_nome_arquivo_pagina(dados, i, campo_atlas)
 
+            # Instancia um layout vazio fresco para a página atual
             layout_temp = QgsPrintLayout(project)
             layout_temp.initializeDefaults()
 
@@ -92,6 +94,7 @@ class LayoutEngine:
             caminho_final = f"{base_sem_ext}_{nome_arquivo}{ext}"
             exporter = QgsLayoutExporter(layout_temp)
 
+            # Define as configurações de DPI e Renderização dependendo do formato de saída
             if ext in [".png", ".jpg", ".jpeg"]:
                 img_settings = QgsLayoutExporter.ImageExportSettings()
                 img_settings.dpi = 300
@@ -106,7 +109,8 @@ class LayoutEngine:
                 exporter.exportToPdf(caminho_final, pdf_settings)
 
             # --- CORREÇÃO: LIMPEZA DE MEMÓRIA SEGURA ---
-            # Desconecta as camadas do quadro para o C++ não apagá-las junto com o layout
+            # Desconecta as camadas do quadro do mapa ANTES de deletar o layout.
+            # Se não fizermos isso, o C++ do QGIS pode tentar deletar a camada real junto com o layout.
             for item in layout_temp.items():
                 if isinstance(item, QgsLayoutItemMap):
                     item.setKeepLayerSet(False)
@@ -120,17 +124,21 @@ class LayoutEngine:
             if progress_callback:
                 progress_callback(i + 1)
 
+            # Libera a interface gráfica para não dar "Não respondendo" no Windows
             if i % 5 == 0:
                 QCoreApplication.processEvents()
 
+            # Força o Garbage Collector a limpar a RAM
             if i > 0 and i % 25 == 0:
                 gc.collect()
 
 
-
-
     def montar_layout_persistente(self, project, manager, camada, paginas_dados, config, progress_callback=None):
-        """Modo Acumulador: Adiciona todas as páginas num único layout do QGIS."""
+        """
+        Modo Acumulador: Usado para gerar um PDF único com várias páginas ou para
+        exibir o resultado no Layout Designer nativo do QGIS.
+        Adiciona todas as páginas (Atlas) num único objeto de layout.
+        """
         preset = config['preset']
         orientacao = config['orientacao']
         campo_atlas = config['campo_atlas']
@@ -138,6 +146,7 @@ class LayoutEngine:
         nome_camada = re.sub(r'[^a-zA-Z0-9_]', '_', unicodedata.normalize('NFD', camada.name()).encode('ascii', 'ignore').decode('utf-8'))
         layout_name = f"VectorToMap_{nome_camada}"
 
+        # Garante nome único caso o usuário gere vários seguidos
         contador = 1
         while manager.layoutByName(layout_name):
             layout_name = f"VectorToMap_{nome_camada}_{contador}"
@@ -152,6 +161,7 @@ class LayoutEngine:
         tamanho_template = None
 
         # --- OTIMIZAÇÃO 2: Silenciar o Layout durante a construção em lote ---
+        # Isso impede que o QGIS tente redesenhar o mapa a cada pequeno item adicionado
         layout.blockSignals(True)
 
         for i, dados in enumerate(paginas_dados):
@@ -165,17 +175,16 @@ class LayoutEngine:
 
             nome_sufixo = self._gerar_nome_arquivo_pagina(dados, i, campo_atlas)
 
+            # Cria novas páginas no PDF (a página 0 já nasce com o layout.initializeDefaults)
             if i > 0:
                 # 1. Sempre adiciona uma página física (Fundo branco)
                 nova_pagina = QgsLayoutItemPage(layout)
                 layout.pageCollection().addPage(nova_pagina)
 
-                # 2. Se for um modelo, aplica o tamanho capturado na página 0
+                # 2. Se for um modelo QPT, aplica o tamanho capturado na página 0 (Apenas 1 vez)
                 if is_template:
                     if tamanho_template is None:
-                        # Captura o tamanho apenas uma vez, na primeira necessidade
                         tamanho_template = layout.pageCollection().page(0).pageSize()
-
                     nova_pagina.setPageSize(tamanho_template)
 
             self.montar_design_da_pagina(
@@ -184,19 +193,19 @@ class LayoutEngine:
             )
 
             # --- OTIMIZAÇÃO 3: Agrupar limpeza e UI Updates para evitar gargalos ---
-            # Atualiza a interface (barra de progresso e destrava tela) a cada 3 mapas
+            # Atualiza a interface (barra de progresso e destrava tela) a cada 5 mapas
             if i % 5 == 0:
                 if progress_callback: progress_callback(i + 1)
                 QCoreApplication.processEvents()
 
-            # Faz a coleta de lixo pesada a cada 20 mapas
+            # Faz a coleta de lixo pesada a cada 25 mapas
             if i > 0 and i % 25 == 0:
                 gc.collect()
 
         # --- Religamos os sinais ao terminar o processo bruto ---
         layout.blockSignals(False)
 
-        # Garantir que a barra de progresso chegue a 100% caso não tenha parado no múltiplo de 3
+        # Garantir que a barra de progresso chegue a 100% caso não tenha parado no múltiplo exato
         if progress_callback and not self.abort_processing:
             progress_callback(len(paginas_dados))
             QCoreApplication.processEvents()
@@ -204,14 +213,23 @@ class LayoutEngine:
         return layout
 
 
-
-
     # =========================================================================
-    # --- RENDERIZAÇÃO E DESIGN
+    # --- RENDERIZAÇÃO E DESIGN (O Coração da Construção)
     # =========================================================================
 
     def montar_design_da_pagina(self, layout, camada, feicoes_da_pagina, preset, orientacao, config, pagina_index=0, is_preview=False, nome_sufixo=""):
-        """Orquestra a montagem completa da página lendo dados do dicionário config."""
+        """
+        Orquestra a montagem completa da página lendo os dados do dicionário config.
+        Roteia para o TemplateManager se for arquivo .qpt, ou constrói matematicamente
+        se for um dos presets geométricos originais do VectorToMap.
+        """
+
+        # 👉 1. CAPTURA A FEIÇÃO AQUI NO TOPO DA FUNÇÃO (Usada pelo Template e pelo Título Dinâmico)
+        feicao_atual = None
+        if feicoes_da_pagina and feicoes_da_pagina[0] != "ALL":
+            feicao_atual = feicoes_da_pagina[0]
+
+        # ROTA A: TEMPLATES (Arquivos .qpt customizados pelo usuário)
         if preset.endswith('.qpt') and os.path.exists(preset):
             # 1. Carrega o XML limpo e extrai os itens de mapa principais
             map_item, overview_map, novos_itens = TemplateManager.carregar_template_sanitizado(
@@ -221,85 +239,86 @@ class LayoutEngine:
             if not map_item:
                 return
 
-            # 2. Identifica se há uma feição ativa nesta prancha
-            feicao_atual = None
-            if feicoes_da_pagina and feicoes_da_pagina[0] != "ALL":
-                feicao_atual = feicoes_da_pagina[0]
-
-            # 3. Processa textos, expressões [% %], sintaxes [""] e deslocamento de página
+            # 2. Processa textos, expressões [% %], sintaxes [""] e deslocamento de página
             # Passamos 'self.tr' por parâmetro para que ele use as traduções do motor
             TemplateManager.processar_textos_dinamicos(
                 novos_itens, layout, feicao_atual, camada, pagina_index, self.tr
             )
 
-            # 4. Aplica escala geográfica e enquadramento (extents)
+            # 3. Aplica escala geográfica e enquadramento (extents)
             w_map, h_map = map_item.rect().width(), map_item.rect().height()
             self._aplicar_extensao_e_escala(map_item, camada, feicoes_da_pagina, w_map, h_map, config)
 
-            # 5. Gerencia visibilidade de camadas (inclusive a nossa nova regra de Temas!)
+            # 4. Gerencia visibilidade de camadas (inclusive a nossa nova regra de Temas!)
             self._gerenciar_visibilidade_camadas(map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index, config)
 
-            # 6. Atualiza o mapa de localização (Locator Map) se existir no template
+            # 5. Atualiza o mapa de localização (Locator Map) se ele existir no template
             if overview_map:
                 self._aplicar_regras_overview(overview_map, map_item, config, is_template=True)
 
             return
 
+        # ROTA B: PRESETS MATEMÁTICOS (Gerados em código)
         geometria, apenas_mapa, cor_fundo_mapa = self._configurar_papel_e_fundo(layout, pagina_index, preset, orientacao, config)
 
         if not apenas_mapa:
-            self._adicionar_titulo(layout, geometria, config)
+            # 👉 PASSA A FEIÇÃO E A CAMADA PARA O GERADOR DO TÍTULO DINÂMICO
+            self._adicionar_titulo(layout, geometria, config, feicao_atual, camada)
 
+        # Adiciona o mapa principal na prancha
         map_item = self._adicionar_item_mapa(layout, geometria, apenas_mapa, cor_fundo_mapa)
         map_item.setId("main_map")
 
+        # Aplica o Zoom e a Malha de Coordenadas
         self._aplicar_extensao_e_escala(map_item, camada, feicoes_da_pagina, geometria['w_map'], geometria['h_map'], config)
         self._adicionar_grade_ao_mapa(map_item, config)
 
+        # Gerencia quem aparece e quem não aparece (Filtros, Travar Camadas, Temas)
         self._gerenciar_visibilidade_camadas(map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index, config)
 
-        # A MÁGICA AGORA ACONTECE TODA AQUI DENTRO (Sem sobreposições!)
+        # A MÁGICA AGORA ACONTECE TODA AQUI DENTRO (Sem sobreposições da Legenda e Norte!)
         self._orquestrar_decoracoes_3_momentos(layout, map_item, geometria, config)
 
+        # Imprime a tabela HTML ou Individual na lateral/fundo
         self._renderizar_textos_e_atributos(layout, camada, feicoes_da_pagina, preset, orientacao, geometria, apenas_mapa, config)
 
         if not apenas_mapa:
             self.adicionar_numeracao_pagina(layout, geometria['w_pg'], geometria['h_pg'], geometria['y_zero'], config)
 
 
-
-
     # -------------------------------------------------------------------------
-    # --- SUB-FUNÇÕES DE MONTAGEM
+    # --- SUB-FUNÇÕES DE MONTAGEM E MATEMÁTICA CARTOGRÁFICA
     # -------------------------------------------------------------------------
 
     def _configurar_papel_e_fundo(self, layout, pagina_index, preset, orientacao, config):
+        """Define as dimensões da folha e divide as margens (A matemática da Prancheta)."""
         dim = config.get('tamanho_pg', (210.0, 297.0))
         w_pg, h_pg = (dim[1], dim[0]) if orientacao == "Paisagem" else (dim[0], dim[1])
 
         pagina = layout.pageCollection().pages()[pagina_index]
         pagina.setPageSize(QgsLayoutSize(w_pg, h_pg, QgsUnitTypes.LayoutMillimeters))
 
+        # Necessário para alinhar múltiplos mapas no mesmo documento PDF (um abaixo do outro)
         y_zero_folha = pagina_index * (h_pg + 10)
         margin_padrao = 15.0
 
         cor_pagina = config.get('cor_pagina', QColor(255, 255, 255, 255))
         cor_mapa = config.get('cor_fundo', QColor(255, 255, 255, 255))
 
-        # --- NOVO: Lógica que zera a opacidade (Alpha = 0) mantendo a cor RGB original ---
+        # Lógica de Exportação Transparente (Apenas zera o Alfa, mantendo a tinta)
         if config.get('pag_fundo_transp', False):
             cor_pagina.setAlpha(0)
-
         if config.get('map_fundo_transp', False):
             cor_mapa.setAlpha(0)
-        # --------------------------------------------------------------------------------
 
+        # Pinta a Folha (Página inteira)
         pagina.setBackgroundEnabled(True)
         if pagina.pageStyleSymbol():
             simbolo_novo = pagina.pageStyleSymbol().clone()
             simbolo_novo.setColor(cor_pagina)
             pagina.setPageStyleSymbol(simbolo_novo)
 
+        # --- A MATEMÁTICA DOS PRESETS GEOMÉTRICOS ---
         if preset == "horizontal":
             header_h = 35.0
             h_util = h_pg - (2 * margin_padrao) - header_h
@@ -330,7 +349,7 @@ class LayoutEngine:
                 x_map_f = w_pg - margin_padrao - w_map_f
                 y_map_f = y_zero_folha + margin_padrao
 
-        else: # "quadrado"
+        else: # preset == "quadrado"
             if orientacao == "Retrato":
                 w_map_f, h_map_f = w_pg - (2 * margin_padrao), w_pg - (2 * margin_padrao)
                 x_map_f, y_map_f = margin_padrao, y_zero_folha + 40.0
@@ -339,6 +358,7 @@ class LayoutEngine:
                 w_map_f = h_map_f
                 x_map_f, y_map_f = w_pg - margin_padrao - w_map_f, y_zero_folha + margin_padrao
 
+        # Checkbox "Apenas Mapa" selecionada: Ignora prancha e envelopa o papel no próprio mapa
         apenas_mapa = config.get('apenas_mapa', False)
 
         if apenas_mapa:
@@ -348,15 +368,58 @@ class LayoutEngine:
             y_map_f = y_zero_folha
             pagina.setPageSize(QgsLayoutSize(w_pg, h_pg, QgsUnitTypes.LayoutMillimeters))
 
+        # DTO da Geometria que guia a renderização de tudo na folha
         geometria = {
             'w_pg': w_pg, 'h_pg': h_pg, 'w_map': w_map_f, 'h_map': h_map_f,
             'x_map': x_map_f, 'y_map': y_map_f, 'y_zero': y_zero_folha, 'margin': margin_padrao
         }
         return geometria, apenas_mapa, cor_mapa
 
-    def _adicionar_titulo(self, layout, geo, config):
+
+    def _adicionar_titulo(self, layout, geo, config, feicao=None, camada=None):
+        """
+        Adiciona o Título da Página com Avaliação de Expressões DDO.
+        Lê [% variáveis %] e processa quebras de linha dinâmicas \n.
+        Protegido contra a ausência de atributos no modo 'Mapa Geral' (__ALL_FEATURES__).
+        """
         texto = config.get('texto_titulo', '').strip()
         if not texto: return
+
+        # =========================================================
+        # MÁGICA 1: Tratamento de Quebra de Linha
+        # Transforma o \n digitado num Enter real na prancha
+        # =========================================================
+        texto = texto.replace('\\n', '\n')
+
+        # =========================================================
+        # MÁGICA 2: Avaliador de Expressões (DDO via [% %])
+        # =========================================================
+        if '[%' in texto and '%]' in texto:
+
+            # Checa se a feição é real ou a "dummy" do Mapa Geral (__ALL_FEATURES__)
+            # Uma feature dummy do PyQGIS retorna False para hasGeometry() e não tem campos (fields)
+            feicao_valida = False
+            if feicao and feicao.isValid():
+                # No QGIS, se a feature for vazia (criada com QgsFeature()), isValid() retorna False
+                feicao_valida = True
+
+            # Monta o ambiente de leitura de dados (Contexto)
+            if feicao_valida and camada:
+                # Mapa Individual/Agrupado: Lê os valores da tabela de atributos
+                contexto = QgsExpressionContextUtils.createFeatureBasedContext(feicao, camada.fields())
+            else:
+                # Mapa Geral: Não tem atributo. Cria um contexto limpo.
+                contexto = QgsExpressionContext()
+
+            # Injeta as variáveis do projeto QGIS e da Camada atual
+            if camada:
+                contexto.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(camada))
+
+            # Dispara o avaliador interno do QGIS.
+            # Se der erro (ex: pediu "bairro" no Mapa Geral), a função do QGIS mantém o texto
+            # com erro (ex: [% "bairro" %]) ou retorna vazio dependendo da versão,
+            # mas NÃO quebra a execução do plugin.
+            texto = QgsExpression.replaceExpressionText(texto, contexto)
 
         lbl_titulo = QgsLayoutItemLabel(layout)
         lbl_titulo.setText(texto)
@@ -380,6 +443,7 @@ class LayoutEngine:
 
 
     def _adicionar_item_mapa(self, layout, geo, apenas_mapa, cor_fundo):
+        """Cria o objeto vazio do Mapa Principal na folha (sem dar render ainda)."""
         map_item = QgsLayoutItemMap(layout)
         map_item.setFrameEnabled(not apenas_mapa)
         map_item.setBackgroundEnabled(True)
@@ -388,20 +452,22 @@ class LayoutEngine:
 
         map_item.attemptResize(QgsLayoutSize(geo['w_map'], geo['h_map'], QgsUnitTypes.LayoutMillimeters))
         map_item.attemptMove(QgsLayoutPoint(geo['x_map'], geo['y_map'], QgsUnitTypes.LayoutMillimeters))
-        map_item.setZValue(0)
+        map_item.setZValue(0) # Fica no fundo
         return map_item
 
 
-
-
     def _aplicar_regras_overview(self, overview_map, main_map, config, is_template):
-
+        """
+        Gera e sincroniza o "Mapa de Localização" (Locator Map) injetando um Red Rectangle (Mira)
+        e gerencia a visibilidade condicional de rasters (Ortofotos, Google Earth).
+        """
         chk_ativada = config.get('inserir_mapa_loc', False)
         camada_loc = config.get('camada_loc')
         modo_local = config.get('modo_local', 'camada')
         fator_zoom_local = config.get('fator_zoom_local', 10.0)
 
         try:
+            # Trava o mapa de localização temporariamente para não recarregar no vazio
             overview_map.blockSignals(True)
 
             project_crs = QgsProject.instance().crs()
@@ -411,18 +477,18 @@ class LayoutEngine:
             # 1. DEFINIÇÃO DAS CAMADAS DO MAPA DE LOCALIZAÇÃO
             # =========================================================
             if is_template and not chk_ativada:
-                # Comportamento Padrão de Template Desmarcado: Clona o mapa principal
+                # Comportamento Padrão de Template Desmarcado: Clona as camadas do mapa principal
                 overview_map.setKeepLayerSet(True)
                 overview_map.setLayers(main_map.layers())
                 overview_map.setKeepLayerStyles(True)
             else:
-                # Lógica de camadas filtradas (Respeita o chk_incluir_raster)
+                # Lógica de camadas filtradas (Respeita a checkbox "Incluir Rasters no Locator")
                 layers_to_show = []
                 root = QgsProject.instance().layerTreeRoot()
                 incluir_rasters_loc = config.get('add_raster_loc', False)
 
                 for layer in root.layerOrder():
-                    # Ignora as camadas temporárias do plugin baseando-se EXCLUSIVAMENTE no carimbo!
+                    # Segurança Absoluta: Ignora camadas temporárias lendo seu CustomProperty carimbado
                     if layer.customProperty("vtm_is_preview_temp"):
                         continue
 
@@ -433,8 +499,7 @@ class LayoutEngine:
                             continue
                         layers_to_show.append(layer)
 
-                # Se estivermos no modo "camada" e a camada de localizacao estiver fechada no QGIS,
-                # força a exibição dela na lista (para nao tampar outros mapas)
+                # Força a exibição da camada escolhida como base (se o QGIS estiver com o olho fechado)
                 if modo_local == "camada" and camada_loc and camada_loc not in layers_to_show:
                     layers_to_show.append(camada_loc)
 
@@ -443,39 +508,65 @@ class LayoutEngine:
                 overview_map.setKeepLayerStyles(True)
 
             # =========================================================
+            # 👉 MUTAR RÓTULOS (LABELS) DO MAPA DE LOCALIZAÇÃO
+            # Aplica override no XML na memória para silenciar rótulos,
+            # impedindo que nomes de ruas sujem a caixa pequena.
+            # =========================================================
+            # 1. Se não houver estilos gravados, forçamos a captura do estilo que está na tela principal.
+            if not overview_map.layerStyleOverrides():
+                overview_map.storeCurrentLayerStyles()
+
+            # 2. Varre os estilos (XML) que estão na memória do mapa de localização
+            overrides = overview_map.layerStyleOverrides()
+            new_overrides = {}
+
+            for layer_id, xml_str in overrides.items():
+                if xml_str:
+                    # Substitui via Regex a flag de rótulos ligados (1) para desligados (0)
+                    xml_str_modificado = re.sub(r'labelsEnabled=["\']1["\']', 'labelsEnabled="0"', xml_str)
+                    new_overrides[layer_id] = xml_str_modificado
+                else:
+                    new_overrides[layer_id] = xml_str
+
+            # 3. Devolve os estilos modificados (agora mudos) para o mapa de localização
+            overview_map.setLayerStyleOverrides(new_overrides)
+            overview_map.setKeepLayerStyles(True)
+
+            # =========================================================
             # 2. DEFINIÇÃO DO ENQUADRAMENTO (EXTENT E ZOOM)
             # =========================================================
             if is_template and not chk_ativada:
-                # Template sem override: Zoom out genérico
+                # Template sem override: Zoom out genérico de 10x
                 ext = main_map.extent()
                 if not ext.isEmpty():
                     ext.scale(10.0)
                     overview_map.zoomToExtent(ext)
 
             elif chk_ativada:
-                # Usuário ativou o override na UI!
+                # Usuário ativou o override na interface do VectorToMap!
                 if modo_local == "zoom":
-                    # Modo 1: Zoom Out a partir do mapa principal
+                    # Modo 1: Zoom Out relativo ao mapa principal (Usa a ComboBox)
                     ext = main_map.extent()
                     if not ext.isEmpty():
                         ext.scale(fator_zoom_local)
                         overview_map.zoomToExtent(ext)
                 else:
-                    # Modo 2: Enquadramento fixo pela camada selecionada
+                    # Modo 2: Enquadramento absoluto usando todo o limite da Camada Selecionada
                     if camada_loc:
                         ext = camada_loc.extent()
+                        # Realiza o Shift de Projeção se necessário
                         if camada_loc.crs() != project_crs:
                             trans = QgsCoordinateTransform(camada_loc.crs(), project_crs, QgsProject.instance().transformContext())
                             try: ext = trans.transformBoundingBox(ext)
                             except Exception: pass # nosec
 
                         if not ext.isEmpty():
-                            ext.scale(1.15) # Margem de respiro leve
+                            ext.scale(1.15) # Dá uma margem de respiro de 15% na tela
                             overview_map.zoomToExtent(ext)
 
             # =========================================================
             # 3. CRIAÇÃO DA MIRA VERMELHA VAZADA (RED RECTANGLE)
-            # (É desenhado em qualquer cenário!)
+            # (É desenhado para mostrar onde o main_map está localizado)
             # =========================================================
             overviews = overview_map.overviews()
             for ov in overviews.asList():
@@ -484,6 +575,7 @@ class LayoutEngine:
             overview = QgsLayoutItemMapOverview("Overview_Plugin", overview_map)
             overview.setLinkedMap(main_map)
 
+            # Constrói o quadrado com miolo vazado e bordas vermelhas
             simbolo = QgsFillSymbol.createSimple({'outline_color': 'red', 'outline_width': '0.8', 'outline_style': 'solid'})
             if simbolo:
                 try: simbolo.symbolLayer(0).setBrushStyle(Qt.NoBrush)
@@ -502,14 +594,14 @@ class LayoutEngine:
             overview_map.invalidateCache()
 
 
-
-
     def _orquestrar_decoracoes_3_momentos(self, layout, map_item, geo, config):
         """
-        1º Momento: Criação (Nascimento dos itens)
-        2º Momento: Maturação (Ensaio na memória com Invisibilidade de Mapas)
-        3º Momento: Posicionamento (A sua matemática exata)
+        Resolve o problema de colisão (sobreposição) das Decorações no QGIS 3/4.
+        1º Momento: Criação (Nascimento de todos os itens no topo da tela)
+        2º Momento: Maturação (Muta o mapa, renderiza cego na RAM e puxa o bounding box exato das legendas)
+        3º Momento: Posicionamento (Agrupa nos 4 cantos respeitando as margens sem bater um no outro)
         """
+
         # =====================================================================
         # 1º MOMENTO: CRIAÇÃO
         # =====================================================================
@@ -526,6 +618,7 @@ class LayoutEngine:
             overview_map.setBackgroundEnabled(True)
             overview_map.setBackgroundColor(QColor(255, 255, 255, 255))
 
+            # Ele usa 22% do tamanho do mapa principal
             w_loc = geo['w_map'] * 0.22
             h_loc = geo['h_map'] * 0.22
             overview_map.attemptResize(QgsLayoutSize(w_loc, h_loc, QgsUnitTypes.LayoutMillimeters))
@@ -551,10 +644,10 @@ class LayoutEngine:
             # 2. Força o QGIS a ler e desenhar a árvore de camadas na memória AGORA
             legenda.updateLegend()
 
-            # 3. Trancamos a árvore para que nossas remoções não sejam desfeitas
+            # 3. Trancamos a árvore para que nossas remoções customizadas não sejam desfeitas
             legenda.setAutoUpdateModel(False)
 
-            # 4. BÔNUS NATIVO: Diz pro QGIS ocultar automaticamente quem não está visível no mapa
+            # 4. BÔNUS NATIVO: Ocultar automaticamente feições que estão fora do Extent atual
             legenda.setLegendFilterByMapEnabled(True)
 
             root_projeto = QgsProject.instance().layerTreeRoot()
@@ -571,7 +664,7 @@ class LayoutEngine:
 
                 # Regra: Removemos a camada da legenda SE:
                 # 1. Ela estiver com o olhinho fechado (invisível) OU
-                # 2. Ela for um raster E o usuário não marcou a checkbox
+                # 2. Ela for um raster E o usuário não marcou a checkbox de inclusão
                 deve_remover = (not no_camada.isVisible()) or (is_raster and not incluir_rasters)
 
                 if deve_remover:
@@ -579,7 +672,7 @@ class LayoutEngine:
                     if no_legenda:
                         no_legenda.parent().removeChildNode(no_legenda)
 
-            # Limpa grupos vazios e as camadas temporárias do plugin
+            # Limpa grupos vazios e as camadas temporárias do plugin (O Culto ao Lixo)
             for no_grupo in root_legenda.findGroups():
                 if "VectorToMap" in no_grupo.name() or not no_grupo.children():
                     no_grupo.parent().removeChildNode(no_grupo)
@@ -594,17 +687,15 @@ class LayoutEngine:
             escala.setLinkedMap(map_item)
             escala.setStyle('Line Ticks Up')
 
-            # --- NOVO: Fundo branco com 80% de opacidade ---
+            # Fundo branco suave de 80% de opacidade para proteger leitura sobre fotos de satélite
             escala.setBackgroundEnabled(True)
             escala.setBackgroundColor(QColor(255, 255, 255, 204))
-            # -----------------------------------------------
 
             escala_mapa = map_item.scale()
-
             if escala_mapa <= 0:
                 escala_mapa = config.get('escala_val', 10000.0)
 
-            # Descobre qual unidade usar
+            # Descobre qual unidade usar (Quilômetros ou Metros)
             unidade = QgsUnitTypes.DistanceKilometers if escala_mapa >= 50000 else QgsUnitTypes.DistanceMeters
 
             escala.setUnits(unidade)
@@ -615,7 +706,7 @@ class LayoutEngine:
             escala.setMinimumBarWidth(55.0)
             escala.setMaximumBarWidth(110.0)
 
-            # A BALA DE PRATA: Passamos a nossa unidade para ele não resetar pro padrão!
+            # A BALA DE PRATA: Passamos a nossa unidade calculada para ele não dar reset pro padrão!
             escala.applyDefaultSize(unidade)
             escala.update()
 
@@ -625,17 +716,17 @@ class LayoutEngine:
         if config.get('inserir_norte', False):
             norte = QgsLayoutItemPicture(layout)
 
-            # --- NOVA LÓGICA DO ESTILO DA SETA ---
+            # Lógica Rota de Navegação Segura: Puxa do QGIS nativo
             try:
                 pasta_svg = QgsApplication.svgPaths()[0]
                 estilo = config.get('estilo_norte', 'NorthArrow_02.svg')
                 caminho_seta = os.path.join(pasta_svg, "arrows", estilo)
                 norte.setPicturePath(caminho_seta)
             except Exception:
-                # Fallback de segurança se o QGIS do usuário estiver com as pastas bagunçadas
+                # Fallback de segurança se o QGIS do usuário estiver com os caminhos bagunçados
                 norte.setPicturePath(':/images/north_arrows/layout_default_north_arrow.svg')
-            # -------------------------------------
 
+            # O setLinkedMap garante que a seta aponte para o norte real se o mapa central rotacionar
             norte.setLinkedMap(map_item)
             layout.addLayoutItem(norte)
             elementos.append({'tipo': 'norte', 'item': norte, 'pos': config.get('pos_norte', 'SD')})
@@ -643,7 +734,7 @@ class LayoutEngine:
         if not elementos: return
 
         # =====================================================================
-        # 2º MOMENTO: MATURAÇÃO (Com Truque de Invisibilidade)
+        # 2º MOMENTO: MATURAÇÃO (Com Truque de Invisibilidade Anti-Gargalo)
         # =====================================================================
         # Encontra todos os mapas no layout (Principal e Localização)
         mapas_na_tela = [item for item in layout.items() if isinstance(item, QgsLayoutItemMap)]
@@ -657,13 +748,13 @@ class LayoutEngine:
         flags_originais = contexto.flags()
         contexto.setFlags(flags_originais & ~QgsLayoutRenderContext.FlagAntialiasing)
 
-        # O Rascunho cego e instantâneo
+        # O Rascunho cego e instantâneo: Força o Qt/C++ a dar um bounding box real pra legenda
         exporter = QgsLayoutExporter(layout)
         _ = exporter.renderPageToImage(0, QSize(), 15.0)
 
         contexto.setFlags(flags_originais)
 
-        # LIGA a renderização dos mapas novamente para a foto final
+        # LIGA a renderização dos mapas novamente para a foto final da prancha
         for m in mapas_na_tela:
             m.setVisibility(visibilidades.get(m.uuid(), True))
 
@@ -679,10 +770,9 @@ class LayoutEngine:
             elif el['tipo'] == 'norte':
                 item.attemptResize(QgsLayoutSize(18.0, 18.0, QgsUnitTypes.LayoutMillimeters))
 
-        # (NÃO TEM MAIS layout.refresh() AQUI! Limpamos a redundância)
 
         # =====================================================================
-        # 3º MOMENTO: POSICIONAMENTO FINAL
+        # 3º MOMENTO: POSICIONAMENTO FINAL (A Matemática dos 4 Cantos)
         # =====================================================================
         cantos = {'SE': [], 'SD': [], 'IE': [], 'ID': []}
         for el in elementos:
@@ -698,6 +788,7 @@ class LayoutEngine:
             is_esquerdo = canto.endswith('E')
 
             if is_superior:
+                # Order de empilhamento de cima para baixo
                 lista_itens.sort(key=lambda x: {'mapa_loc': 0, 'legenda': 1, 'escala': 2, 'norte': 3}[x['tipo']])
                 y_teto = geo['y_map'] + margem
                 ancora = QgsLayoutItem.UpperLeft if is_esquerdo else QgsLayoutItem.UpperRight
@@ -713,6 +804,7 @@ class LayoutEngine:
                     y_teto += (h + espacamento)
 
             else:
+                # Order de empilhamento de baixo para cima
                 lista_itens.sort(key=lambda x: {'mapa_loc': 0, 'legenda': 1, 'escala': 2, 'norte': 3}[x['tipo']])
                 y_chao = geo['y_map'] + geo['h_map'] - margem
                 ancora = QgsLayoutItem.LowerLeft if is_esquerdo else QgsLayoutItem.LowerRight
@@ -727,10 +819,9 @@ class LayoutEngine:
                     item.setZValue(15)
                     y_chao -= (h + espacamento)
 
+        # Retoque final na legenda após se mover
         for el in elementos:
             if el['tipo'] == 'legenda': el['item'].update()
-
-
 
 
     def _aplicar_extensao_e_escala(self, map_item, camada, feicoes_da_pagina, w_map, h_map, config):
@@ -811,11 +902,11 @@ class LayoutEngine:
         map_item.setExtent(ext_proj)
 
         # =====================================================================
-        # 6. A MÁGICA DA EXPRESSÃO (O Botão Epsilon ε)
+        # 6. A MÁGICA DA EXPRESSÃO (O Contexto do DDO)
         # Criamos o contexto lendo os atributos da primeira feição da página
         # =====================================================================
         if campo_atlas == "__ALL_FEATURES__":
-            feicao_atual = QgsFeature() # Dummy feature para não quebrar o motor
+            feicao_atual = QgsFeature() # Dummy feature para não quebrar o motor matemático
         else:
             feicao_atual = feicoes_da_pagina[0]
 
@@ -827,7 +918,7 @@ class LayoutEngine:
         if config.get('escala_fixa', False):
             # --- MODO ESCALA FIXA ---
             escala_config = config.get('escala_val', 10000.0)
-            escala_final = 10000.0 # Fallback de segurança
+            escala_final = 10000.0 # Fallback de segurança global
 
             if escala_config == "expressao":
                 exp_str = config.get('escala_fixa_exp', "")
@@ -841,7 +932,7 @@ class LayoutEngine:
                     except Exception:
                         pass # nosec
             else:
-                # Se for valor da ComboBox (ex: 5000), converte direto
+                # Se for valor da ComboBox da UI (ex: 5000), converte direto
                 try:
                     escala_final = float(escala_config)
                 except Exception:
@@ -850,9 +941,9 @@ class LayoutEngine:
             map_item.setScale(escala_final)
 
         else:
-            # --- MODO ESCALA AUTOMÁTICA (Enquadramento por Zoom Out) ---
+            # --- MODO ESCALA AUTOMÁTICA (Enquadramento por Zoom Out Extent) ---
             if is_coordenada_unica:
-                escala_final = 10000.0 # Pontos ganham escala padrão de 1:10000
+                escala_final = 10000.0 # Pontos ganham escala padrão de 1:10000 para não estourar render
             else:
                 # Calcula a escala matemática perfeita para caber na caixa
                 unit_to_mm = QgsUnitTypes.fromUnitToUnitFactor(project_crs.mapUnits(), QgsUnitTypes.DistanceMillimeters)
@@ -860,7 +951,7 @@ class LayoutEngine:
                 scale_h = (ext_proj.height() * unit_to_mm) / h_map
 
                 zoom_out_config = config.get('zoom_out_auto', 25.0)
-                fator_zoom = 1.25 # Padrão = 25% de margem extra
+                fator_zoom = 1.25 # Padrão = 25% de margem extra (respiro)
 
                 if zoom_out_config == "expressao":
                     exp_str = config.get('escala_auto_exp', "")
@@ -896,26 +987,26 @@ class LayoutEngine:
         map_item.attemptMove(QgsLayoutPoint(map_item.pos().x(), map_item.pos().y(), QgsUnitTypes.LayoutMillimeters))
 
 
-
-
     def atualizar_mapa_para_canvas(self, map_item):
+        """Comportamento padrão se nada for marcado: Lê a tela atual inteira e repassa para o layout"""
         map_item.setKeepLayerSet(False)
         map_item.setKeepLayerStyles(False)
         map_item.invalidateCache()
         map_item.refresh()
 
 
-
-
     def criar_camada_temporaria(self, camada_original, feicoes, nome_pagina, is_preview=False):
-        """Cria uma camada isolada. Tenta Subset de alta performance; se falhar, usa Memory Layer segura."""
+        """
+        Cria uma camada isolada (Memória) ou uma View SQL (Subset) apenas com as feições alvo.
+        Tenta usar o Subset (Mais Rápido e Seguro) de alta performance; se falhar, cai para a Memory Layer.
+        """
         nome_temp = f"{self.tr('Mapa')}_{nome_pagina}"
         pk_idxs = camada_original.primaryKeyAttributes()
 
         camada_temp = None
 
         # =========================================================================
-        # 1. CAMINHO DE ALTA PERFORMANCE (Clone + Filtro SQL / Subset)
+        # 1. CAMINHO DE ALTA PERFORMANCE (Clone Virtual + Filtro SQL / Subset)
         # =========================================================================
         if pk_idxs:
             camada_temp = camada_original.clone()
@@ -928,11 +1019,11 @@ class LayoutEngine:
             for f in feicoes:
                 val = f[pk_name]
                 if isinstance(val, str):
-                    valores.append(f"'{val}'") # Protege com aspas se for texto (UUID)
+                    valores.append(f"'{val}'") # Protege com aspas se for texto (ex: UUID)
                 else:
                     valores.append(str(val))
 
-            # Aplica o filtro direto no provedor (Não gasta RAM!)
+            # Aplica o filtro direto no provedor de dados (Não consome RAM duplicando arquivo!)
             if valores:
                 filtro_sql = f"\"{pk_name}\" IN ({','.join(valores)})"
                 camada_temp.setSubsetString(filtro_sql)
@@ -940,7 +1031,7 @@ class LayoutEngine:
                 camada_temp.setSubsetString("1 = 0") # Esconde tudo se o grupo estiver vazio
 
         # =========================================================================
-        # 2. CAMINHO DE SEGURANÇA (Fallback para Memory Layer)
+        # 2. CAMINHO DE SEGURANÇA ABSOLUTA (Fallback para Memory Layer)
         # =========================================================================
         else:
             crs_auth = camada_original.crs().authid()
@@ -966,16 +1057,15 @@ class LayoutEngine:
             camada_temp.triggerRepaint()
 
         # =========================================================================
-        # 3. SALVAMENTO DA CAMADA (Impede que o Python delete a camada temp)
-        # Serve tanto para o GeoPackage quanto para o Shapefile!
+        # 3. SALVAMENTO DA CAMADA (Impede que o Python delete a camada debaixo do pano)
         # =========================================================================
         if is_preview:
-            # Na preview, entra como oculta e sem grupo para não poluir a tela
+            # Na preview instantânea, entra como oculta e sem grupo (Fica fantasma no TOC)
             QgsProject.instance().addMapLayer(camada_temp, False)
         else:
-            # Na exportação / OK, criamos a pastinha Temp na árvore de camadas
+            # Na exportação real, criamos a pastinha Temp na árvore de camadas bonitinha
             root = QgsProject.instance().layerTreeRoot()
-            nome_grupo_temp = f"{self.tr('Temp')} - VectorToMap ({camada_original.name()})"
+            nome_grupo_temp = f"{self.tr('Temp')}VectorToMap ({camada_original.name()})"
             grupo = root.findGroup(nome_grupo_temp)
 
             if not grupo:
@@ -991,38 +1081,42 @@ class LayoutEngine:
                 else:
                     grupo = root.insertGroup(0, nome_grupo_temp)
 
-            # Avisa o QGIS que ele é o dono da camada agora (salva a vida dela)
+            # Avisa o QGIS que ele é o dono da camada agora (salva a vida dela no C++)
             QgsProject.instance().addMapLayer(camada_temp, False)
             grupo.addLayer(camada_temp)
 
         # =========================================================================
-        # A MARCA DA SEGURANÇA 200%: Carimba a camada como temporária do plugin
+        # A MARCA DA SEGURANÇA 200%: Carimba a camada como temporária do plugin!
+        # Isso faz ela ser invisível na UI e ser deletada no fechamento
         # =========================================================================
         camada_temp.setCustomProperty("vtm_is_preview_temp", True)
 
         return camada_temp
 
-    def _gerenciar_visibilidade_camadas(self, map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index, config):
 
+    def _gerenciar_visibilidade_camadas(self, map_item, camada, feicoes_da_pagina, is_preview, nome_sufixo, pagina_index, config):
+        """
+        Gere toda a lógica de Olhos ligados/desligados do TOC (Layers).
+        Trava camadas, Filtra Geometrias, ou delega o controle 100% para um Tema Salvo pelo usuário.
+        """
         # ====================================================================
-        # NOVO: APLICAÇÃO DO TEMA NO MAPA PRINCIPAL
+        # APLICAÇÃO DO TEMA (Map Themes do QGIS) NO MAPA PRINCIPAL
         # ====================================================================
         usar_tema = config.get('usar_tema', False)
         tema_selecionado = config.get('tema_selecionado', '')
 
         if usar_tema and tema_selecionado:
-            # 1. Avisa o QGIS para ligar a chavinha nativa de Temas
+            # 1. Avisa o QGIS para ligar a chavinha nativa de Temas no mapa atual
             map_item.setFollowVisibilityPreset(True)
             map_item.setFollowVisibilityPresetName(tema_selecionado)
 
-            # 2. Como o Tema já diz exatamente o que deve aparecer, não precisamos
-            # rodar o resto dessa função. Atualizamos a tela e encerramos aqui!
+            # 2. Como o Tema dita regras estritas de visibilidade, anulamos o resto
+            # Dessa forma os filtros e restrições não conflitam com a vontade do usuário
             map_item.invalidateCache()
             map_item.refresh()
             return
         else:
-            # Se a opção de tema não estiver marcada, garantimos que a trava
-            # nativa do QGIS esteja desligada para não interferir nas outras funções.
+            # Se não há tema em uso, desligamos a trava nativa por segurança
             map_item.setFollowVisibilityPreset(False)
         # ====================================================================
 
@@ -1035,6 +1129,8 @@ class LayoutEngine:
         if is_filtrado:
             nome_camada_limpo = re.sub(r'[^a-zA-Z0-9_]', '_', unicodedata.normalize('NFD', camada.name()).encode('ascii', 'ignore').decode('utf-8'))
             nome_temp = f"{nome_camada_limpo}_{nome_sufixo}" if nome_sufixo else f"{nome_camada_limpo}_{pagina_index + 1}"
+
+            # Chama a forja de Subsets/Memory Layers
             camada_alvo = self.criar_camada_temporaria(camada, feicoes_da_pagina, nome_temp, is_preview)
             if is_preview: self.clones_preview.append(camada_alvo.id())
 
@@ -1042,22 +1138,28 @@ class LayoutEngine:
             camadas_finais_para_layout = []
 
             if is_isolado:
+                # Tranca e exibe única e exclusivamente a camada atual alvo
                 camadas_finais_para_layout = [camada_alvo]
             else:
+                # Mantém as camadas de fundo/rasters ativas e isola apenas a principal
                 root = QgsProject.instance().layerTreeRoot()
                 for layer in root.layerOrder():
                     is_visible_in_toc = root.findLayer(layer.id()).isVisible()
+
                     if layer.id() == camada.id():
                         if is_visible_in_toc or is_filtrado:
                             if camada_alvo not in camadas_finais_para_layout:
                                 camadas_finais_para_layout.append(camada_alvo)
                     else:
+                        # Varredura de Segurança contra fantasmas das Memory Layers passadas
                         if is_visible_in_toc and layer.id() not in self.clones_preview and layer.id() != camada_alvo.id():
                             camadas_finais_para_layout.append(layer)
 
+            # Trava as camadas selecionadas explicitamente no LayoutItem
             map_item.setLayers(camadas_finais_para_layout)
             map_item.setKeepLayerSet(True)
 
+            # Checkbox de CSS: Trava também a symbologia visual do jeito exato que estava
             if config.get('travar_estilos', False):
                 map_item.setKeepLayerStyles(True)
         else:
@@ -1065,12 +1167,14 @@ class LayoutEngine:
 
         map_item.refresh()
 
+        # Limpa o olho da TOC caso seja a exportação final gerando os Subsets pastinha de temps
         if is_filtrado and not is_preview:
             no_da_camada = QgsProject.instance().layerTreeRoot().findLayer(camada_alvo.id())
             if no_da_camada: no_da_camada.setItemVisibilityChecked(False)
 
 
     def _renderizar_textos_e_atributos(self, layout, camada, feicoes_da_pagina, preset, orientacao, geo, apenas_mapa, config):
+        """Disparador principal que avalia qual bloco de HTML/Texto montar na prancha."""
         campo_atlas = config.get('campo_atlas')
         if apenas_mapa: return
         if not config.get('exibir_atributos', True): return
@@ -1083,7 +1187,7 @@ class LayoutEngine:
 
         colunas = config.get('colunas', [])
 
-        # Proteção contra lista 'dummy' e lista vazia
+        # Proteção contra lista 'dummy' e lista vazia gerada indevidamente
         if not colunas or not feicoes_da_pagina or isinstance(feicoes_da_pagina[0], str):
             return
 
@@ -1095,7 +1199,7 @@ class LayoutEngine:
 
 
     def _renderizar_resumo_camada(self, layout, camada, geom, geo):
-        """Renderiza um bloco de metadados quando o mapa for da camada inteira, usando toda a largura."""
+        """Renderiza um bloco dinâmico de metadados quando o usuário renderiza a Camada Inteira."""
 
         nome = camada.name()
         total = camada.featureCount()
@@ -1134,6 +1238,7 @@ class LayoutEngine:
 
 
     def _calcular_geometria_textos(self, preset, orientacao, geo, config):
+        """Realiza as divisões e frações da prancha para destinar o espaço exato aos textos."""
         limite_fundo = geo['y_zero'] + geo['h_pg'] - geo['margin']
         geom = {'limite_fundo': limite_fundo}
 
@@ -1175,13 +1280,15 @@ class LayoutEngine:
         return geom
 
     def _inserir_label_no_layout(self, layout, texto, x, y, w=None, h=None, is_html=False, auto_resize=False):
+        """Atalho (Wrapper) para injetar labels limpos no QgsPrintLayout."""
         lbl = QgsLayoutItemLabel(layout)
 
         if is_html:
+            # Compatibilidade QGIS 3 e QGIS 4
             mode = QgsLayoutItemLabel.ContentMode.ModeHtml if hasattr(QgsLayoutItemLabel, 'ContentMode') else (QgsLayoutItemLabel.ModeHtml if hasattr(QgsLayoutItemLabel, 'ModeHtml') else 1)
             lbl.setMode(mode)
 
-        # Garantimos que a caixa (frame) fique sempre desligada por padrão
+        # Garantimos que a caixa (frame preta de contorno) fique desligada
         lbl.setFrameEnabled(False)
 
         lbl.setText(texto)
@@ -1200,8 +1307,9 @@ class LayoutEngine:
         return float(w) if w is not None else 0.0
 
     def _renderizar_modo_formulario(self, layout, feicoes_da_pagina, colunas, geom, config):
+        """Cria o bloco unificado HTML simulando a Tabela de Atributos do QGIS."""
         txt = ""
-        # Verifica a extensão. Se for SVG, fugimos do HTML para não acionar o bug do QGIS
+        # Verifica a extensão. Se for exportação SVG, fugimos do HTML para não acionar o bug do parser do Qt
         is_svg = config.get('ext', '') == '.svg'
 
         for f in feicoes_da_pagina:
@@ -1212,7 +1320,7 @@ class LayoutEngine:
                         # Texto puro com quebra de linha normal (\n)
                         txt += f"{col}: {valor}\n"
                     else:
-                        # HTML com negrito e quebra web (<br>)
+                        # HTML rico com negrito e quebra web (<br>)
                         txt += f"<b>{col}:</b> {valor}<br>"
                 except Exception: continue # nosec
 
@@ -1223,6 +1331,7 @@ class LayoutEngine:
         )
 
     def _renderizar_modo_individual(self, layout, feicoes_da_pagina, colunas, geom, preset, orientacao, config):
+        """Cria as linhas corridas preenchendo o rodapé de forma linear sem sobreposições."""
         campo_atlas = config.get('campo_atlas')
         altura_linha = 5.5
         xi, yi = geom['x_ind_start'], geom['y_ind_min']
@@ -1263,7 +1372,9 @@ class LayoutEngine:
                     except Exception: continue # nosec
                 yi += altura_linha
 
+
     def adicionar_numeracao_pagina(self, layout, w_pg, h_pg, y_zero_folha, config):
+        """Injeta a variável nativa [% @layout_page %] de forma oculta no cantinho do PDF."""
         if not config.get('numeracao', False): return
         label_page = QgsLayoutItemLabel(layout)
         label_page.setText("[% @layout_page %]")
@@ -1271,12 +1382,12 @@ class LayoutEngine:
         label_page.setReferencePoint(QgsLayoutItem.LowerRight)
         x, y = w_pg - 5, y_zero_folha + h_pg - 5
         label_page.attemptMove(QgsLayoutPoint(x, y, QgsUnitTypes.LayoutMillimeters))
-        label_page.setZValue(100)
+        label_page.setZValue(100) # Garante que nada tampe ele
         layout.addLayoutItem(label_page)
 
 
     def _adicionar_grade_ao_mapa(self, map_item, config):
-        """Adiciona a grade de coordenadas com cálculo automático de intervalo e estilo refinado."""
+        """Adiciona a grade de coordenadas com cálculo automático de intervalo tridimensional e estilo refinado."""
         if not config.get('inserir_grade', False): return
 
         # 1. Cria a Grade
@@ -1289,26 +1400,27 @@ class LayoutEngine:
             grid.setStyle(QgsLayoutItemMapGrid.Cross)
             grid.setCrossLength(2.0)
             grid.setFrameStyle(QgsLayoutItemMapGrid.NoFrame)
-            # Como não alteramos o lineSymbol aqui, a cruz mantém a força padrão do QGIS!
+            # Como não alteramos o lineSymbol aqui, a cruz mantém a força padrão do QGIS
         else:
             grid.setStyle(QgsLayoutItemMapGrid.Solid)
             grid.setFrameStyle(QgsLayoutItemMapGrid.Zebra)
             grid.setFrameWidth(2.0)
 
-            # Aplicamos a leveza APENAS na linha sólida (e um pouco mais forte que antes)
+            # Aplicamos a leveza e transparência APENAS na linha sólida interna
             linha_simbolo = grid.lineSymbol().clone()
-            linha_simbolo.setWidth(0.18) # Aumentado de 0.12 para 0.18
-            linha_simbolo.setColor(QColor(130, 130, 130, 220)) # Cinza levemente mais escuro
+            linha_simbolo.setWidth(0.18)
+            linha_simbolo.setColor(QColor(130, 130, 130, 220)) # Cinza levemente escuro para não poluir
             grid.setLineSymbol(linha_simbolo)
 
-        # 3. Controle de Posição e Rotação das Coordenadas
+        # 3. Controle de Posição e Rotação das Coordenadas Matemáticas
         grid.setAnnotationEnabled(True)
         grid.setAnnotationFormat(QgsLayoutItemMapGrid.DecimalWithSuffix)
 
+        # Detecta se é Grau ou Metro e ajusta as casas decimais (Inteligência Geodésica)
         is_geo = map_item.crs().isGeographic()
         grid.setAnnotationPrecision(3 if is_geo else 0)
 
-        # a) Desliga as coordenadas da Direita e do Topo
+        # a) Desliga as coordenadas da Direita e do Topo (Minimalismo)
         grid.setAnnotationDisplay(QgsLayoutItemMapGrid.HideAll, QgsLayoutItemMapGrid.Right)
         grid.setAnnotationDisplay(QgsLayoutItemMapGrid.HideAll, QgsLayoutItemMapGrid.Top)
 
@@ -1319,7 +1431,8 @@ class LayoutEngine:
         # c) Rotaciona as coordenadas da Esquerda para Vertical Ascendente
         grid.setAnnotationDirection(QgsLayoutItemMapGrid.Vertical, QgsLayoutItemMapGrid.Left)
 
-        # 4. A MATEMÁTICA DO INTERVALO
+        # 4. A MATEMÁTICA DO INTERVALO BASEADA EM LOGARITMO
+        # Lógica: O intervalo ideal faz com que o mapa seja dividido em ~4 grades.
         ext = map_item.extent()
         largura_mapa = ext.width()
 
@@ -1338,5 +1451,5 @@ class LayoutEngine:
             grid.setIntervalX(intervalo_ideal)
             grid.setIntervalY(intervalo_ideal)
 
-        # 5. Adiciona a grade à "pilha" de grades do mapa
+        # 5. Adiciona a grade à "pilha" de camadas do mapa principal
         map_item.grids().addGrid(grid)

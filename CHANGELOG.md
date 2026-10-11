@@ -4,6 +4,16 @@ All notable changes to VectorToMap will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.9.0] - 2026-10-11
+### Added
+- Dynamic Titles via QGIS Expression Builder: Upgraded the static text input to a dynamic expression engine (DDO). Users can now inject native QGIS functions and attribute values directly into the layout title using the `[% %]` syntax and the new `ε` button.
+- Seamless Map Overview Label Silencing: The locator map engine was upgraded with on-the-fly XML `QDomDocument` manipulation. By overriding the `layerStyleOverrides` directly in memory, text labels from background streets and roads are dynamically muted in the overview map, without altering the active project layers or templates.
+- Letter Paper Size Support: Added the "Letter" (215.9 x 279.4 mm) format to the native geometric generation presets (`tamanhos_disponiveis`), keeping the engine math completely agnostic and responsive.
+
+### Changed
+- Expression Scope Logic (Atlas vs General Map): Handled a major context bug where dynamic titles (e.g. `[% "bairro" %]`) would crash when the user selected the "General Map" (`__ALL_FEATURES__`). The engine now detects the `QgsFeature().isValid()` boolean state and dynamically switches the rendering scope, falling back to a clean context for the whole layer.
+- Code Readability and Maintenance: Performed a deep review across `vector_to_map.py` and `layout_engine.py`, implementing highly detailed and structured docstrings and in-line comments for every function and complex cartographic logic step, ensuring maximum readability for future open-source contributors.
+
 ## [3.8.8] - 2026-09-22
 ### Security & DevSecOps
 - Complete CI/CD Pipeline Overhaul: Replaced manual release scripts with the official `qgis-plugin-ci` tool for robust, secure packaging and automated publishing directly to the QGIS official plugin repository.
@@ -62,6 +72,16 @@ Todas as mudanças notáveis no VectorToMap serão documentadas neste arquivo.
 
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+## [3.9.0] - 2026-10-11
+### Adicionado
+- Títulos Dinâmicos via Construtor de Expressões do QGIS: Evolução do campo de texto estático para um motor de expressões dinâmicas (DDO). Os usuários agora podem injetar funções nativas do QGIS e valores da tabela de atributos diretamente no título usando a sintaxe `[% %]` e o novo botão `ε`.
+- Silenciamento Dinâmico de Rótulos no Mapa de Localização: O motor do overview map foi atualizado com manipulação XML `QDomDocument` on-the-fly. Ao sobrescrever a variável `layerStyleOverrides` diretamente na memória, os rótulos de textos (como nomes de ruas em mapas de fundo) são silenciados no mapa de localização, sem alterar os estilos da camada principal ou do template do projeto.
+- Suporte ao Formato Carta (Letter): Adicionado o papel tamanho Carta (215.9 x 279.4 mm) aos presets matemáticos de geração nativa (`tamanhos_disponiveis`), mantendo a matemática do motor agnóstica e totalmente responsiva.
+
+### Modificado
+- Lógica de Escopo de Expressões (Atlas vs Mapa Geral): Correção de um bug severo de contexto onde títulos dinâmicos (ex: `[% "bairro" %]`) causavam erro ao renderizar a opção de "Mapa Geral" (`__ALL_FEATURES__`). O motor agora checa a validade booleana via `QgsFeature().isValid()` e reajusta dinamicamente o escopo de renderização do QGIS, garantindo a exibição do texto literal quando não há uma feição específica em foco.
+- Legibilidade e Manutenção do Código Fonte: Revisão profunda de toda a arquitetura dos arquivos `vector_to_map.py` e `layout_engine.py`, implementando docstrings detalhadas e comentários práticos bloco a bloco, explicando as matemáticas e lógicas cartográficas complexas. Foco total em facilitar a curva de aprendizado para futuros contribuidores open-source.
 
 ## [3.8.8] - 2026-09-22
 ### Segurança & DevSecOps

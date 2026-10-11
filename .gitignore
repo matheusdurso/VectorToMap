@@ -4,6 +4,9 @@ __pycache__/
 *$py.class
 .pytest_cache/
 
+# Linting e Análise Estática
+.ruff_cache/
+
 # Ambientes Virtuais (NOVO - CRUCIAL)
 venv/
 .venv/
